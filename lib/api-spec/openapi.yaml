@@ -1,0 +1,988 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Andi Language Learning Platform API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+  - name: words
+  - name: lessons
+  - name: exercises
+  - name: flashcards
+  - name: progress
+  - name: stats
+  - name: morphology
+  - name: grammar
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /words:
+    get:
+      operationId: listWords
+      tags: [words]
+      summary: List dictionary words
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: partOfSpeech
+          in: query
+          schema:
+            type: string
+        - name: nounClass
+          in: query
+          schema:
+            type: string
+        - name: level
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of words
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WordList"
+    post:
+      operationId: createWord
+      tags: [words]
+      summary: Create a new word
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WordInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Word"
+
+  /words/random:
+    get:
+      operationId: getRandomWord
+      tags: [words]
+      summary: Get a random word of the day
+      responses:
+        "200":
+          description: Random word
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Word"
+
+  /words/analyze:
+    post:
+      operationId: analyzeWord
+      tags: [morphology]
+      summary: Morphological analysis of an Andi word (rule-based, preliminary)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyzeWordInput"
+      responses:
+        "200":
+          description: Morphological analysis result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MorphologicalAnalysis"
+
+  /words/{id}:
+    get:
+      operationId: getWord
+      tags: [words]
+      summary: Get a word by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Word found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Word"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateWord
+      tags: [words]
+      summary: Update a word
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WordUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Word"
+    delete:
+      operationId: deleteWord
+      tags: [words]
+      summary: Delete a word
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /words/{id}/forms:
+    get:
+      operationId: getWordForms
+      tags: [morphology]
+      summary: Get declined/conjugated forms of a word
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Word forms
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WordFormsResponse"
+
+  /lessons:
+    get:
+      operationId: listLessons
+      tags: [lessons]
+      summary: List all lessons
+      responses:
+        "200":
+          description: List of lessons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lesson"
+    post:
+      operationId: createLesson
+      tags: [lessons]
+      summary: Create a lesson
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LessonInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lesson"
+
+  /lessons/{id}:
+    get:
+      operationId: getLesson
+      tags: [lessons]
+      summary: Get lesson by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lesson found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LessonDetail"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateLesson
+      tags: [lessons]
+      summary: Update a lesson
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LessonUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lesson"
+
+  /exercises:
+    get:
+      operationId: listExercises
+      tags: [exercises]
+      summary: List exercises
+      parameters:
+        - name: lessonId
+          in: query
+          schema:
+            type: integer
+        - name: type
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of exercises
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Exercise"
+    post:
+      operationId: createExercise
+      tags: [exercises]
+      summary: Create an exercise
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExerciseInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Exercise"
+
+  /exercises/{id}/submit:
+    post:
+      operationId: submitExercise
+      tags: [exercises]
+      summary: Submit an answer to an exercise
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExerciseSubmission"
+      responses:
+        "200":
+          description: Result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExerciseResult"
+
+  /flashcards/due:
+    get:
+      operationId: getDueFlashcards
+      tags: [flashcards]
+      summary: Get flashcards due for review
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Due flashcards
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Flashcard"
+
+  /flashcards/{wordId}/review:
+    post:
+      operationId: reviewFlashcard
+      tags: [flashcards]
+      summary: Record a flashcard review result
+      parameters:
+        - name: wordId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlashcardReview"
+      responses:
+        "200":
+          description: Updated flashcard state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Flashcard"
+
+  /progress:
+    get:
+      operationId: getProgress
+      tags: [progress]
+      summary: Get current user progress summary
+      responses:
+        "200":
+          description: Progress summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProgressSummary"
+
+  /stats/summary:
+    get:
+      operationId: getStatsSummary
+      tags: [stats]
+      summary: Get platform-wide statistics
+      responses:
+        "200":
+          description: Platform stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatsSummary"
+
+  /stats/activity:
+    get:
+      operationId: getActivityFeed
+      tags: [stats]
+      summary: Get recent learning activity
+      parameters:
+        - name: days
+          in: query
+          schema:
+            type: integer
+            default: 7
+      responses:
+        "200":
+          description: Activity feed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityEntry"
+
+  /grammar/cases:
+    get:
+      operationId: getCaseParadigms
+      tags: [grammar]
+      summary: Get Andi case system with paradigms
+      responses:
+        "200":
+          description: Case paradigms
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CaseParadigmsResponse"
+
+  /grammar/classes:
+    get:
+      operationId: getNounClasses
+      tags: [grammar]
+      summary: Get Andi noun class (grammatical gender) system
+      responses:
+        "200":
+          description: Noun classes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NounClassesResponse"
+
+  /grammar/drills:
+    get:
+      operationId: getGrammarDrills
+      tags: [grammar]
+      summary: Get grammar drill exercises
+      parameters:
+        - name: topic
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Grammar drills
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GrammarDrill"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+
+    Word:
+      type: object
+      required: [id, andiWord, russian, partOfSpeech, createdAt]
+      properties:
+        id:
+          type: integer
+        andiWord:
+          type: string
+        lemma:
+          type: ["string", "null"]
+        russian:
+          type: string
+        english:
+          type: ["string", "null"]
+        partOfSpeech:
+          type: string
+        nounClass:
+          type: ["string", "null"]
+        grammaticalFunction:
+          type: ["string", "null"]
+        root:
+          type: ["string", "null"]
+        affixes:
+          type: ["string", "null"]
+        morphology:
+          type: ["string", "null"]
+        phonetic:
+          type: ["string", "null"]
+        examples:
+          type: ["string", "null"]
+        dialect:
+          type: ["string", "null"]
+        source:
+          type: ["string", "null"]
+        license:
+          type: ["string", "null"]
+        confidence:
+          type: ["number", "null"]
+        editorNotes:
+          type: ["string", "null"]
+        level:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    WordInput:
+      type: object
+      required: [andiWord, russian, partOfSpeech]
+      properties:
+        andiWord:
+          type: string
+        lemma:
+          type: string
+        russian:
+          type: string
+        english:
+          type: string
+        partOfSpeech:
+          type: string
+        nounClass:
+          type: string
+        grammaticalFunction:
+          type: string
+        root:
+          type: string
+        affixes:
+          type: string
+        morphology:
+          type: string
+        phonetic:
+          type: string
+        examples:
+          type: string
+        dialect:
+          type: string
+        source:
+          type: string
+        license:
+          type: string
+        confidence:
+          type: number
+        editorNotes:
+          type: string
+        level:
+          type: string
+
+    WordUpdate:
+      type: object
+      properties:
+        andiWord:
+          type: string
+        lemma:
+          type: string
+        russian:
+          type: string
+        english:
+          type: string
+        partOfSpeech:
+          type: string
+        nounClass:
+          type: string
+        grammaticalFunction:
+          type: string
+        root:
+          type: string
+        affixes:
+          type: string
+        morphology:
+          type: string
+        phonetic:
+          type: string
+        examples:
+          type: string
+        dialect:
+          type: string
+        source:
+          type: string
+        license:
+          type: string
+        confidence:
+          type: number
+        editorNotes:
+          type: string
+        level:
+          type: string
+
+    WordList:
+      type: object
+      required: [words, total]
+      properties:
+        words:
+          type: array
+          items:
+            $ref: "#/components/schemas/Word"
+        total:
+          type: integer
+
+    WordForm:
+      type: object
+      required: [id, wordId, form]
+      properties:
+        id:
+          type: integer
+        wordId:
+          type: integer
+        form:
+          type: string
+        caseName:
+          type: ["string", "null"]
+        caseNameRu:
+          type: ["string", "null"]
+        number:
+          type: ["string", "null"]
+        nounClass:
+          type: ["string", "null"]
+        grammarNote:
+          type: ["string", "null"]
+
+    WordFormsResponse:
+      type: object
+      required: [word, forms]
+      properties:
+        word:
+          $ref: "#/components/schemas/Word"
+        forms:
+          type: array
+          items:
+            $ref: "#/components/schemas/WordForm"
+
+    AnalyzeWordInput:
+      type: object
+      required: [word]
+      properties:
+        word:
+          type: string
+
+    MorphologicalAnalysis:
+      type: object
+      required: [input, isPreliminary, segments, explanation]
+      properties:
+        input:
+          type: string
+        isPreliminary:
+          type: boolean
+        matchedWord:
+          $ref: "#/components/schemas/Word"
+          nullable: true
+        segments:
+          type: array
+          items:
+            $ref: "#/components/schemas/MorphSegment"
+        explanation:
+          type: string
+        partOfSpeech:
+          type: ["string", "null"]
+        nounClass:
+          type: ["string", "null"]
+        case:
+          type: ["string", "null"]
+        number:
+          type: ["string", "null"]
+        confidence:
+          type: number
+
+    MorphSegment:
+      type: object
+      required: [text, type, label]
+      properties:
+        text:
+          type: string
+        type:
+          type: string
+        label:
+          type: string
+        labelRu:
+          type: string
+
+    Lesson:
+      type: object
+      required: [id, title, level, orderIndex, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        level:
+          type: string
+        orderIndex:
+          type: integer
+        createdAt:
+          type: string
+
+    LessonDetail:
+      type: object
+      required: [id, title, level, orderIndex, createdAt, exercises]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        level:
+          type: string
+        orderIndex:
+          type: integer
+        content:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        exercises:
+          type: array
+          items:
+            $ref: "#/components/schemas/Exercise"
+
+    LessonInput:
+      type: object
+      required: [title, level, orderIndex]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        level:
+          type: string
+        orderIndex:
+          type: integer
+        content:
+          type: string
+
+    LessonUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        level:
+          type: string
+        orderIndex:
+          type: integer
+        content:
+          type: string
+
+    Exercise:
+      type: object
+      required: [id, type, prompt, answer, createdAt]
+      properties:
+        id:
+          type: integer
+        lessonId:
+          type: ["integer", "null"]
+        type:
+          type: string
+        prompt:
+          type: string
+        options:
+          type: ["string", "null"]
+        answer:
+          type: string
+        explanation:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    ExerciseInput:
+      type: object
+      required: [type, prompt, answer]
+      properties:
+        lessonId:
+          type: integer
+        type:
+          type: string
+        prompt:
+          type: string
+        options:
+          type: string
+        answer:
+          type: string
+        explanation:
+          type: string
+
+    ExerciseSubmission:
+      type: object
+      required: [answer]
+      properties:
+        answer:
+          type: string
+
+    ExerciseResult:
+      type: object
+      required: [correct, correctAnswer]
+      properties:
+        correct:
+          type: boolean
+        correctAnswer:
+          type: string
+        explanation:
+          type: ["string", "null"]
+
+    Flashcard:
+      type: object
+      required: [wordId, word, dueDate, repetitions, easeFactor, interval]
+      properties:
+        wordId:
+          type: integer
+        word:
+          $ref: "#/components/schemas/Word"
+        dueDate:
+          type: string
+        repetitions:
+          type: integer
+        easeFactor:
+          type: number
+        interval:
+          type: integer
+
+    FlashcardReview:
+      type: object
+      required: [quality]
+      properties:
+        quality:
+          type: integer
+
+    ProgressSummary:
+      type: object
+      required: [wordsLearned, exercisesDone, streak, totalWords, lessonsCompleted, dueToday]
+      properties:
+        wordsLearned:
+          type: integer
+        exercisesDone:
+          type: integer
+        streak:
+          type: integer
+        totalWords:
+          type: integer
+        lessonsCompleted:
+          type: integer
+        dueToday:
+          type: integer
+
+    StatsSummary:
+      type: object
+      required: [totalWords, totalLessons, totalExercises, partOfSpeechBreakdown, levelBreakdown]
+      properties:
+        totalWords:
+          type: integer
+        totalLessons:
+          type: integer
+        totalExercises:
+          type: integer
+        partOfSpeechBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/CountEntry"
+        levelBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/CountEntry"
+
+    CountEntry:
+      type: object
+      required: [label, count]
+      properties:
+        label:
+          type: string
+        count:
+          type: integer
+
+    ActivityEntry:
+      type: object
+      required: [date, exercisesDone, wordsReviewed]
+      properties:
+        date:
+          type: string
+        exercisesDone:
+          type: integer
+        wordsReviewed:
+          type: integer
+
+    CaseParadigmsResponse:
+      type: object
+      required: [cases, description]
+      properties:
+        description:
+          type: string
+        cases:
+          type: array
+          items:
+            $ref: "#/components/schemas/CaseInfo"
+
+    CaseInfo:
+      type: object
+      required: [name, nameRu, suffix, function, example]
+      properties:
+        name:
+          type: string
+        nameRu:
+          type: string
+        suffix:
+          type: string
+        function:
+          type: string
+        example:
+          type: string
+        exampleTranslation:
+          type: string
+
+    NounClassesResponse:
+      type: object
+      required: [classes, description]
+      properties:
+        description:
+          type: string
+        classes:
+          type: array
+          items:
+            $ref: "#/components/schemas/NounClassInfo"
+
+    NounClassInfo:
+      type: object
+      required: [classNumber, nameRu, marker, semantics, examples]
+      properties:
+        classNumber:
+          type: string
+        nameRu:
+          type: string
+        marker:
+          type: string
+        markerPosition:
+          type: string
+        semantics:
+          type: string
+        examples:
+          type: array
+          items:
+            type: string
+
+    GrammarDrill:
+      type: object
+      required: [id, topic, question, answer, explanation]
+      properties:
+        id:
+          type: string
+        topic:
+          type: string
+        topicRu:
+          type: string
+        question:
+          type: string
+        answer:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+        explanation:
+          type: string

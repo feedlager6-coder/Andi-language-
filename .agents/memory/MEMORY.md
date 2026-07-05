@@ -1,0 +1,1 @@
+- [Andi platform architecture](andi-platform.md) — linguistics-first stack: React+Vite+Wouter, Express 5, Drizzle+Postgres, Orval codegen, SM-2 flashcards, rule-based morphology analyzer.
