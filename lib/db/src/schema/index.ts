@@ -5,3 +5,4 @@ export * from "./exercises";
 export * from "./flashcards";
 export * from "./user_stats";
 export * from "./activity_log";
+export * from "./phrases";

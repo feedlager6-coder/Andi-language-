@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import {
   BookOpen, BookText, Home, Layers, TrendingUp,
   Dumbbell, ChevronDown, ChevronRight, Settings,
-  Microscope, FlaskConical,
+  Microscope, FlaskConical, Languages, MessageSquareText,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
@@ -14,8 +14,10 @@ import { cn } from "@/lib/utils";
 
 const mainNav = [
   { title: "Главная", url: "/", icon: Home },
-  { title: "Словарь", url: "/dictionary", icon: BookText },
+  { title: "Учить слова", url: "/dictionary", icon: BookText },
+  { title: "Учить фразы", url: "/phrasebank", icon: MessageSquareText },
   { title: "Уроки", url: "/lessons", icon: Layers },
+  { title: "Переводчик", url: "/translator", icon: Languages },
   { title: "Практика", url: "/practice", icon: Dumbbell },
   { title: "Прогресс", url: "/progress", icon: TrendingUp },
 ];

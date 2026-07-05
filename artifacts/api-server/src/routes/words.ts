@@ -8,6 +8,7 @@ import {
   UpdateWordParams,
   UpdateWordBody,
   DeleteWordParams,
+  RequestWordAudioParams,
 } from "@workspace/api-zod";
 
 const router = Router();
@@ -68,6 +69,22 @@ router.patch("/words/:id", async (req, res) => {
   if (!params.success || !body.success) return res.status(400).json({ error: "Invalid request" });
   const [word] = await db.update(wordsTable).set(body.data).where(eq(wordsTable.id, params.data.id)).returning();
   if (!word) return res.status(404).json({ error: "Word not found" });
+  return res.json(word);
+});
+
+router.post("/words/:id/request-audio", async (req, res) => {
+  const params = RequestWordAudioParams.safeParse({ id: Number(req.params.id) });
+  if (!params.success) return res.status(400).json({ error: "Invalid id" });
+  const [word] = await db.select().from(wordsTable).where(eq(wordsTable.id, params.data.id));
+  if (!word) return res.status(404).json({ error: "Word not found" });
+  if (word.audioStatus === "missing") {
+    const [updated] = await db
+      .update(wordsTable)
+      .set({ audioStatus: "requested" })
+      .where(eq(wordsTable.id, params.data.id))
+      .returning();
+    return res.json(updated);
+  }
   return res.json(word);
 });
 

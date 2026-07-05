@@ -33,3 +33,13 @@ description: Key decisions, data model, and conventions for the Andi language le
 - GET /grammar/drills — 13 interactive grammar drills (noun_classes, cases, numerals, vocabulary)
 
 **Why linguistics-first:** The platform's value is the quality of linguistic data. Rule-based analyzer is clearly labeled preliminary to avoid misleading learners.
+
+## Phrasebank + translator + audio status (added later)
+- `phrases` table mirrors `words` fields (andi/russian/english/category/confidence/source) plus `audioStatus`; both `words` and `phrases` share the same audioStatus lifecycle: missing → requested → recorded → verified.
+- Translator (`/translate`) does phrase-match → n-gram phrase match → word-by-word dictionary lookup, never fabricates full machine translation; always returns a disclaimer and per-segment confidence.
+- No TTS/fake audio anywhere — every word/phrase detail view shows an honest audio-status badge + a "request recording" button that just flips status to `requested`.
+
+## api-server dev workflow does NOT hot-reload
+The `dev` script is `build (esbuild) && start (node dist/index.mjs)` — it is a one-shot build, not a watcher.
+**Why:** new/changed Express routes are silently invisible (404) until the workflow is restarted, even though the source file is correct.
+**How to apply:** after adding/editing anything under `artifacts/api-server/src/routes/**`, restart the `API Server` workflow before testing — don't assume dev-server hot reload.

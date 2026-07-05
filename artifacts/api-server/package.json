@@ -13,6 +13,9 @@
     "seed:words-expanded": "tsx src/seed-words-expanded.ts",
     "seed:lessons-part2": "tsx src/seed-lessons-part2.ts",
     "seed:salimov": "tsx src/seed-salimov.ts",
+    "seed:vocab-expanded": "tsx src/seed-vocab-expanded.ts",
+    "seed:phrasebank": "tsx src/seed-phrasebank.ts",
+    "seed:lessons-practical": "tsx src/seed-lessons-practical.ts",
     "parse:salimov": "python3 src/parse-salimov-dict.py /tmp/salimov_full.txt"
   },
   "dependencies": {

@@ -1,0 +1,1 @@
+{"version":3,"file":"grammarDrill.d.ts","sourceRoot":"","sources":["../../../src/generated/types/grammarDrill.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AAEH,MAAM,WAAW,YAAY;IAC3B,EAAE,EAAE,MAAM,CAAC;IACX,KAAK,EAAE,MAAM,CAAC;IACd,OAAO,CAAC,EAAE,MAAM,CAAC;IACjB,QAAQ,EAAE,MAAM,CAAC;IACjB,MAAM,EAAE,MAAM,CAAC;IACf,OAAO,CAAC,EAAE,MAAM,EAAE,CAAC;IACnB,WAAW,EAAE,MAAM,CAAC;CACrB"}

@@ -1,11 +1,19 @@
 import { useParams } from "wouter";
-import { useGetWord, getGetWordQueryKey } from "@workspace/api-client-react";
+import { useGetWord, getGetWordQueryKey, useRequestWordAudio } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { ArrowLeft, Microscope } from "lucide-react";
+import { ArrowLeft, Microscope, Mic, MicOff, CircleCheck, Send } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+const audioStatusMeta: Record<string, { label: string; icon: typeof Mic; className: string }> = {
+  missing: { label: "Нет аудио", icon: MicOff, className: "text-muted-foreground border-muted-foreground/40" },
+  requested: { label: "Запись запрошена", icon: Send, className: "text-amber-700 border-amber-400 dark:text-amber-400" },
+  recorded: { label: "Записано (не проверено)", icon: Mic, className: "text-blue-700 border-blue-400 dark:text-blue-400" },
+  verified: { label: "Проверено носителем", icon: CircleCheck, className: "text-green-700 border-green-500 dark:text-green-400" },
+};
 
 const levelMap: Record<string, string> = {
   beginner: "начальный",
@@ -23,9 +31,18 @@ const classColors: Record<string, string> = {
 export default function WordDetail() {
   const params = useParams();
   const id = parseInt(params.id || "0", 10);
+  const { toast } = useToast();
 
   const { data: word, isLoading } = useGetWord(id, {
     query: { enabled: !!id, queryKey: getGetWordQueryKey(id) }
+  });
+
+  const requestAudio = useRequestWordAudio({
+    mutation: {
+      onSuccess: () => {
+        toast({ title: "Запрос отправлен", description: "Слово добавлено в очередь на запись носителем языка." });
+      },
+    },
   });
 
   if (isLoading) {
@@ -89,6 +106,29 @@ export default function WordDetail() {
           )}
           {confidencePct !== null && (
             <span className="text-xs text-muted-foreground">достоверность: {confidencePct}%</span>
+          )}
+          {(() => {
+            const status = word.audioStatus || "missing";
+            const meta = audioStatusMeta[status] || audioStatusMeta.missing;
+            const Icon = meta.icon;
+            return (
+              <Badge variant="outline" className={`gap-1 ${meta.className}`}>
+                <Icon className="h-3 w-3" />
+                {meta.label}
+              </Badge>
+            );
+          })()}
+          {(word.audioStatus || "missing") === "missing" && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-6 gap-1 text-xs px-2"
+              disabled={requestAudio.isPending}
+              onClick={() => requestAudio.mutate({ id: word.id })}
+            >
+              <Send className="h-3 w-3" />
+              Запросить запись
+            </Button>
           )}
         </div>
       </div>

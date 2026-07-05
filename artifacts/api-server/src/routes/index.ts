@@ -8,6 +8,8 @@ import progressRouter from "./progress";
 import statsRouter from "./stats";
 import morphologyRouter from "./morphology";
 import grammarRouter from "./grammar";
+import phrasesRouter from "./phrases";
+import translateRouter from "./translate";
 
 const router: IRouter = Router();
 
@@ -20,5 +22,7 @@ router.use(flashcardsRouter);
 router.use(progressRouter);
 router.use(statsRouter);
 router.use(grammarRouter);
+router.use(phrasesRouter);
+router.use(translateRouter);
 
 export default router;

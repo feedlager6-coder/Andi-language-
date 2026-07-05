@@ -15361,7 +15361,7 @@ var require_type_is = __commonJS({
     module.exports = typeofrequest;
     module.exports.is = typeis;
     module.exports.hasBody = hasbody;
-    module.exports.normalize = normalize;
+    module.exports.normalize = normalize2;
     module.exports.match = mimeMatch;
     function typeis(value, types_) {
       if (value && typeof value === "object") {
@@ -15384,7 +15384,7 @@ var require_type_is = __commonJS({
       }
       var type;
       for (i = 0; i < types3.length; i++) {
-        if (mimeMatch(normalize(type = types3[i]), val)) {
+        if (mimeMatch(normalize2(type = types3[i]), val)) {
           return type[0] === "+" || type.indexOf("*") !== -1 ? val : type;
         }
       }
@@ -15399,7 +15399,7 @@ var require_type_is = __commonJS({
       var value = req.headers["content-type"];
       return typeis(value, types3);
     }
-    function normalize(type) {
+    function normalize2(type) {
       if (typeof type !== "string") {
         return false;
       }
@@ -20706,27 +20706,27 @@ var require_router = __commonJS({
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var methods = METHODS.map((method) => method.toLowerCase());
-    module.exports = Router11;
+    module.exports = Router13;
     module.exports.Route = Route;
-    function Router11(options) {
-      if (!(this instanceof Router11)) {
-        return new Router11(options);
+    function Router13(options) {
+      if (!(this instanceof Router13)) {
+        return new Router13(options);
       }
       const opts = options || {};
-      function router11(req, res, next) {
-        router11.handle(req, res, next);
+      function router13(req, res, next) {
+        router13.handle(req, res, next);
       }
-      Object.setPrototypeOf(router11, this);
-      router11.caseSensitive = opts.caseSensitive;
-      router11.mergeParams = opts.mergeParams;
-      router11.params = {};
-      router11.strict = opts.strict;
-      router11.stack = [];
-      return router11;
+      Object.setPrototypeOf(router13, this);
+      router13.caseSensitive = opts.caseSensitive;
+      router13.mergeParams = opts.mergeParams;
+      router13.params = {};
+      router13.strict = opts.strict;
+      router13.stack = [];
+      return router13;
     }
-    Router11.prototype = function() {
+    Router13.prototype = function() {
     };
-    Router11.prototype.param = function param(name, fn) {
+    Router13.prototype.param = function param(name, fn) {
       if (!name) {
         throw new TypeError("argument name is required");
       }
@@ -20746,7 +20746,7 @@ var require_router = __commonJS({
       params.push(fn);
       return this;
     };
-    Router11.prototype.handle = function handle(req, res, callback) {
+    Router13.prototype.handle = function handle(req, res, callback) {
       if (!callback) {
         throw new TypeError("argument callback is required");
       }
@@ -20873,7 +20873,7 @@ var require_router = __commonJS({
         }
       }
     };
-    Router11.prototype.use = function use(handler) {
+    Router13.prototype.use = function use(handler) {
       let offset = 0;
       let path = "/";
       if (typeof handler !== "function") {
@@ -20906,7 +20906,7 @@ var require_router = __commonJS({
       }
       return this;
     };
-    Router11.prototype.route = function route(path) {
+    Router13.prototype.route = function route(path) {
       const route2 = new Route(path);
       const layer = new Layer(path, {
         sensitive: this.caseSensitive,
@@ -20921,7 +20921,7 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      Router11.prototype[method] = function(path) {
+      Router13.prototype[method] = function(path) {
         const route = this.route(path);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
@@ -21104,13 +21104,13 @@ var require_application = __commonJS({
     var compileTrust = require_utils3().compileTrust;
     var resolve = __require("node:path").resolve;
     var once = require_once();
-    var Router11 = require_router();
+    var Router13 = require_router();
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var app2 = exports = module.exports = {};
     var trustProxyDefaultSymbol = "@@symbol:trust_proxy_default";
     app2.init = function init() {
-      var router11 = null;
+      var router13 = null;
       this.cache = /* @__PURE__ */ Object.create(null);
       this.engines = /* @__PURE__ */ Object.create(null);
       this.settings = /* @__PURE__ */ Object.create(null);
@@ -21119,13 +21119,13 @@ var require_application = __commonJS({
         configurable: true,
         enumerable: true,
         get: function getrouter() {
-          if (router11 === null) {
-            router11 = new Router11({
+          if (router13 === null) {
+            router13 = new Router13({
               caseSensitive: this.enabled("case sensitive routing"),
               strict: this.enabled("strict routing")
             });
           }
-          return router11;
+          return router13;
         }
       });
     };
@@ -21196,15 +21196,15 @@ var require_application = __commonJS({
       if (fns.length === 0) {
         throw new TypeError("app.use() requires a middleware function");
       }
-      var router11 = this.router;
+      var router13 = this.router;
       fns.forEach(function(fn2) {
         if (!fn2 || !fn2.handle || !fn2.set) {
-          return router11.use(path, fn2);
+          return router13.use(path, fn2);
         }
         debug(".use app under %s", path);
         fn2.mountpath = path;
         fn2.parent = this;
-        router11.use(path, function mounted_app(req, res, next) {
+        router13.use(path, function mounted_app(req, res, next) {
           var orig = req.app;
           fn2.handle(req, res, function(err) {
             Object.setPrototypeOf(req, orig.request);
@@ -22672,7 +22672,7 @@ var require_send = __commonJS({
     var util2 = __require("util");
     var extname = path.extname;
     var join = path.join;
-    var normalize = path.normalize;
+    var normalize2 = path.normalize;
     var resolve = path.resolve;
     var sep = path.sep;
     var BYTES_RANGE_REGEXP = /^ *bytes=/;
@@ -22835,7 +22835,7 @@ var require_send = __commonJS({
       var parts;
       if (root !== null) {
         if (path2) {
-          path2 = normalize("." + sep + path2);
+          path2 = normalize2("." + sep + path2);
         }
         if (UP_PATH_REGEXP.test(path2)) {
           debug('malicious path "%s"', path2);
@@ -22843,14 +22843,14 @@ var require_send = __commonJS({
           return res;
         }
         parts = path2.split(sep);
-        path2 = normalize(join(root, path2));
+        path2 = normalize2(join(root, path2));
       } else {
         if (UP_PATH_REGEXP.test(path2)) {
           debug('malicious path "%s"', path2);
           this.error(403);
           return res;
         }
-        parts = normalize(path2).split(sep);
+        parts = normalize2(path2).split(sep);
         path2 = resolve(path2);
       }
       if (containsDotFile(parts)) {
@@ -23789,7 +23789,7 @@ var require_express = __commonJS({
     var EventEmitter = __require("node:events").EventEmitter;
     var mixin = require_merge_descriptors();
     var proto = require_application();
-    var Router11 = require_router();
+    var Router13 = require_router();
     var req = require_request();
     var res = require_response();
     exports = module.exports = createApplication;
@@ -23811,8 +23811,8 @@ var require_express = __commonJS({
     exports.application = proto;
     exports.request = req;
     exports.response = res;
-    exports.Route = Router11.Route;
-    exports.Router = Router11;
+    exports.Route = Router13.Route;
+    exports.Router = Router13;
     exports.json = bodyParser.json;
     exports.raw = bodyParser.raw;
     exports.static = require_serve_static();
@@ -28297,11 +28297,11 @@ var require_pino = __commonJS({
       depthLimit: 5,
       edgeLimit: 100
     };
-    var normalize = createArgsNormalizer(defaultOptions);
+    var normalize2 = createArgsNormalizer(defaultOptions);
     var serializers = Object.assign(/* @__PURE__ */ Object.create(null), stdSerializers);
     function pino2(...args) {
       const instance = {};
-      const { opts, stream } = normalize(instance, caller(), ...args);
+      const { opts, stream } = normalize2(instance, caller(), ...args);
       if (opts.level && typeof opts.level === "string" && DEFAULT_LEVELS[opts.level.toLowerCase()] !== void 0) opts.level = opts.level.toLowerCase();
       const {
         redact,
@@ -33821,12 +33821,12 @@ var require_lib5 = __commonJS({
 });
 
 // src/app.ts
-var import_express11 = __toESM(require_express2(), 1);
+var import_express13 = __toESM(require_express2(), 1);
 var import_cors = __toESM(require_lib3(), 1);
 var import_pino_http = __toESM(require_logger(), 1);
 
 // src/routes/index.ts
-var import_express10 = __toESM(require_express2(), 1);
+var import_express12 = __toESM(require_express2(), 1);
 
 // src/routes/health.ts
 var import_express = __toESM(require_express2(), 1);
@@ -37752,6 +37752,7 @@ var ListWordsResponse = objectType({
     "confidence": numberType().nullish(),
     "editorNotes": stringType().nullish(),
     "level": stringType().nullish(),
+    "audioStatus": stringType().nullish(),
     "createdAt": stringType()
   })),
   "total": numberType()
@@ -37796,6 +37797,7 @@ var CreateWordResponse = objectType({
   "confidence": numberType().nullish(),
   "editorNotes": stringType().nullish(),
   "level": stringType().nullish(),
+  "audioStatus": stringType().nullish(),
   "createdAt": stringType()
 });
 var GetRandomWordResponse = objectType({
@@ -37818,6 +37820,7 @@ var GetRandomWordResponse = objectType({
   "confidence": numberType().nullish(),
   "editorNotes": stringType().nullish(),
   "level": stringType().nullish(),
+  "audioStatus": stringType().nullish(),
   "createdAt": stringType()
 });
 var AnalyzeWordBody = objectType({
@@ -37846,6 +37849,7 @@ var AnalyzeWordResponse = objectType({
     "confidence": numberType().nullish(),
     "editorNotes": stringType().nullish(),
     "level": stringType().nullish(),
+    "audioStatus": stringType().nullish(),
     "createdAt": stringType()
   }).nullish(),
   "segments": arrayType(objectType({
@@ -37884,6 +37888,7 @@ var GetWordResponse = objectType({
   "confidence": numberType().nullish(),
   "editorNotes": stringType().nullish(),
   "level": stringType().nullish(),
+  "audioStatus": stringType().nullish(),
   "createdAt": stringType()
 });
 var UpdateWordParams = objectType({
@@ -37907,7 +37912,8 @@ var UpdateWordBody = objectType({
   "license": stringType().optional(),
   "confidence": numberType().optional(),
   "editorNotes": stringType().optional(),
-  "level": stringType().optional()
+  "level": stringType().optional(),
+  "audioStatus": stringType().optional()
 });
 var UpdateWordResponse = objectType({
   "id": numberType(),
@@ -37929,6 +37935,7 @@ var UpdateWordResponse = objectType({
   "confidence": numberType().nullish(),
   "editorNotes": stringType().nullish(),
   "level": stringType().nullish(),
+  "audioStatus": stringType().nullish(),
   "createdAt": stringType()
 });
 var DeleteWordParams = objectType({
@@ -37959,6 +37966,7 @@ var GetWordFormsResponse = objectType({
     "confidence": numberType().nullish(),
     "editorNotes": stringType().nullish(),
     "level": stringType().nullish(),
+    "audioStatus": stringType().nullish(),
     "createdAt": stringType()
   }),
   "forms": arrayType(objectType({
@@ -38106,6 +38114,7 @@ var GetDueFlashcardsResponseItem = objectType({
     "confidence": numberType().nullish(),
     "editorNotes": stringType().nullish(),
     "level": stringType().nullish(),
+    "audioStatus": stringType().nullish(),
     "createdAt": stringType()
   }),
   "dueDate": stringType(),
@@ -38142,6 +38151,7 @@ var ReviewFlashcardResponse = objectType({
     "confidence": numberType().nullish(),
     "editorNotes": stringType().nullish(),
     "level": stringType().nullish(),
+    "audioStatus": stringType().nullish(),
     "createdAt": stringType()
   }),
   "dueDate": stringType(),
@@ -38201,6 +38211,173 @@ var GetNounClassesResponse = objectType({
     "semantics": stringType(),
     "examples": arrayType(stringType())
   }))
+});
+var ListPhrasesQueryParams = objectType({
+  "search": coerce.string().optional(),
+  "category": coerce.string().optional(),
+  "audioStatus": coerce.string().optional()
+});
+var ListPhrasesResponse = objectType({
+  "phrases": arrayType(objectType({
+    "id": numberType(),
+    "category": stringType(),
+    "andi": stringType(),
+    "russian": stringType(),
+    "english": stringType().nullish(),
+    "transliteration": stringType().nullish(),
+    "breakdown": stringType().nullish(),
+    "exampleUsage": stringType().nullish(),
+    "source": stringType().nullish(),
+    "confidence": numberType().nullish(),
+    "audioStatus": stringType(),
+    "orderIndex": numberType(),
+    "createdAt": stringType()
+  })),
+  "total": numberType()
+});
+var CreatePhraseBody = objectType({
+  "category": stringType(),
+  "andi": stringType(),
+  "russian": stringType(),
+  "english": stringType().optional(),
+  "transliteration": stringType().optional(),
+  "breakdown": stringType().optional(),
+  "exampleUsage": stringType().optional(),
+  "source": stringType().optional(),
+  "confidence": numberType().optional(),
+  "audioStatus": stringType().optional(),
+  "orderIndex": numberType().optional()
+});
+var CreatePhraseResponse = objectType({
+  "id": numberType(),
+  "category": stringType(),
+  "andi": stringType(),
+  "russian": stringType(),
+  "english": stringType().nullish(),
+  "transliteration": stringType().nullish(),
+  "breakdown": stringType().nullish(),
+  "exampleUsage": stringType().nullish(),
+  "source": stringType().nullish(),
+  "confidence": numberType().nullish(),
+  "audioStatus": stringType(),
+  "orderIndex": numberType(),
+  "createdAt": stringType()
+});
+var ListPhraseCategoriesResponseItem = objectType({
+  "label": stringType(),
+  "count": numberType()
+});
+var ListPhraseCategoriesResponse = arrayType(ListPhraseCategoriesResponseItem);
+var GetPhraseParams = objectType({
+  "id": coerce.number()
+});
+var GetPhraseResponse = objectType({
+  "id": numberType(),
+  "category": stringType(),
+  "andi": stringType(),
+  "russian": stringType(),
+  "english": stringType().nullish(),
+  "transliteration": stringType().nullish(),
+  "breakdown": stringType().nullish(),
+  "exampleUsage": stringType().nullish(),
+  "source": stringType().nullish(),
+  "confidence": numberType().nullish(),
+  "audioStatus": stringType(),
+  "orderIndex": numberType(),
+  "createdAt": stringType()
+});
+var UpdatePhraseParams = objectType({
+  "id": coerce.number()
+});
+var UpdatePhraseBody = objectType({
+  "category": stringType().optional(),
+  "andi": stringType().optional(),
+  "russian": stringType().optional(),
+  "english": stringType().optional(),
+  "transliteration": stringType().optional(),
+  "breakdown": stringType().optional(),
+  "exampleUsage": stringType().optional(),
+  "source": stringType().optional(),
+  "confidence": numberType().optional(),
+  "audioStatus": stringType().optional(),
+  "orderIndex": numberType().optional()
+});
+var UpdatePhraseResponse = objectType({
+  "id": numberType(),
+  "category": stringType(),
+  "andi": stringType(),
+  "russian": stringType(),
+  "english": stringType().nullish(),
+  "transliteration": stringType().nullish(),
+  "breakdown": stringType().nullish(),
+  "exampleUsage": stringType().nullish(),
+  "source": stringType().nullish(),
+  "confidence": numberType().nullish(),
+  "audioStatus": stringType(),
+  "orderIndex": numberType(),
+  "createdAt": stringType()
+});
+var RequestPhraseAudioParams = objectType({
+  "id": coerce.number()
+});
+var RequestPhraseAudioResponse = objectType({
+  "id": numberType(),
+  "category": stringType(),
+  "andi": stringType(),
+  "russian": stringType(),
+  "english": stringType().nullish(),
+  "transliteration": stringType().nullish(),
+  "breakdown": stringType().nullish(),
+  "exampleUsage": stringType().nullish(),
+  "source": stringType().nullish(),
+  "confidence": numberType().nullish(),
+  "audioStatus": stringType(),
+  "orderIndex": numberType(),
+  "createdAt": stringType()
+});
+var RequestWordAudioParams = objectType({
+  "id": coerce.number()
+});
+var RequestWordAudioResponse = objectType({
+  "id": numberType(),
+  "andiWord": stringType(),
+  "lemma": stringType().nullish(),
+  "russian": stringType(),
+  "english": stringType().nullish(),
+  "partOfSpeech": stringType(),
+  "nounClass": stringType().nullish(),
+  "grammaticalFunction": stringType().nullish(),
+  "root": stringType().nullish(),
+  "affixes": stringType().nullish(),
+  "morphology": stringType().nullish(),
+  "phonetic": stringType().nullish(),
+  "examples": stringType().nullish(),
+  "dialect": stringType().nullish(),
+  "source": stringType().nullish(),
+  "license": stringType().nullish(),
+  "confidence": numberType().nullish(),
+  "editorNotes": stringType().nullish(),
+  "level": stringType().nullish(),
+  "audioStatus": stringType().nullish(),
+  "createdAt": stringType()
+});
+var TranslateTextBody = objectType({
+  "text": stringType()
+});
+var TranslateTextResponse = objectType({
+  "input": stringType(),
+  "isDraft": booleanType(),
+  "segments": arrayType(objectType({
+    "sourceText": stringType(),
+    "translatedText": stringType().nullish(),
+    "matchType": stringType().describe("phrase | word | unmatched"),
+    "confidence": numberType(),
+    "sourceRef": stringType().optional().describe("e.g. 'phrasebank' or 'dictionary'"),
+    "notes": stringType().nullish()
+  })),
+  "draftTranslation": stringType().optional(),
+  "overallConfidence": numberType(),
+  "disclaimer": stringType()
 });
 var GetGrammarDrillsQueryParams = objectType({
   "topic": coerce.string().optional()
@@ -38913,10 +39090,10 @@ var PgEnumColumn = class extends PgColumn {
 // ../../node_modules/.pnpm/drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0/node_modules/drizzle-orm/subquery.js
 var Subquery = class {
   static [entityKind] = "Subquery";
-  constructor(sql3, fields, alias, isWith = false, usedTables = []) {
+  constructor(sql4, fields, alias, isWith = false, usedTables = []) {
     this._ = {
       brand: "Subquery",
-      sql: sql3,
+      sql: sql4,
       selectedFields: fields,
       alias,
       isWith,
@@ -44414,10 +44591,10 @@ var PgRelationalQuery = class extends QueryPromise {
 
 // ../../node_modules/.pnpm/drizzle-orm@0.45.2_@types+pg@8.20.0_pg@8.22.0/node_modules/drizzle-orm/pg-core/query-builders/raw.js
 var PgRaw = class extends QueryPromise {
-  constructor(execute, sql3, query, mapBatchResult) {
+  constructor(execute, sql4, query, mapBatchResult) {
     super();
     this.execute = execute;
-    this.sql = sql3;
+    this.sql = sql4;
     this.query = query;
     this.mapBatchResult = mapBatchResult;
   }
@@ -44737,8 +44914,8 @@ var NoopCache = class extends Cache {
   async onMutate(_params) {
   }
 };
-async function hashQuery(sql3, params) {
-  const dataToHash = `${sql3}-${JSON.stringify(params)}`;
+async function hashQuery(sql4, params) {
+  const dataToHash = `${sql4}-${JSON.stringify(params)}`;
   const encoder = new TextEncoder();
   const data = encoder.encode(dataToHash);
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
@@ -45205,10 +45382,12 @@ __export(schema_exports, {
   insertExerciseSchema: () => insertExerciseSchema,
   insertFlashcardSchema: () => insertFlashcardSchema,
   insertLessonSchema: () => insertLessonSchema,
+  insertPhraseSchema: () => insertPhraseSchema,
   insertUserStatsSchema: () => insertUserStatsSchema,
   insertWordFormSchema: () => insertWordFormSchema,
   insertWordSchema: () => insertWordSchema,
   lessonsTable: () => lessonsTable,
+  phrasesTable: () => phrasesTable,
   userStatsTable: () => userStatsTable,
   wordFormsTable: () => wordFormsTable,
   wordsTable: () => wordsTable
@@ -56621,6 +56800,7 @@ var wordsTable = pgTable("words", {
   confidence: real("confidence").default(0.8),
   editorNotes: text("editor_notes"),
   level: text("level"),
+  audioStatus: text("audio_status").notNull().default("missing"),
   createdAt: timestamp("created_at").defaultNow().notNull()
 });
 var insertWordSchema = createInsertSchema(wordsTable).omit({ id: true, createdAt: true });
@@ -56698,6 +56878,24 @@ var activityLogTable = pgTable("activity_log", {
 });
 var insertActivityLogSchema = createInsertSchema(activityLogTable).omit({ id: true, createdAt: true });
 
+// ../../lib/db/src/schema/phrases.ts
+var phrasesTable = pgTable("phrases", {
+  id: serial("id").primaryKey(),
+  category: text("category").notNull(),
+  andi: text("andi").notNull(),
+  russian: text("russian").notNull(),
+  english: text("english"),
+  transliteration: text("transliteration"),
+  breakdown: text("breakdown"),
+  exampleUsage: text("example_usage"),
+  source: text("source"),
+  confidence: real("confidence").default(0.7),
+  audioStatus: text("audio_status").notNull().default("missing"),
+  orderIndex: integer("order_index").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull()
+});
+var insertPhraseSchema = createInsertSchema(phrasesTable).omit({ id: true, createdAt: true });
+
 // ../../lib/db/src/index.ts
 var { Pool: Pool3 } = esm_default;
 if (!process.env.DATABASE_URL) {
@@ -56758,6 +56956,17 @@ router2.patch("/words/:id", async (req, res) => {
   if (!params.success || !body.success) return res.status(400).json({ error: "Invalid request" });
   const [word] = await db.update(wordsTable).set(body.data).where(eq(wordsTable.id, params.data.id)).returning();
   if (!word) return res.status(404).json({ error: "Word not found" });
+  return res.json(word);
+});
+router2.post("/words/:id/request-audio", async (req, res) => {
+  const params = RequestWordAudioParams.safeParse({ id: Number(req.params.id) });
+  if (!params.success) return res.status(400).json({ error: "Invalid id" });
+  const [word] = await db.select().from(wordsTable).where(eq(wordsTable.id, params.data.id));
+  if (!word) return res.status(404).json({ error: "Word not found" });
+  if (word.audioStatus === "missing") {
+    const [updated] = await db.update(wordsTable).set({ audioStatus: "requested" }).where(eq(wordsTable.id, params.data.id)).returning();
+    return res.json(updated);
+  }
   return res.json(word);
 });
 router2.delete("/words/:id", async (req, res) => {
@@ -57349,18 +57558,173 @@ router9.get("/grammar/drills", async (req, res) => {
 });
 var grammar_default = router9;
 
-// src/routes/index.ts
+// src/routes/phrases.ts
+var import_express10 = __toESM(require_express2(), 1);
 var router10 = (0, import_express10.Router)();
-router10.use(health_default);
-router10.use(morphology_default);
-router10.use(words_default);
-router10.use(lessons_default);
-router10.use(exercises_default);
-router10.use(flashcards_default);
-router10.use(progress_default);
-router10.use(stats_default);
-router10.use(grammar_default);
-var routes_default = router10;
+router10.get("/phrases/categories", async (_req, res) => {
+  const rows = await db.select({ label: phrasesTable.category, count: sql`count(*)::int` }).from(phrasesTable).groupBy(phrasesTable.category).orderBy(phrasesTable.category);
+  return res.json(rows);
+});
+router10.get("/phrases", async (req, res) => {
+  const query = ListPhrasesQueryParams.safeParse(req.query);
+  if (!query.success) return res.status(400).json({ error: "Invalid query" });
+  const { search, category, audioStatus } = query.data;
+  const conditions = [];
+  if (search) {
+    conditions.push(
+      or(
+        ilike(phrasesTable.andi, `%${search}%`),
+        ilike(phrasesTable.russian, `%${search}%`),
+        ilike(phrasesTable.english, `%${search}%`)
+      )
+    );
+  }
+  if (category) conditions.push(eq(phrasesTable.category, category));
+  if (audioStatus) conditions.push(eq(phrasesTable.audioStatus, audioStatus));
+  const whereClause = conditions.length > 0 ? conditions.reduce((a, b) => sql`${a} AND ${b}`) : void 0;
+  const [phrases, [{ count }]] = await Promise.all([
+    db.select().from(phrasesTable).where(whereClause).orderBy(asc(phrasesTable.category), asc(phrasesTable.orderIndex)),
+    db.select({ count: sql`count(*)::int` }).from(phrasesTable).where(whereClause)
+  ]);
+  return res.json({ phrases, total: count });
+});
+router10.post("/phrases", async (req, res) => {
+  const body = CreatePhraseBody.safeParse(req.body);
+  if (!body.success) return res.status(400).json({ error: "Invalid body" });
+  const [phrase] = await db.insert(phrasesTable).values(body.data).returning();
+  return res.status(201).json(phrase);
+});
+router10.get("/phrases/:id", async (req, res) => {
+  const params = GetPhraseParams.safeParse({ id: Number(req.params.id) });
+  if (!params.success) return res.status(400).json({ error: "Invalid id" });
+  const [phrase] = await db.select().from(phrasesTable).where(eq(phrasesTable.id, params.data.id));
+  if (!phrase) return res.status(404).json({ error: "Phrase not found" });
+  return res.json(phrase);
+});
+router10.patch("/phrases/:id", async (req, res) => {
+  const params = UpdatePhraseParams.safeParse({ id: Number(req.params.id) });
+  const body = UpdatePhraseBody.safeParse(req.body);
+  if (!params.success || !body.success) return res.status(400).json({ error: "Invalid request" });
+  const [phrase] = await db.update(phrasesTable).set(body.data).where(eq(phrasesTable.id, params.data.id)).returning();
+  if (!phrase) return res.status(404).json({ error: "Phrase not found" });
+  return res.json(phrase);
+});
+router10.post("/phrases/:id/request-audio", async (req, res) => {
+  const params = RequestPhraseAudioParams.safeParse({ id: Number(req.params.id) });
+  if (!params.success) return res.status(400).json({ error: "Invalid id" });
+  const [phrase] = await db.select().from(phrasesTable).where(eq(phrasesTable.id, params.data.id));
+  if (!phrase) return res.status(404).json({ error: "Phrase not found" });
+  if (phrase.audioStatus === "missing") {
+    const [updated] = await db.update(phrasesTable).set({ audioStatus: "requested" }).where(eq(phrasesTable.id, params.data.id)).returning();
+    return res.json(updated);
+  }
+  return res.json(phrase);
+});
+var phrases_default = router10;
+
+// src/routes/translate.ts
+var import_express11 = __toESM(require_express2(), 1);
+var router11 = (0, import_express11.Router)();
+function normalize(text2) {
+  return text2.trim().toLowerCase().replace(/[.,!?;:"'()«»]/g, "");
+}
+function tokenize(text2) {
+  return normalize(text2).split(/\s+/).filter(Boolean);
+}
+router11.post("/translate", async (req, res) => {
+  const body = TranslateTextBody.safeParse(req.body);
+  if (!body.success) return res.status(400).json({ error: "Invalid body" });
+  const input = body.data.text;
+  const normalizedInput = normalize(input);
+  if (!normalizedInput) {
+    return res.status(400).json({ error: "\u041F\u0443\u0441\u0442\u043E\u0439 \u0442\u0435\u043A\u0441\u0442" });
+  }
+  const segments = [];
+  const [exactPhrase] = await db.select().from(phrasesTable).where(ilike(phrasesTable.russian, normalizedInput)).limit(1);
+  if (exactPhrase) {
+    segments.push({
+      sourceText: input,
+      translatedText: exactPhrase.andi,
+      matchType: "phrase",
+      confidence: exactPhrase.confidence ?? 0.7,
+      sourceRef: "phrasebank",
+      notes: exactPhrase.breakdown ?? null
+    });
+  } else {
+    const tokens = tokenize(input);
+    const usedIndices = /* @__PURE__ */ new Set();
+    for (let size = Math.min(4, tokens.length); size >= 2; size--) {
+      for (let i = 0; i + size <= tokens.length; i++) {
+        if ([...Array(size).keys()].some((k) => usedIndices.has(i + k))) continue;
+        const chunk = tokens.slice(i, i + size).join(" ");
+        const [phraseMatch] = await db.select().from(phrasesTable).where(ilike(phrasesTable.russian, `%${chunk}%`)).limit(1);
+        if (phraseMatch) {
+          segments.push({
+            sourceText: chunk,
+            translatedText: phraseMatch.andi,
+            matchType: "phrase",
+            confidence: Math.max((phraseMatch.confidence ?? 0.7) - 0.1, 0.3),
+            sourceRef: "phrasebank",
+            notes: phraseMatch.breakdown ?? null
+          });
+          for (let k = 0; k < size; k++) usedIndices.add(i + k);
+        }
+      }
+    }
+    for (let i = 0; i < tokens.length; i++) {
+      if (usedIndices.has(i)) continue;
+      const token = tokens[i];
+      const [wordMatch] = await db.select().from(wordsTable).where(or(ilike(wordsTable.russian, token), ilike(wordsTable.russian, `%${token}%`))).limit(1);
+      if (wordMatch) {
+        segments.push({
+          sourceText: token,
+          translatedText: wordMatch.andiWord,
+          matchType: "word",
+          confidence: Math.min((wordMatch.confidence ?? 0.6) - 0.15, 0.75),
+          sourceRef: "dictionary",
+          notes: wordMatch.partOfSpeech ? `${wordMatch.partOfSpeech}${wordMatch.nounClass ? ", " + wordMatch.nounClass : ""}` : null
+        });
+      } else {
+        segments.push({
+          sourceText: token,
+          translatedText: null,
+          matchType: "unmatched",
+          confidence: 0,
+          notes: "\u041D\u0435\u0442 \u0443\u0432\u0435\u0440\u0435\u043D\u043D\u043E\u0433\u043E \u0441\u043E\u043E\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0438\u044F \u0432 \u0441\u043B\u043E\u0432\u0430\u0440\u0435 \u0438\u043B\u0438 \u0444\u0440\u0430\u0437\u043D\u0438\u043A\u0435"
+        });
+      }
+    }
+  }
+  const draftTranslation = segments.filter((s) => s.translatedText).map((s) => s.translatedText).join(" ");
+  const matchedSegments = segments.filter((s) => s.matchType !== "unmatched");
+  const overallConfidence = matchedSegments.length ? matchedSegments.reduce((sum, s) => sum + s.confidence, 0) / segments.length : 0;
+  const unmatchedCount = segments.filter((s) => s.matchType === "unmatched").length;
+  const result = {
+    input,
+    isDraft: true,
+    segments,
+    draftTranslation: draftTranslation || null,
+    overallConfidence: Math.round(overallConfidence * 100) / 100,
+    disclaimer: unmatchedCount > 0 ? `\u042D\u0442\u043E \u0447\u0435\u0440\u043D\u043E\u0432\u043E\u0439 \u043F\u0435\u0440\u0435\u0432\u043E\u0434, \u043D\u0435 \u043F\u043E\u043B\u043D\u044B\u0439 \u043C\u0430\u0448\u0438\u043D\u043D\u044B\u0439 \u043F\u0435\u0440\u0435\u0432\u043E\u0434. ${unmatchedCount} \u0438\u0437 ${segments.length} \u0444\u0440\u0430\u0433\u043C\u0435\u043D\u0442(\u043E\u0432) \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u043E \u0432 \u0441\u043B\u043E\u0432\u0430\u0440\u0435 \u0438\u043B\u0438 \u0444\u0440\u0430\u0437\u043D\u0438\u043A\u0435 \u2014 \u0442\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u0440\u0443\u0447\u043D\u0430\u044F \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0430 \u043D\u043E\u0441\u0438\u0442\u0435\u043B\u0435\u043C \u044F\u0437\u044B\u043A\u0430.` : "\u042D\u0442\u043E \u0447\u0435\u0440\u043D\u043E\u0432\u043E\u0439 \u043F\u0435\u0440\u0435\u0432\u043E\u0434 \u043D\u0430 \u043E\u0441\u043D\u043E\u0432\u0435 \u0441\u043B\u043E\u0432\u0430\u0440\u044F \u0438 \u0444\u0440\u0430\u0437\u043D\u0438\u043A\u0430. \u0412\u0441\u0435 \u0444\u0440\u0430\u0433\u043C\u0435\u043D\u0442\u044B \u043D\u0430\u0439\u0434\u0435\u043D\u044B, \u043D\u043E \u0440\u0435\u043A\u043E\u043C\u0435\u043D\u0434\u0443\u0435\u0442\u0441\u044F \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0430 \u043D\u043E\u0441\u0438\u0442\u0435\u043B\u0435\u043C \u044F\u0437\u044B\u043A\u0430 \u043F\u0435\u0440\u0435\u0434 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u043D\u0438\u0435\u043C."
+  };
+  return res.json(result);
+});
+var translate_default = router11;
+
+// src/routes/index.ts
+var router12 = (0, import_express12.Router)();
+router12.use(health_default);
+router12.use(morphology_default);
+router12.use(words_default);
+router12.use(lessons_default);
+router12.use(exercises_default);
+router12.use(flashcards_default);
+router12.use(progress_default);
+router12.use(stats_default);
+router12.use(grammar_default);
+router12.use(phrases_default);
+router12.use(translate_default);
+var routes_default = router12;
 
 // src/lib/logger.ts
 var import_pino = __toESM(require_pino(), 1);
@@ -57381,7 +57745,7 @@ var logger = (0, import_pino.default)({
 });
 
 // src/app.ts
-var app = (0, import_express11.default)();
+var app = (0, import_express13.default)();
 app.use(
   (0, import_pino_http.default)({
     logger,
@@ -57402,8 +57766,8 @@ app.use(
   })
 );
 app.use((0, import_cors.default)());
-app.use(import_express11.default.json());
-app.use(import_express11.default.urlencoded({ extended: true }));
+app.use(import_express13.default.json());
+app.use(import_express13.default.urlencoded({ extended: true }));
 app.use("/api", routes_default);
 var app_default = app;
 

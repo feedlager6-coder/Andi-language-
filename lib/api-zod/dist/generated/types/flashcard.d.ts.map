@@ -1,0 +1,1 @@
+{"version":3,"file":"flashcard.d.ts","sourceRoot":"","sources":["../../../src/generated/types/flashcard.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AACH,OAAO,KAAK,EAAE,IAAI,EAAE,MAAM,QAAQ,CAAC;AAEnC,MAAM,WAAW,SAAS;IACxB,MAAM,EAAE,MAAM,CAAC;IACf,IAAI,EAAE,IAAI,CAAC;IACX,OAAO,EAAE,MAAM,CAAC;IAChB,WAAW,EAAE,MAAM,CAAC;IACpB,UAAU,EAAE,MAAM,CAAC;IACnB,QAAQ,EAAE,MAAM,CAAC;CAClB"}

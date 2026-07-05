@@ -10,6 +10,8 @@ import WordDetail from "@/pages/word-detail";
 import Lessons from "@/pages/lessons";
 import LessonDetail from "@/pages/lesson-detail";
 import Practice from "@/pages/practice";
+import Translator from "@/pages/translator";
+import Phrasebank from "@/pages/phrasebank";
 import Progress from "@/pages/progress";
 import Morphology from "@/pages/morphology";
 import Grammar from "@/pages/grammar";
@@ -34,6 +36,8 @@ function Router() {
         <Route path="/lessons" component={Lessons} />
         <Route path="/lessons/:id" component={LessonDetail} />
         <Route path="/practice" component={Practice} />
+        <Route path="/translator" component={Translator} />
+        <Route path="/phrasebank" component={Phrasebank} />
         <Route path="/progress" component={Progress} />
         <Route path="/morphology" component={Morphology} />
         <Route path="/grammar" component={Grammar} />

@@ -16,6 +16,8 @@ tags:
   - name: stats
   - name: morphology
   - name: grammar
+  - name: phrases
+  - name: translate
 
 paths:
   /healthz:
@@ -457,6 +459,165 @@ paths:
               schema:
                 $ref: "#/components/schemas/NounClassesResponse"
 
+  /phrases:
+    get:
+      operationId: listPhrases
+      tags: [phrases]
+      summary: List phrasebank entries
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: audioStatus
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of phrases
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhraseList"
+    post:
+      operationId: createPhrase
+      tags: [phrases]
+      summary: Create a phrase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PhraseInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Phrase"
+
+  /phrases/categories:
+    get:
+      operationId: listPhraseCategories
+      tags: [phrases]
+      summary: List phrase categories with counts
+      responses:
+        "200":
+          description: Categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CountEntry"
+
+  /phrases/{id}:
+    get:
+      operationId: getPhrase
+      tags: [phrases]
+      summary: Get a phrase by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Phrase found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Phrase"
+        "404":
+          description: Not found
+    patch:
+      operationId: updatePhrase
+      tags: [phrases]
+      summary: Update a phrase
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PhraseUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Phrase"
+
+  /phrases/{id}/request-audio:
+    post:
+      operationId: requestPhraseAudio
+      tags: [phrases]
+      summary: Mark a phrase's audio as requested from native speakers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Phrase"
+
+  /words/{id}/request-audio:
+    post:
+      operationId: requestWordAudio
+      tags: [words]
+      summary: Mark a word's audio as requested from native speakers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Word"
+
+  /translate:
+    post:
+      operationId: translateText
+      tags: [translate]
+      summary: Translate a Russian sentence into Andi with confidence scoring (draft, not machine translation)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TranslateInput"
+      responses:
+        "200":
+          description: Translation draft with per-segment confidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TranslationResult"
+
   /grammar/drills:
     get:
       operationId: getGrammarDrills
@@ -527,6 +688,8 @@ components:
         editorNotes:
           type: ["string", "null"]
         level:
+          type: ["string", "null"]
+        audioStatus:
           type: ["string", "null"]
         createdAt:
           type: string
@@ -610,6 +773,8 @@ components:
         editorNotes:
           type: string
         level:
+          type: string
+        audioStatus:
           type: string
 
     WordList:
@@ -985,4 +1150,144 @@ components:
           items:
             type: string
         explanation:
+          type: string
+
+    Phrase:
+      type: object
+      required: [id, category, andi, russian, audioStatus, orderIndex, createdAt]
+      properties:
+        id:
+          type: integer
+        category:
+          type: string
+        andi:
+          type: string
+        russian:
+          type: string
+        english:
+          type: ["string", "null"]
+        transliteration:
+          type: ["string", "null"]
+        breakdown:
+          type: ["string", "null"]
+        exampleUsage:
+          type: ["string", "null"]
+        source:
+          type: ["string", "null"]
+        confidence:
+          type: ["number", "null"]
+        audioStatus:
+          type: string
+        orderIndex:
+          type: integer
+        createdAt:
+          type: string
+
+    PhraseInput:
+      type: object
+      required: [category, andi, russian]
+      properties:
+        category:
+          type: string
+        andi:
+          type: string
+        russian:
+          type: string
+        english:
+          type: string
+        transliteration:
+          type: string
+        breakdown:
+          type: string
+        exampleUsage:
+          type: string
+        source:
+          type: string
+        confidence:
+          type: number
+        audioStatus:
+          type: string
+        orderIndex:
+          type: integer
+
+    PhraseUpdate:
+      type: object
+      properties:
+        category:
+          type: string
+        andi:
+          type: string
+        russian:
+          type: string
+        english:
+          type: string
+        transliteration:
+          type: string
+        breakdown:
+          type: string
+        exampleUsage:
+          type: string
+        source:
+          type: string
+        confidence:
+          type: number
+        audioStatus:
+          type: string
+        orderIndex:
+          type: integer
+
+    PhraseList:
+      type: object
+      required: [phrases, total]
+      properties:
+        phrases:
+          type: array
+          items:
+            $ref: "#/components/schemas/Phrase"
+        total:
+          type: integer
+
+    TranslateInput:
+      type: object
+      required: [text]
+      properties:
+        text:
+          type: string
+
+    TranslationSegment:
+      type: object
+      required: [sourceText, matchType, confidence]
+      properties:
+        sourceText:
+          type: string
+        translatedText:
+          type: ["string", "null"]
+        matchType:
+          type: string
+          description: "phrase | word | unmatched"
+        confidence:
+          type: number
+        sourceRef:
+          type: string
+          description: "e.g. 'phrasebank' or 'dictionary'"
+        notes:
+          type: ["string", "null"]
+
+    TranslationResult:
+      type: object
+      required: [input, isDraft, segments, overallConfidence, disclaimer]
+      properties:
+        input:
+          type: string
+        isDraft:
+          type: boolean
+        segments:
+          type: array
+          items:
+            $ref: "#/components/schemas/TranslationSegment"
+        draftTranslation:
+          type: string
+        overallConfidence:
+          type: number
+        disclaimer:
           type: string
