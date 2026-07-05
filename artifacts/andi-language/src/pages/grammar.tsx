@@ -8,7 +8,7 @@ import { CheckCircle2, XCircle } from "lucide-react";
 
 type Tab = "cases" | "classes" | "drills";
 
-function DrillItem({ drill }: { drill: { id: string; topicRu: string; question: string; answer: string; options?: string[]; explanation: string } }) {
+function DrillItem({ drill }: { drill: { id: string; topicRu?: string; question: string; answer: string; options?: string[]; explanation: string } }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
 

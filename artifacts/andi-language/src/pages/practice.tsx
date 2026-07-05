@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckCircle2, XCircle, RotateCcw, Dumbbell, LayersIcon, HelpCircle } from "lucide-react";
 
-type Mode = "choose" | "flashcards" | "quiz";
+type Mode = "choose" | "flashcards" | "quiz" | "exercises";
 
 // ─── Flashcard component (SM-2) ─────────────────────────────
 function FlashcardSession({ onDone }: { onDone: () => void }) {
@@ -25,7 +25,7 @@ function FlashcardSession({ onDone }: { onDone: () => void }) {
 
   const handleReview = (quality: number) => {
     if (!card) return;
-    reviewMutation.mutate({ data: { wordId: card.wordId, quality } }, {
+    reviewMutation.mutate({ wordId: card.wordId, data: { quality } }, {
       onSuccess: () => {
         setFlipped(false);
         if (idx < (cards?.length ?? 0) - 1) {
@@ -48,9 +48,9 @@ function FlashcardSession({ onDone }: { onDone: () => void }) {
         </div>
         <h3 className="text-2xl font-serif font-bold">Готово!</h3>
         <p className="text-muted-foreground text-center">
-          {cards?.length === 0
+          {(cards?.length ?? 0) === 0
             ? "На сегодня карточек нет — вы молодец!"
-            : `Проработали ${cards.length} карточек. Отличная сессия!`}
+            : `Проработали ${cards?.length ?? 0} карточек. Отличная сессия!`}
         </p>
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => { setIdx(0); setDone(false); setFlipped(false); queryClient.invalidateQueries({ queryKey: getGetDueFlashcardsQueryKey() }); }}>
@@ -61,6 +61,8 @@ function FlashcardSession({ onDone }: { onDone: () => void }) {
       </div>
     );
   }
+
+  if (!card) return null;
 
   return (
     <div className="space-y-6 max-w-md mx-auto">
@@ -389,7 +391,7 @@ export default function Practice() {
     </div>
   );
 
-  if (mode === "quiz") return (
+  if (mode === "exercises") return (
     <div className="max-w-xl mx-auto space-y-6 animate-in fade-in">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" onClick={() => setMode("choose")}>← Назад</Button>

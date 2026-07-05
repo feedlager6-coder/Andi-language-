@@ -273,7 +273,6 @@ const expandedWords: WordEntry[] = [
     level: "beginner",
   },
   {
-    anlaWord: "зозо",
     andiWord: "зозо",
     lemma: "зозо",
     russian: "соль",

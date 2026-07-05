@@ -21,7 +21,7 @@ export default function Flashcards() {
     if (!card) return;
 
     reviewMutation.mutate(
-      { data: { wordId: card.wordId, quality } },
+      { wordId: card.wordId, data: { quality } },
       {
         onSuccess: () => {
           setIsFlipped(false);
@@ -64,6 +64,8 @@ export default function Flashcards() {
       </div>
     );
   }
+
+  if (!card) return null;
 
   return (
     <div className="max-w-xl mx-auto py-8 space-y-8 animate-in fade-in">

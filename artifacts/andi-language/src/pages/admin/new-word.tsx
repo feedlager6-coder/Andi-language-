@@ -54,7 +54,7 @@ export default function NewWord() {
     const clean = Object.fromEntries(
       Object.entries(data).filter(([, v]) => v !== "" && v !== undefined)
     );
-    createWord.mutate({ data: clean as Parameters<typeof createWord.mutate>[0]["data"] }, {
+    createWord.mutate({ data: clean as unknown as Parameters<typeof createWord.mutate>[0]["data"] }, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListWordsQueryKey() });
         setLocation("/dictionary");

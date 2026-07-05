@@ -25,7 +25,7 @@ function ExerciseCard({ ex }: { ex: { id: number; type: string; prompt: string; 
 
   const handleSubmit = () => {
     const answer = ex.type === "multiple_choice" ? (selectedOption || "") : userAnswer;
-    submitMutation.mutate({ data: { answer }, params: { id: ex.id } }, {
+    submitMutation.mutate({ id: ex.id, data: { answer } }, {
       onSuccess: (data) => setResult(data),
     });
   };
