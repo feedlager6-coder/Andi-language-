@@ -6,11 +6,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
-import { ArrowLeft, CheckCircle2, XCircle, Trophy, RotateCcw } from "lucide-react";
+import { ArrowLeft, CheckCircle2, XCircle, Trophy, RotateCcw, Zap, BookOpen } from "lucide-react";
 
 const levelMap: Record<string, string> = {
   beginner: "Начальный", intermediate: "Средний", advanced: "Продвинутый",
 };
+
+const XP_PER_CORRECT = 10;
 
 interface ExerciseCardProps {
   ex: {
@@ -31,6 +33,7 @@ function ExerciseCard({ ex, index, total, onNext }: ExerciseCardProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const [result, setResult] = useState<{ correct: boolean; correctAnswer: string; explanation?: string | null } | null>(null);
   const [textInput, setTextInput] = useState("");
+  const [showXp, setShowXp] = useState(false);
 
   const options: string[] | null = ex.options ? (() => { try { return JSON.parse(ex.options!); } catch { return null; } })() : null;
 
@@ -38,50 +41,70 @@ function ExerciseCard({ ex, index, total, onNext }: ExerciseCardProps) {
     if (result) return;
     setSelected(answer);
     submitMutation.mutate({ id: ex.id, data: { answer } }, {
-      onSuccess: (res) => setResult(res)
+      onSuccess: (res) => {
+        setResult(res);
+        if (res.correct) setShowXp(true);
+      }
     });
   };
 
+  const progressPct = Math.round((index / total) * 100);
+
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-muted-foreground">Задание {index + 1} из {total}</span>
-        <div className="flex gap-1">
-          {Array.from({ length: total }).map((_, i) => (
-            <div key={i} className={`h-1.5 w-6 rounded-full transition-all ${
-              i < index ? "bg-primary" : i === index ? "bg-primary/40" : "bg-muted"
-            }`} />
-          ))}
+      {/* Progress bar */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted-foreground font-medium">Задание {index + 1} из {total}</span>
+          <div className="flex items-center gap-1.5 text-xs text-amber-600 font-semibold">
+            <Zap className="h-3.5 w-3.5" />
+            {index * XP_PER_CORRECT} XP
+          </div>
+        </div>
+        <div className="h-2 bg-muted rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary rounded-full transition-all duration-500"
+            style={{ width: `${progressPct}%` }}
+          />
         </div>
       </div>
 
-      <Card className="bg-card">
+      {/* Question */}
+      <Card className="bg-card shadow-sm">
         <CardContent className="pt-6 pb-5">
-          <Badge variant="outline" className="mb-3 text-xs">{
+          <Badge variant="outline" className="mb-3 text-xs font-medium">{
             ex.type === "multiple_choice" ? "Выбор ответа" :
             ex.type === "translation" ? "Перевод" :
             ex.type === "fill_blank" ? "Заполните пропуск" : ex.type
           }</Badge>
-          <p className="text-xl font-medium">{ex.prompt}</p>
+          <p className="text-xl font-medium leading-snug">{ex.prompt}</p>
         </CardContent>
       </Card>
 
+      {/* Answer options */}
       {options ? (
-        <div className="space-y-2">
-          {options.map(opt => {
-            let cls = "w-full text-left px-5 py-3.5 rounded-xl border-2 font-medium text-base transition-all ";
+        <div className="space-y-2.5">
+          {options.map((opt, i) => {
+            const letters = ["А", "Б", "В", "Г"];
+            let cls = "w-full text-left px-5 py-3.5 rounded-xl border-2 font-medium text-base transition-all flex items-center gap-3 ";
             if (!result) {
-              cls += "border-border hover:border-primary hover:bg-primary/5";
+              cls += "border-border hover:border-primary hover:bg-primary/5 cursor-pointer";
             } else if (opt === result.correctAnswer) {
-              cls += "border-green-500 bg-green-50 dark:bg-green-900/20";
-            } else if (opt === selected) {
-              cls += "border-red-400 bg-red-50 dark:bg-red-900/20 line-through opacity-70";
+              cls += "border-green-500 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300";
+            } else if (opt === selected && !result.correct) {
+              cls += "border-red-400 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 line-through opacity-70";
             } else {
               cls += "border-border opacity-40";
             }
             return (
               <button key={opt} className={cls} disabled={!!result} onClick={() => handleAnswer(opt)}>
-                {opt}
+                <span className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-xs font-bold shrink-0 text-muted-foreground">
+                  {letters[i] ?? (i + 1)}
+                </span>
+                <span>{opt}</span>
+                {result && opt === result.correctAnswer && (
+                  <CheckCircle2 className="h-5 w-5 text-green-600 ml-auto shrink-0" />
+                )}
               </button>
             );
           })}
@@ -89,7 +112,7 @@ function ExerciseCard({ ex, index, total, onNext }: ExerciseCardProps) {
       ) : (
         <div className="space-y-3">
           <input
-            className="w-full px-4 py-3 rounded-xl border-2 border-border bg-background text-base focus:outline-none focus:border-primary disabled:opacity-60"
+            className="w-full px-4 py-3 rounded-xl border-2 border-border bg-background text-base focus:outline-none focus:border-primary disabled:opacity-60 transition-colors"
             placeholder="Введите ответ..."
             value={textInput}
             onChange={e => setTextInput(e.target.value)}
@@ -105,9 +128,10 @@ function ExerciseCard({ ex, index, total, onNext }: ExerciseCardProps) {
         </div>
       )}
 
+      {/* Result feedback */}
       {result && (
         <div className="space-y-3 animate-in slide-in-from-bottom-2 duration-200">
-          <div className={`flex items-start gap-3 p-4 rounded-xl text-sm ${
+          <div className={`flex items-start gap-3 p-4 rounded-xl text-sm relative overflow-hidden ${
             result.correct
               ? "bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-800"
               : "bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-800"
@@ -115,21 +139,69 @@ function ExerciseCard({ ex, index, total, onNext }: ExerciseCardProps) {
             {result.correct
               ? <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
               : <XCircle className="h-5 w-5 text-red-600 mt-0.5 shrink-0" />}
-            <div>
+            <div className="flex-1">
               <div className="font-semibold mb-1">
                 {result.correct ? "Верно! Отличная работа." : `Ошибка. Правильный ответ: «${result.correctAnswer}»`}
               </div>
               {result.explanation && (
-                <div className="text-muted-foreground">{result.explanation}</div>
+                <div className="text-muted-foreground leading-relaxed">{result.explanation}</div>
               )}
             </div>
+            {showXp && result.correct && (
+              <div className="absolute top-2 right-3 flex items-center gap-1 text-amber-600 font-bold text-sm animate-in fade-in zoom-in duration-300">
+                <Zap className="h-4 w-4" />
+                +{XP_PER_CORRECT} XP
+              </div>
+            )}
           </div>
-          <Button className="w-full text-base" onClick={() => onNext(result.correct)}>
+          <Button className="w-full text-base font-semibold" size="lg" onClick={() => onNext(result.correct)}>
             {index < total - 1 ? "Следующее задание →" : "Завершить урок →"}
           </Button>
         </div>
       )}
     </div>
+  );
+}
+
+function LessonContent({ content }: { content: string }) {
+  const isHtml = content.trimStart().startsWith("<");
+
+  if (isHtml) {
+    return (
+      <div className="lesson-rich-content">
+        <style>{`
+          .lesson-rich-content p { margin-bottom: 0.75rem; line-height: 1.7; }
+          .lesson-rich-content h2 { font-size: 1.2rem; font-weight: 700; margin: 1.5rem 0 0.75rem; padding-bottom: 0.375rem; border-bottom: 1px solid hsl(var(--border)); }
+          .lesson-rich-content ul { margin: 0.5rem 0 1rem 1.25rem; list-style-type: disc; }
+          .lesson-rich-content ul li { margin-bottom: 0.4rem; line-height: 1.6; }
+          .lesson-rich-content table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.92rem; }
+          .lesson-rich-content thead { background: hsl(var(--muted)); }
+          .lesson-rich-content th { padding: 0.6rem 0.9rem; text-align: left; font-weight: 600; color: hsl(var(--foreground)); border: 1px solid hsl(var(--border)); }
+          .lesson-rich-content td { padding: 0.55rem 0.9rem; border: 1px solid hsl(var(--border)); vertical-align: middle; }
+          .lesson-rich-content tbody tr:nth-child(even) { background: hsl(var(--muted) / 0.3); }
+          .lesson-rich-content tbody tr:hover { background: hsl(var(--muted) / 0.5); }
+          .lesson-rich-content .special-row { background: hsl(var(--primary) / 0.06) !important; }
+          .lesson-rich-content .special-row:hover { background: hsl(var(--primary) / 0.1) !important; }
+          .lesson-rich-content .lesson-intro { background: hsl(var(--muted) / 0.5); border-left: 3px solid hsl(var(--primary)); padding: 0.75rem 1rem; border-radius: 0 0.5rem 0.5rem 0; margin-bottom: 1rem; }
+          .lesson-rich-content .lesson-source { font-size: 0.8rem; color: hsl(var(--muted-foreground)); }
+          .lesson-rich-content strong { color: hsl(var(--foreground)); }
+          .lesson-rich-content em { color: hsl(var(--muted-foreground)); }
+        `}</style>
+        <div dangerouslySetInnerHTML={{ __html: content }} />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="prose dark:prose-invert max-w-none text-base leading-relaxed"
+      dangerouslySetInnerHTML={{
+        __html: content
+          .replace(/\n/g, "<br/>")
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+          .replace(/`(.*?)`/g, "<code class='font-mono bg-muted px-1 rounded text-primary'>$1</code>")
+      }}
+    />
   );
 }
 
@@ -157,27 +229,46 @@ export default function LessonDetail() {
   if (!lesson) return <div className="text-center py-16 text-muted-foreground">Урок не найден.</div>;
 
   const exercises = lesson.exercises ?? [];
+  const totalXp = exercises.length * XP_PER_CORRECT;
 
   // Phase: Done
   if (phase === "done") {
     const pct = exercises.length ? Math.round((score / exercises.length) * 100) : 100;
+    const earnedXp = score * XP_PER_CORRECT;
     return (
       <div className="max-w-2xl mx-auto animate-in fade-in duration-500">
-        <div className="flex flex-col items-center justify-center py-16 space-y-6 text-center">
+        <div className="flex flex-col items-center justify-center py-12 space-y-6 text-center">
           <div className={`h-24 w-24 rounded-full flex items-center justify-center ${pct >= 70 ? "bg-green-100 dark:bg-green-900/30" : "bg-amber-100 dark:bg-amber-900/30"}`}>
             <Trophy className={`h-12 w-12 ${pct >= 70 ? "text-green-600" : "text-amber-600"}`} />
           </div>
-          <h2 className="text-3xl font-serif font-bold">
-            {pct >= 70 ? "Урок пройден!" : "Урок завершён!"}
-          </h2>
-          <p className="text-muted-foreground">
-            Правильных ответов: <strong>{score} из {exercises.length}</strong> ({pct}%)
-          </p>
+          <div>
+            <h2 className="text-3xl font-serif font-bold mb-1">
+              {pct >= 70 ? "Урок пройден!" : "Урок завершён!"}
+            </h2>
+            <p className="text-muted-foreground">
+              Правильных ответов: <strong>{score} из {exercises.length}</strong> ({pct}%)
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+            <Zap className="h-6 w-6 text-amber-600" />
+            <div className="text-left">
+              <div className="text-2xl font-bold text-amber-700 dark:text-amber-400">+{earnedXp} XP</div>
+              <div className="text-xs text-amber-600 dark:text-amber-500">из {totalXp} максимальных</div>
+            </div>
+          </div>
+
           {pct < 70 && (
             <p className="text-sm text-muted-foreground max-w-sm">
               Попробуйте пройти урок ещё раз — повторение помогает лучше запомнить материал.
             </p>
           )}
+          {pct === 100 && (
+            <p className="text-sm text-green-700 dark:text-green-400 font-medium">
+              Все задания выполнены верно! Отличный результат!
+            </p>
+          )}
+
           <div className="flex gap-3 flex-wrap justify-center">
             <Button variant="outline" onClick={() => { setPhase("intro"); setExIdx(0); setScore(0); }}>
               <RotateCcw className="mr-2 h-4 w-4" /> Повторить
@@ -234,6 +325,11 @@ export default function LessonDetail() {
         <div className="flex items-center gap-2 mb-2">
           <Badge variant="outline">{levelMap[lesson.level] || lesson.level}</Badge>
           <span className="text-muted-foreground text-sm">Урок {lesson.orderIndex}</span>
+          {exercises.length > 0 && (
+            <span className="text-xs font-semibold text-amber-600 flex items-center gap-1">
+              <Zap className="h-3 w-3" /> до {totalXp} XP
+            </span>
+          )}
         </div>
         <h1 className="text-4xl font-serif font-bold">{lesson.title}</h1>
         {lesson.description && (
@@ -242,26 +338,25 @@ export default function LessonDetail() {
       </div>
 
       {lesson.content && (
-        <div className="prose dark:prose-invert max-w-none text-base leading-relaxed">
-          <div dangerouslySetInnerHTML={{
-            __html: lesson.content
-              .replace(/\n/g, "<br/>")
-              .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-              .replace(/`(.*?)`/g, "<code class='font-mono bg-muted px-1 rounded text-primary'>$1</code>")
-          }} />
-        </div>
+        <LessonContent content={lesson.content} />
       )}
 
       {exercises.length > 0 ? (
         <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6 space-y-4">
           <div className="flex items-center gap-3">
-            <CheckCircle2 className="h-5 w-5 text-primary" />
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <BookOpen className="h-5 w-5 text-primary" />
+            </div>
             <div>
-              <div className="font-semibold">В этом уроке {exercises.length} {exercises.length === 1 ? "задание" : exercises.length < 5 ? "задания" : "заданий"}</div>
-              <div className="text-sm text-muted-foreground">Выполните их, чтобы закрепить материал</div>
+              <div className="font-semibold">
+                {exercises.length} {exercises.length === 1 ? "задание" : exercises.length < 5 ? "задания" : "заданий"} в этом уроке
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Выполните все задания и заработайте до <span className="text-amber-600 font-semibold">{totalXp} XP</span>
+              </div>
             </div>
           </div>
-          <Button size="lg" className="w-full text-base" onClick={() => setPhase("exercises")}>
+          <Button size="lg" className="w-full text-base font-semibold" onClick={() => setPhase("exercises")}>
             Приступить к заданиям →
           </Button>
         </div>
