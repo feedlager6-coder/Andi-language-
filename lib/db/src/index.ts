@@ -11,10 +11,16 @@ if (!process.env.DATABASE_URL) {
 }
 
 // Railway (and other cloud providers) require SSL for Postgres.
-// We pass ssl: { rejectUnauthorized: false } in production so self-signed
-// certs used by Railway's internal Postgres are accepted.
+// We pass ssl: { rejectUnauthorized: false } when DATABASE_URL points to an
+// external host (Railway, Neon, Supabase, etc.) so self-signed or chain certs
+// are accepted both in development and production.
+const isExternalDb =
+  process.env.DATABASE_URL &&
+  !process.env.DATABASE_URL.includes("localhost") &&
+  !process.env.DATABASE_URL.includes("127.0.0.1");
+
 const sslConfig =
-  process.env.NODE_ENV === "production"
+  (process.env.NODE_ENV === "production" || isExternalDb)
     ? { rejectUnauthorized: false }
     : undefined;
 

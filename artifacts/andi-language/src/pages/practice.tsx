@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import {
   useGetDueFlashcards, useReviewFlashcard, getGetDueFlashcardsQueryKey,
   useListWords, useListExercises, useSubmitExercise,
@@ -8,9 +8,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CheckCircle2, XCircle, RotateCcw, Dumbbell, LayersIcon, HelpCircle } from "lucide-react";
+import { CheckCircle2, XCircle, RotateCcw, LayersIcon, HelpCircle, PencilLine } from "lucide-react";
 
-type Mode = "choose" | "flashcards" | "quiz" | "exercises";
+type Mode = "choose" | "flashcards" | "quiz" | "exercises" | "write";
 
 // ─── Flashcard component (SM-2) ─────────────────────────────
 function FlashcardSession({ onDone }: { onDone: () => void }) {
@@ -85,7 +85,6 @@ function FlashcardSession({ onDone }: { onDone: () => void }) {
           }}
           onClick={() => !flipped && setFlipped(true)}
         >
-          {/* Лицевая */}
           <Card className="absolute inset-0 flex flex-col items-center justify-center p-8 bg-card border-2 select-none"
             style={{ backfaceVisibility: "hidden" }}>
             <Badge variant="secondary" className="mb-4 font-mono text-xs">{card.word.partOfSpeech}</Badge>
@@ -94,7 +93,6 @@ function FlashcardSession({ onDone }: { onDone: () => void }) {
             <div className="text-xs text-muted-foreground animate-pulse mt-4">Нажмите, чтобы узнать перевод</div>
           </Card>
 
-          {/* Обратная */}
           <Card className="absolute inset-0 flex flex-col p-8 bg-card border-2 border-primary/20 select-none"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
             <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
@@ -365,6 +363,122 @@ function ExerciseSession({ onDone }: { onDone: () => void }) {
   );
 }
 
+// ─── Write translation session ───────────────────────────────
+function WriteSession({ onDone }: { onDone: () => void }) {
+  const { data: wordsData, isLoading } = useListWords({ limit: 30, level: "beginner" });
+  const words = wordsData?.words ?? [];
+  const [qIdx, setQIdx] = useState(0);
+  const [input, setInput] = useState("");
+  const [checked, setChecked] = useState(false);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const questions = words.slice(0, Math.min(8, words.length));
+  const q = questions[qIdx];
+
+  const normalize = (s: string) => s.trim().toLowerCase().replace(/ё/g, "е");
+
+  const handleCheck = () => {
+    if (!q || !input.trim()) return;
+    setChecked(true);
+    const correct = normalize(input) === normalize(q.russian);
+    if (correct) setScore(s => s + 1);
+  };
+
+  const handleNext = () => {
+    setInput("");
+    setChecked(false);
+    if (qIdx < questions.length - 1) setQIdx(i => i + 1);
+    else setDone(true);
+    setTimeout(() => inputRef.current?.focus(), 50);
+  };
+
+  if (isLoading) return <Skeleton className="h-72 w-full rounded-xl" />;
+  if (!questions.length) return <div className="text-center text-muted-foreground py-12">Слов пока нет.</div>;
+
+  if (done) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 space-y-5">
+        <div className={`h-20 w-20 rounded-full flex items-center justify-center ${score >= questions.length * 0.6 ? "bg-green-100" : "bg-amber-100"}`}>
+          <CheckCircle2 className="h-10 w-10 text-green-600" />
+        </div>
+        <h3 className="text-2xl font-serif font-bold">
+          {score >= questions.length * 0.6 ? "Отличный результат!" : "Продолжайте практиковаться!"}
+        </h3>
+        <p className="text-muted-foreground">Правильно: {score} из {questions.length}</p>
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={() => { setQIdx(0); setInput(""); setChecked(false); setScore(0); setDone(false); }}>
+            <RotateCcw className="mr-2 h-4 w-4" /> Снова
+          </Button>
+          <Button onClick={onDone}>К выбору режима</Button>
+        </div>
+      </div>
+    );
+  }
+
+  const isCorrect = checked && normalize(input) === normalize(q?.russian ?? "");
+
+  return (
+    <div className="space-y-6 max-w-md mx-auto">
+      <div className="flex justify-between text-sm text-muted-foreground">
+        <span>Слово {qIdx + 1} из {questions.length}</span>
+        <span>✓ {score}</span>
+      </div>
+
+      <Card className="bg-card">
+        <CardContent className="pt-8 pb-6 text-center space-y-2">
+          <p className="text-xs text-muted-foreground">Напишите перевод на русском:</p>
+          <div className="text-5xl font-bold text-primary">{q?.andiWord}</div>
+          {q?.phonetic && <div className="text-muted-foreground font-mono text-sm">/{q.phonetic}/</div>}
+        </CardContent>
+      </Card>
+
+      <div className="space-y-3">
+        <input
+          ref={inputRef}
+          autoFocus
+          className={`w-full px-4 py-3 rounded-xl border-2 text-base focus:outline-none transition-colors ${
+            !checked ? "border-border focus:border-primary" :
+            isCorrect ? "border-green-500 bg-green-50 dark:bg-green-900/20" :
+            "border-red-400 bg-red-50 dark:bg-red-900/20"
+          }`}
+          placeholder="Введите перевод на русском..."
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          disabled={checked}
+          onKeyDown={e => {
+            if (e.key === "Enter") checked ? handleNext() : handleCheck();
+          }}
+        />
+
+        {!checked && (
+          <Button className="w-full" disabled={!input.trim()} onClick={handleCheck}>
+            Проверить
+          </Button>
+        )}
+      </div>
+
+      {checked && (
+        <div className="space-y-3">
+          <div className={`flex items-start gap-2 p-3 rounded-lg text-sm ${isCorrect ? "bg-green-50 border border-green-200 dark:bg-green-900/20" : "bg-red-50 border border-red-200 dark:bg-red-900/20"}`}>
+            {isCorrect ? <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 shrink-0" /> : <XCircle className="h-4 w-4 text-red-600 mt-0.5 shrink-0" />}
+            <div>
+              <div>{isCorrect ? "Верно!" : `Правильно: «${q?.russian}»`}</div>
+              {q?.examples && !isCorrect && (
+                <div className="text-xs text-muted-foreground mt-1 italic">{q.examples}</div>
+              )}
+            </div>
+          </div>
+          <Button className="w-full" onClick={handleNext}>
+            {qIdx < questions.length - 1 ? "Следующее слово →" : "Завершить"}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Main Practice Page ─────────────────────────────────────
 export default function Practice() {
   const [mode, setMode] = useState<Mode>("choose");
@@ -401,6 +515,17 @@ export default function Practice() {
     </div>
   );
 
+  if (mode === "write") return (
+    <div className="max-w-xl mx-auto space-y-6 animate-in fade-in">
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="sm" onClick={() => setMode("choose")}>← Назад</Button>
+        <h1 className="text-2xl font-serif font-bold">Письменный перевод</h1>
+      </div>
+      <p className="text-sm text-muted-foreground">Смотрите на андийское слово и напишите его перевод на русском. 8 слов начального уровня.</p>
+      <WriteSession onDone={() => setMode("choose")} />
+    </div>
+  );
+
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div>
@@ -408,7 +533,7 @@ export default function Practice() {
         <p className="text-muted-foreground mt-2">Выберите режим тренировки.</p>
       </div>
 
-      <div className="grid sm:grid-cols-3 gap-5">
+      <div className="grid sm:grid-cols-2 gap-5">
         <Card
           className="bg-card cursor-pointer hover:border-primary/60 transition-colors border-2 hover:bg-primary/5"
           onClick={() => setMode("flashcards")}
@@ -437,14 +562,31 @@ export default function Practice() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-2 border-dashed opacity-60">
+        <Card
+          className="bg-card cursor-pointer hover:border-primary/60 transition-colors border-2 hover:bg-primary/5"
+          onClick={() => setMode("write")}
+        >
           <CardContent className="pt-8 pb-7 space-y-3 text-center">
-            <Dumbbell className="h-10 w-10 text-muted-foreground mx-auto" />
-            <h3 className="text-xl font-semibold text-muted-foreground">Диктант</h3>
+            <PencilLine className="h-10 w-10 text-emerald-500 mx-auto" />
+            <h3 className="text-xl font-semibold">Письменный перевод</h3>
             <p className="text-sm text-muted-foreground">
-              Слушайте произношение и пишите слово. Требует аудиозаписей — скоро.
+              Смотрите на андийское слово и напишите перевод на русском. Развивает активную память.
             </p>
-            <Button disabled variant="outline" className="w-full mt-2">Скоро</Button>
+            <Button variant="outline" className="w-full mt-2">Начать</Button>
+          </CardContent>
+        </Card>
+
+        <Card
+          className="bg-card cursor-pointer hover:border-primary/60 transition-colors border-2 hover:bg-primary/5"
+          onClick={() => setMode("exercises")}
+        >
+          <CardContent className="pt-8 pb-7 space-y-3 text-center">
+            <CheckCircle2 className="h-10 w-10 text-amber-500 mx-auto" />
+            <h3 className="text-xl font-semibold">Упражнения</h3>
+            <p className="text-sm text-muted-foreground">
+              Структурированные задания по грамматике и лексике.
+            </p>
+            <Button variant="outline" className="w-full mt-2">Начать</Button>
           </CardContent>
         </Card>
       </div>

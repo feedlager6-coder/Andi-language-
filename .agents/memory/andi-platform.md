@@ -1,45 +1,48 @@
 ---
-name: Andi Language Platform Architecture
-description: Key decisions, data model, and conventions for the Andi language learning/research platform.
+name: Andi Language Platform
+description: Architecture decisions, known issues, and durable lessons for the Andi Language Learning Platform monorepo.
 ---
 
-# Andi Language Platform
-
 ## Stack
-- Frontend: React+Vite+Wouter (`artifacts/andi-language`, preview `/`)
-- Backend: Express 5 + Drizzle ORM (`artifacts/api-server`, preview `/api`, port 8080)
-- DB: PostgreSQL via `@workspace/db`
-- API contract: OpenAPI spec at `lib/api-spec/openapi.yaml` → codegen via Orval → hooks in `@workspace/api-client-react`
-- All UI text: Russian only
+- **Monorepo**: pnpm workspaces
+- **Frontend**: `artifacts/andi-language` — React 19, Vite 7, Wouter, TanStack Query, Tailwind, shadcn/ui
+- **Backend**: `artifacts/api-server` — Express 5, Drizzle ORM, ESBuild
+- **DB lib**: `lib/db` — Drizzle + node-postgres, schema in `lib/db/src/schema/`
+- **API types**: `lib/api-client-react`, `lib/api-zod`, `lib/api-spec`
 
-## Route registration order matters
-`morphologyRouter` must be registered BEFORE `wordsRouter` in `routes/index.ts` because `/words/analyze` (POST) must not be caught by the `/words/:id` (GET) handler.
+## Database — Critical Issue
+**The DATABASE_URL in Replit secrets is a Railway INTERNAL URL** (`postgres.railway.internal`).
+This URL is only accessible from within Railway's private network — NOT from Replit.
 
-## Data model highlights
-- `words` table: andiWord, lemma, russian, english, partOfSpeech, nounClass (I/II/III/IV), root, affixes, morphology, phonetic, examples, dialect, source, license, confidence (real 0–1), editorNotes, level
-- `word_forms` table: wordId, form, caseName, caseNameRu, number, nounClass, grammarNote
-- Flashcards use SM-2 spaced repetition
+- **On Railway (production)**: the internal URL works fine for the deployed app.
+- **From Replit (dev)**: all DB queries fail with `ENOTFOUND postgres.railway.internal`.
 
-## Morphological analyzer
-- Rule-based, explicitly marked "preliminary" in all API responses (`isPreliminary: true`)
-- Sources: Madieva 1980, Salimov 2010
-- Handles: class agreement prefixes (в/й/б/р), case suffixes (~14 cases), plural markers, verb infinitive suffixes
-- POST /words/analyze — returns segments with type+labelRu, explanation in Russian
-- GET /words/:id/forms — returns stored forms or auto-generates basic paradigm for nouns
+**Fix needed**: User must add the Railway PUBLIC PostgreSQL URL to the Replit `DATABASE_URL` secret.
+Railway dashboard → PostgreSQL service → "Connect" → Public URL (looks like `postgresql://postgres:pass@monorail.proxy.rlwy.net:PORT/railway`).
 
-## Grammar reference
-- GET /grammar/classes — 4 noun classes with markers, semantics, examples
-- GET /grammar/cases — ~14 cases with suffix, function, example
-- GET /grammar/drills — 13 interactive grammar drills (noun_classes, cases, numerals, vocabulary)
+## SSL Fix
+`lib/db/src/index.ts` and `lib/db/drizzle.config.ts` now enable SSL for any DATABASE_URL that is not localhost/127.0.0.1.
+**Why**: Railway (and most cloud PG hosts) require SSL; localhost dev does not.
 
-**Why linguistics-first:** The platform's value is the quality of linguistic data. Rule-based analyzer is clearly labeled preliminary to avoid misleading learners.
+## Salimov Data — ALL CAPS Fix
+- 4,909 of 4,921 words in `salimov_words.json` were ALL CAPS (OCR artifact from PDF parsing).
+- **Fixed**: `salimov_words.json` has been normalized to lowercase.
+- `seed-salimov.ts` now normalizes case before insert (using `toAndiCase()` helper).
+- One-time DB fix script: `pnpm --filter @workspace/api-server run fix:salimov-case` (in `fix-salimov-case.ts`).
+- After getting correct DATABASE_URL: run `pnpm --filter @workspace/db run push` then `pnpm --filter @workspace/api-server run seed:all` then optionally `fix:salimov-case` if data already exists.
 
-## Phrasebank + translator + audio status (added later)
-- `phrases` table mirrors `words` fields (andi/russian/english/category/confidence/source) plus `audioStatus`; both `words` and `phrases` share the same audioStatus lifecycle: missing → requested → recorded → verified.
-- Translator (`/translate`) does phrase-match → n-gram phrase match → word-by-word dictionary lookup, never fabricates full machine translation; always returns a disclaimer and per-segment confidence.
-- No TTS/fake audio anywhere — every word/phrase detail view shows an honest audio-status badge + a "request recording" button that just flips status to `requested`.
+## UI — Completed Features
+- `dictionary.tsx`: alphabet A–Я navigation bar + ♡ favorites (localStorage `dict_favorites`)
+- `translator.tsx`: example queries, recent history (localStorage `translator_history`), clear button
+- `lessons.tsx`: search filter + localStorage completed indicator (`completed_lessons`)
+- `practice.tsx`: replaced disabled Dictation card with "Письменный перевод" (write translation) mode
+- `layout.tsx`: mobile hamburger menu via shadcn Sidebar + `setOpenMobile` to close on navigation
+- `index.html`: SEO meta tags (title, description, keywords, OG)
 
-## api-server dev workflow does NOT hot-reload
-The `dev` script is `build (esbuild) && start (node dist/index.mjs)` — it is a one-shot build, not a watcher.
-**Why:** new/changed Express routes are silently invisible (404) until the workflow is restarted, even though the source file is correct.
-**How to apply:** after adding/editing anything under `artifacts/api-server/src/routes/**`, restart the `API Server` workflow before testing — don't assume dev-server hot reload.
+## Drizzle execute() return type
+`db.execute<RowType>(sql\`...\`)` returns `QueryResult<RowType>` — access rows via `.rows` array.
+Do NOT cast the return value to `any[]` directly; use `result.rows[0]` pattern.
+
+## useSidebar hook
+The shadcn Sidebar component exposes: `toggleSidebar`, `open`, `openMobile`, `setOpenMobile`, `isMobile`, `state`.
+`setOpenMobile(false)` closes the mobile sheet overlay — call it in nav link `onClick` handlers.

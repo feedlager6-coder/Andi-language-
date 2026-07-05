@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Languages, Send, TriangleAlert, CheckCircle2, HelpCircle } from "lucide-react";
+import { Languages, Send, TriangleAlert, CheckCircle2, HelpCircle, ArrowRightLeft, History } from "lucide-react";
 
 const matchTypeMeta: Record<string, { label: string; icon: typeof CheckCircle2; className: string }> = {
   phrase: { label: "найдена фраза", icon: CheckCircle2, className: "text-green-700 border-green-500 dark:text-green-400" },
@@ -13,15 +13,42 @@ const matchTypeMeta: Record<string, { label: string; icon: typeof CheckCircle2; 
   unmatched: { label: "не найдено", icon: HelpCircle, className: "text-muted-foreground border-muted-foreground/40" },
 };
 
+const EXAMPLE_QUERIES = [
+  { text: "привет", desc: "приветствие" },
+  { text: "вода", desc: "базовое слово" },
+  { text: "мой брат", desc: "семья" },
+  { text: "я здесь", desc: "короткая фраза" },
+  { text: "отец мать", desc: "родственники" },
+  { text: "хорошо", desc: "ответ" },
+];
+
+const MAX_HISTORY = 5;
+
+function getHistory(): string[] {
+  try {
+    return JSON.parse(localStorage.getItem("translator_history") || "[]");
+  } catch { return []; }
+}
+
+function addToHistory(text: string) {
+  const hist = getHistory().filter(h => h !== text);
+  hist.unshift(text);
+  localStorage.setItem("translator_history", JSON.stringify(hist.slice(0, MAX_HISTORY)));
+}
+
 export default function Translator() {
   const [text, setText] = useState("");
+  const [history, setHistory] = useState<string[]>(getHistory);
   const translate = useTranslateText();
-
   const result = translate.data;
 
-  const handleSubmit = () => {
-    if (!text.trim()) return;
-    translate.mutate({ data: { text } });
+  const handleSubmit = (query?: string) => {
+    const q = (query ?? text).trim();
+    if (!q) return;
+    if (query) setText(query);
+    addToHistory(q);
+    setHistory(getHistory());
+    translate.mutate({ data: { text: q } });
   };
 
   return (
@@ -38,6 +65,34 @@ export default function Translator() {
         </p>
       </div>
 
+      {/* Направление перевода */}
+      <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/40 px-4 py-2 rounded-lg w-fit">
+        <span className="font-medium text-foreground">Русский</span>
+        <ArrowRightLeft className="h-4 w-4" />
+        <span className="font-medium text-foreground">Андийский</span>
+        <Badge variant="outline" className="text-xs ml-1">только это направление</Badge>
+      </div>
+
+      {/* Примеры запросов */}
+      <div>
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+          Попробуйте:
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {EXAMPLE_QUERIES.map(({ text: t, desc }) => (
+            <button
+              key={t}
+              onClick={() => handleSubmit(t)}
+              className="px-3 py-1.5 rounded-full border border-border bg-card hover:bg-primary/5 hover:border-primary/40 text-sm transition-colors"
+            >
+              <span className="font-medium">{t}</span>
+              <span className="text-muted-foreground ml-1 text-xs">({desc})</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Форма ввода */}
       <Card>
         <CardContent className="pt-4 space-y-3">
           <Textarea
@@ -49,8 +104,9 @@ export default function Translator() {
               if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSubmit();
             }}
           />
-          <div className="flex justify-end">
-            <Button onClick={handleSubmit} disabled={!text.trim() || translate.isPending} className="gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">Ctrl+Enter для отправки</span>
+            <Button onClick={() => handleSubmit()} disabled={!text.trim() || translate.isPending} className="gap-2">
               <Send className="h-4 w-4" />
               {translate.isPending ? "Перевожу..." : "Перевести"}
             </Button>
@@ -58,9 +114,33 @@ export default function Translator() {
         </CardContent>
       </Card>
 
+      {/* История */}
+      {history.length > 0 && !result && (
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1">
+            <History className="h-3 w-3" /> Недавние запросы
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {history.map(h => (
+              <button
+                key={h}
+                onClick={() => handleSubmit(h)}
+                className="px-3 py-1 rounded-full border border-border bg-card hover:bg-primary/5 text-sm transition-colors"
+              >
+                {h}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Результат */}
       {result && (
         <div className="space-y-4">
-          <Alert variant={result.overallConfidence < 0.5 ? "destructive" : "default"} className="border-amber-300/60 bg-amber-50/40 dark:bg-amber-950/10">
+          <Alert
+            variant={result.overallConfidence < 0.5 ? "destructive" : "default"}
+            className="border-amber-300/60 bg-amber-50/40 dark:bg-amber-950/10"
+          >
             <TriangleAlert className="h-4 w-4" />
             <AlertDescription>{result.disclaimer}</AlertDescription>
           </Alert>
@@ -90,7 +170,7 @@ export default function Translator() {
                     <div>
                       <p className="font-medium">{seg.sourceText}</p>
                       {seg.translatedText ? (
-                        <p className="text-muted-foreground">{seg.translatedText}</p>
+                        <p className="text-muted-foreground text-lg font-semibold text-primary">{seg.translatedText}</p>
                       ) : (
                         <p className="text-muted-foreground italic">нет перевода</p>
                       )}
@@ -109,9 +189,14 @@ export default function Translator() {
             })}
           </div>
 
-          <p className="text-xs text-muted-foreground text-center">
-            Общая достоверность перевода: {Math.round(result.overallConfidence * 100)}%
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">
+              Общая достоверность: {Math.round(result.overallConfidence * 100)}%
+            </p>
+            <Button variant="ghost" size="sm" onClick={() => translate.reset()}>
+              Очистить
+            </Button>
+          </div>
         </div>
       )}
     </div>

@@ -77,14 +77,22 @@ async function seedSalimov() {
 
     for (const entry of batch) {
       try {
-        // Проверяем, существует ли уже это слово
-        const existing = await db
+        // Нормализуем регистр — OCR из PDF даёт ЗАГЛАВНЫЕ, андийская орфография строчная
+        const toAndiCase = (s: string): string =>
+          s === s.toUpperCase() ? s.toLowerCase() : s;
+        const toAndiCaseNullable = (s: string | null | undefined): string | null | undefined =>
+          s == null ? s : toAndiCase(s);
+
+        const normalizedAndiWord = toAndiCase(entry.andiWord);
+
+        // Проверяем по нормализованному написанию во избежание дубликатов
+        const existingWord = await db
           .select({ id: wordsTable.id })
           .from(wordsTable)
-          .where(eq(wordsTable.andiWord, entry.andiWord))
+          .where(eq(wordsTable.andiWord, normalizedAndiWord))
           .limit(1);
 
-        if (existing.length > 0) {
+        if (existingWord.length > 0) {
           skipped++;
           continue;
         }
@@ -93,8 +101,8 @@ async function seedSalimov() {
         const [word] = await db
           .insert(wordsTable)
           .values({
-            andiWord: entry.andiWord,
-            lemma: entry.lemma,
+            andiWord: normalizedAndiWord,
+            lemma: toAndiCaseNullable(entry.lemma),
             russian: entry.russian,
             english: entry.english,
             partOfSpeech: entry.partOfSpeech,
