@@ -11,6 +11,9 @@
     "start": "node --enable-source-maps artifacts/api-server/dist/index.mjs"
   },
   "packageManager": "pnpm@10.26.1",
+  "engines": {
+    "node": ">=22"
+  },
   "private": true,
   "devDependencies": {
     "prettier": "^3.8.4",
