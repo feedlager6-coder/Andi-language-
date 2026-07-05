@@ -4,17 +4,21 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
+// PORT is only needed for the dev server and preview server, not for `vite build`.
+// During Railway build, PORT is injected at runtime, not at build time.
+const isBuildCommand = process.argv.some((arg) => arg === "build");
 const rawPort = process.env.PORT;
 
-if (!rawPort) {
+if (!rawPort && !isBuildCommand) {
   throw new Error(
     "PORT environment variable is required but was not provided.",
   );
 }
 
-const port = Number(rawPort);
+// Fallback 3000 is only used during `vite build` where port config is irrelevant.
+const port = rawPort ? Number(rawPort) : 3000;
 
-if (Number.isNaN(port) || port <= 0) {
+if (rawPort && (Number.isNaN(port) || port <= 0)) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 

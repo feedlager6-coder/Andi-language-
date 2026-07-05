@@ -16,6 +16,7 @@
     "seed:vocab-expanded": "tsx src/seed-vocab-expanded.ts",
     "seed:phrasebank": "tsx src/seed-phrasebank.ts",
     "seed:lessons-practical": "tsx src/seed-lessons-practical.ts",
+    "seed": "tsx src/seed-all.ts",
     "seed:all": "tsx src/seed-all.ts",
     "parse:salimov": "python3 src/parse-salimov-dict.py /tmp/salimov_full.txt"
   },
