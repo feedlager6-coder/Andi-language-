@@ -11,7 +11,9 @@
     "seed:enhanced": "tsx src/seed-enhanced.ts",
     "seed:lessons": "tsx src/seed-lessons.ts",
     "seed:words-expanded": "tsx src/seed-words-expanded.ts",
-    "seed:lessons-part2": "tsx src/seed-lessons-part2.ts"
+    "seed:lessons-part2": "tsx src/seed-lessons-part2.ts",
+    "seed:salimov": "tsx src/seed-salimov.ts",
+    "parse:salimov": "python3 src/parse-salimov-dict.py /tmp/salimov_full.txt"
   },
   "dependencies": {
     "@workspace/api-zod": "workspace:*",
