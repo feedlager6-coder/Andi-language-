@@ -9,7 +9,9 @@
     "start": "node --enable-source-maps ./dist/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "seed:enhanced": "tsx src/seed-enhanced.ts",
-    "seed:lessons": "tsx src/seed-lessons.ts"
+    "seed:lessons": "tsx src/seed-lessons.ts",
+    "seed:words-expanded": "tsx src/seed-words-expanded.ts",
+    "seed:lessons-part2": "tsx src/seed-lessons-part2.ts"
   },
   "dependencies": {
     "@workspace/api-zod": "workspace:*",
