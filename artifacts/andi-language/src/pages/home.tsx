@@ -1,5 +1,6 @@
 import { Link } from "wouter";
-import { useGetProgress, useGetRandomWord, useGetDueFlashcards, useGetStatsSummary } from "@workspace/api-client-react";
+import { useGetProgress, useGetMyStats, useGetRandomWord, useGetDueFlashcards, useGetStatsSummary } from "@workspace/api-client-react";
+import { useAuth } from "@workspace/replit-auth-web";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,10 +16,17 @@ const PHRASES = [
 ];
 
 export default function Home() {
-  const { data: progress, isLoading: loadingProgress } = useGetProgress();
+  const { isAuthenticated, user } = useAuth();
+  const { data: anonProgress, isLoading: loadingAnonProgress } = useGetProgress({ query: { enabled: !isAuthenticated } });
+  const { data: myStats, isLoading: loadingMyStats } = useGetMyStats({ query: { enabled: isAuthenticated } });
   const { data: randomWord, isLoading: loadingWord } = useGetRandomWord();
   const { data: dueCards } = useGetDueFlashcards({ limit: 5 });
   const { data: stats } = useGetStatsSummary();
+
+  const loadingProgress = isAuthenticated ? loadingMyStats : loadingAnonProgress;
+  const progress = isAuthenticated
+    ? (myStats ? { ...myStats, totalWords: stats?.totalWords ?? 0 } : undefined)
+    : anonProgress;
 
   const dueCount = dueCards?.length ?? 0;
 
@@ -29,8 +37,11 @@ export default function Home() {
       <div className="rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/20 p-8">
         <Badge variant="outline" className="mb-4 text-primary border-primary/30">Андийский язык · Дагестан</Badge>
         <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-3">
-          Учите андийский.<br />
-          <span className="text-primary">5 минут в день.</span>
+          {isAuthenticated && user?.firstName ? (
+            <>С возвращением, {user.firstName}!</>
+          ) : (
+            <>Учите андийский.<br /><span className="text-primary">5 минут в день.</span></>
+          )}
         </h1>
         <p className="text-muted-foreground text-lg mb-6 max-w-xl">
           Андийский — один из редких языков Дагестана. Здесь вы найдёте словарь, уроки и практику — всё что нужно для начала.

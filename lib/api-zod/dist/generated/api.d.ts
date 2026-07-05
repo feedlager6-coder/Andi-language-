@@ -2554,4 +2554,368 @@ export declare const GetGrammarDrillsResponse: zod.ZodArray<zod.ZodObject<{
     options?: string[] | undefined;
     topicRu?: string | undefined;
 }>, "many">;
+/**
+ * @summary Get the currently authenticated user
+ */
+export declare const GetCurrentAuthUserHeader: zod.ZodObject<{
+    Authorization: zod.ZodOptional<zod.ZodString>;
+}, "strip", zod.ZodTypeAny, {
+    Authorization?: string | undefined;
+}, {
+    Authorization?: string | undefined;
+}>;
+export declare const GetCurrentAuthUserResponse: zod.ZodObject<{
+    user: zod.ZodUnion<[zod.ZodObject<{
+        id: zod.ZodString;
+        email: zod.ZodNullable<zod.ZodString>;
+        firstName: zod.ZodNullable<zod.ZodString>;
+        lastName: zod.ZodNullable<zod.ZodString>;
+        profileImageUrl: zod.ZodNullable<zod.ZodString>;
+    }, "strip", zod.ZodTypeAny, {
+        id: string;
+        email: string | null;
+        firstName: string | null;
+        lastName: string | null;
+        profileImageUrl: string | null;
+    }, {
+        id: string;
+        email: string | null;
+        firstName: string | null;
+        lastName: string | null;
+        profileImageUrl: string | null;
+    }>, zod.ZodNull]>;
+}, "strip", zod.ZodTypeAny, {
+    user: {
+        id: string;
+        email: string | null;
+        firstName: string | null;
+        lastName: string | null;
+        profileImageUrl: string | null;
+    } | null;
+}, {
+    user: {
+        id: string;
+        email: string | null;
+        firstName: string | null;
+        lastName: string | null;
+        profileImageUrl: string | null;
+    } | null;
+}>;
+/**
+ * @summary Start the browser OIDC login flow
+ */
+export declare const BeginBrowserLoginQueryParams: zod.ZodObject<{
+    returnTo: zod.ZodOptional<zod.ZodString>;
+}, "strip", zod.ZodTypeAny, {
+    returnTo?: string | undefined;
+}, {
+    returnTo?: string | undefined;
+}>;
+export declare const BeginBrowserLoginResponse: zod.ZodVoid;
+/**
+ * @summary Complete the browser OIDC login flow
+ */
+export declare const HandleBrowserLoginCallbackQueryParams: zod.ZodObject<{
+    code: zod.ZodOptional<zod.ZodString>;
+    state: zod.ZodOptional<zod.ZodString>;
+    iss: zod.ZodOptional<zod.ZodString>;
+}, "strip", zod.ZodTypeAny, {
+    code?: string | undefined;
+    state?: string | undefined;
+    iss?: string | undefined;
+}, {
+    code?: string | undefined;
+    state?: string | undefined;
+    iss?: string | undefined;
+}>;
+export declare const HandleBrowserLoginCallbackResponse: zod.ZodVoid;
+/**
+ * @summary Clear the session and begin OIDC logout
+ */
+export declare const LogoutBrowserSessionHeader: zod.ZodObject<{
+    Authorization: zod.ZodOptional<zod.ZodString>;
+}, "strip", zod.ZodTypeAny, {
+    Authorization?: string | undefined;
+}, {
+    Authorization?: string | undefined;
+}>;
+export declare const LogoutBrowserSessionResponse: zod.ZodVoid;
+/**
+ * @summary Exchange a mobile OIDC code for a session token
+ */
+export declare const ExchangeMobileAuthorizationCodeBody: zod.ZodObject<{
+    code: zod.ZodString;
+    code_verifier: zod.ZodString;
+    redirect_uri: zod.ZodString;
+    state: zod.ZodString;
+    nonce: zod.ZodOptional<zod.ZodString>;
+}, "strip", zod.ZodTypeAny, {
+    code: string;
+    state: string;
+    code_verifier: string;
+    redirect_uri: string;
+    nonce?: string | undefined;
+}, {
+    code: string;
+    state: string;
+    code_verifier: string;
+    redirect_uri: string;
+    nonce?: string | undefined;
+}>;
+export declare const ExchangeMobileAuthorizationCodeResponse: zod.ZodObject<{
+    token: zod.ZodString;
+}, "strip", zod.ZodTypeAny, {
+    token: string;
+}, {
+    token: string;
+}>;
+/**
+ * @summary Delete a mobile session token
+ */
+export declare const LogoutMobileSessionHeader: zod.ZodObject<{
+    Authorization: zod.ZodOptional<zod.ZodString>;
+}, "strip", zod.ZodTypeAny, {
+    Authorization?: string | undefined;
+}, {
+    Authorization?: string | undefined;
+}>;
+export declare const LogoutMobileSessionResponse: zod.ZodObject<{
+    success: zod.ZodBoolean;
+}, "strip", zod.ZodTypeAny, {
+    success: boolean;
+}, {
+    success: boolean;
+}>;
+/**
+ * @summary List the current user's favorite words and phrases
+ */
+export declare const ListMyFavoritesResponseItem: zod.ZodObject<{
+    id: zod.ZodNumber;
+    itemType: zod.ZodEnum<["word", "phrase"]>;
+    itemId: zod.ZodNumber;
+    createdAt: zod.ZodString;
+}, "strip", zod.ZodTypeAny, {
+    id: number;
+    createdAt: string;
+    itemType: "word" | "phrase";
+    itemId: number;
+}, {
+    id: number;
+    createdAt: string;
+    itemType: "word" | "phrase";
+    itemId: number;
+}>;
+export declare const ListMyFavoritesResponse: zod.ZodArray<zod.ZodObject<{
+    id: zod.ZodNumber;
+    itemType: zod.ZodEnum<["word", "phrase"]>;
+    itemId: zod.ZodNumber;
+    createdAt: zod.ZodString;
+}, "strip", zod.ZodTypeAny, {
+    id: number;
+    createdAt: string;
+    itemType: "word" | "phrase";
+    itemId: number;
+}, {
+    id: number;
+    createdAt: string;
+    itemType: "word" | "phrase";
+    itemId: number;
+}>, "many">;
+/**
+ * @summary Add a word or phrase to favorites
+ */
+export declare const AddMyFavoriteBody: zod.ZodObject<{
+    itemType: zod.ZodEnum<["word", "phrase"]>;
+    itemId: zod.ZodNumber;
+}, "strip", zod.ZodTypeAny, {
+    itemType: "word" | "phrase";
+    itemId: number;
+}, {
+    itemType: "word" | "phrase";
+    itemId: number;
+}>;
+export declare const AddMyFavoriteResponse: zod.ZodObject<{
+    id: zod.ZodNumber;
+    itemType: zod.ZodEnum<["word", "phrase"]>;
+    itemId: zod.ZodNumber;
+    createdAt: zod.ZodString;
+}, "strip", zod.ZodTypeAny, {
+    id: number;
+    createdAt: string;
+    itemType: "word" | "phrase";
+    itemId: number;
+}, {
+    id: number;
+    createdAt: string;
+    itemType: "word" | "phrase";
+    itemId: number;
+}>;
+/**
+ * @summary Remove a favorite
+ */
+export declare const RemoveMyFavoriteParams: zod.ZodObject<{
+    itemType: zod.ZodEnum<["word", "phrase"]>;
+    itemId: zod.ZodNumber;
+}, "strip", zod.ZodTypeAny, {
+    itemType: "word" | "phrase";
+    itemId: number;
+}, {
+    itemType: "word" | "phrase";
+    itemId: number;
+}>;
+export declare const RemoveMyFavoriteResponse: zod.ZodVoid;
+/**
+ * @summary List the current user's translation history
+ */
+export declare const ListMyTranslationHistoryQueryParams: zod.ZodObject<{
+    limit: zod.ZodOptional<zod.ZodNumber>;
+}, "strip", zod.ZodTypeAny, {
+    limit?: number | undefined;
+}, {
+    limit?: number | undefined;
+}>;
+export declare const ListMyTranslationHistoryResponseItem: zod.ZodObject<{
+    id: zod.ZodNumber;
+    inputText: zod.ZodString;
+    resultText: zod.ZodNullable<zod.ZodString>;
+    confidence: zod.ZodOptional<zod.ZodNullable<zod.ZodNumber>>;
+    createdAt: zod.ZodString;
+}, "strip", zod.ZodTypeAny, {
+    id: number;
+    createdAt: string;
+    inputText: string;
+    resultText: string | null;
+    confidence?: number | null | undefined;
+}, {
+    id: number;
+    createdAt: string;
+    inputText: string;
+    resultText: string | null;
+    confidence?: number | null | undefined;
+}>;
+export declare const ListMyTranslationHistoryResponse: zod.ZodArray<zod.ZodObject<{
+    id: zod.ZodNumber;
+    inputText: zod.ZodString;
+    resultText: zod.ZodNullable<zod.ZodString>;
+    confidence: zod.ZodOptional<zod.ZodNullable<zod.ZodNumber>>;
+    createdAt: zod.ZodString;
+}, "strip", zod.ZodTypeAny, {
+    id: number;
+    createdAt: string;
+    inputText: string;
+    resultText: string | null;
+    confidence?: number | null | undefined;
+}, {
+    id: number;
+    createdAt: string;
+    inputText: string;
+    resultText: string | null;
+    confidence?: number | null | undefined;
+}>, "many">;
+/**
+ * @summary Save a translation to history
+ */
+export declare const AddMyHistoryEntryBody: zod.ZodObject<{
+    inputText: zod.ZodString;
+    resultText: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+    confidence: zod.ZodOptional<zod.ZodNullable<zod.ZodNumber>>;
+}, "strip", zod.ZodTypeAny, {
+    inputText: string;
+    confidence?: number | null | undefined;
+    resultText?: string | null | undefined;
+}, {
+    inputText: string;
+    confidence?: number | null | undefined;
+    resultText?: string | null | undefined;
+}>;
+export declare const AddMyHistoryEntryResponse: zod.ZodObject<{
+    id: zod.ZodNumber;
+    inputText: zod.ZodString;
+    resultText: zod.ZodNullable<zod.ZodString>;
+    confidence: zod.ZodOptional<zod.ZodNullable<zod.ZodNumber>>;
+    createdAt: zod.ZodString;
+}, "strip", zod.ZodTypeAny, {
+    id: number;
+    createdAt: string;
+    inputText: string;
+    resultText: string | null;
+    confidence?: number | null | undefined;
+}, {
+    id: number;
+    createdAt: string;
+    inputText: string;
+    resultText: string | null;
+    confidence?: number | null | undefined;
+}>;
+/**
+ * @summary Clear the current user's translation history
+ */
+export declare const ClearMyTranslationHistoryResponse: zod.ZodVoid;
+/**
+ * @summary Get the current user's settings
+ */
+export declare const GetMySettingsResponse: zod.ZodObject<{
+    dailyGoal: zod.ZodNumber;
+    showTransliteration: zod.ZodBoolean;
+    theme: zod.ZodString;
+}, "strip", zod.ZodTypeAny, {
+    dailyGoal: number;
+    showTransliteration: boolean;
+    theme: string;
+}, {
+    dailyGoal: number;
+    showTransliteration: boolean;
+    theme: string;
+}>;
+/**
+ * @summary Update the current user's settings
+ */
+export declare const UpdateMySettingsBody: zod.ZodObject<{
+    dailyGoal: zod.ZodOptional<zod.ZodNumber>;
+    showTransliteration: zod.ZodOptional<zod.ZodBoolean>;
+    theme: zod.ZodOptional<zod.ZodString>;
+}, "strip", zod.ZodTypeAny, {
+    dailyGoal?: number | undefined;
+    showTransliteration?: boolean | undefined;
+    theme?: string | undefined;
+}, {
+    dailyGoal?: number | undefined;
+    showTransliteration?: boolean | undefined;
+    theme?: string | undefined;
+}>;
+export declare const UpdateMySettingsResponse: zod.ZodObject<{
+    dailyGoal: zod.ZodNumber;
+    showTransliteration: zod.ZodBoolean;
+    theme: zod.ZodString;
+}, "strip", zod.ZodTypeAny, {
+    dailyGoal: number;
+    showTransliteration: boolean;
+    theme: string;
+}, {
+    dailyGoal: number;
+    showTransliteration: boolean;
+    theme: string;
+}>;
+/**
+ * @summary Get the current user's learning stats
+ */
+export declare const GetMyStatsResponse: zod.ZodObject<{
+    streak: zod.ZodNumber;
+    exercisesDone: zod.ZodNumber;
+    wordsLearned: zod.ZodNumber;
+    lessonsCompleted: zod.ZodNumber;
+    lastActivityAt: zod.ZodOptional<zod.ZodNullable<zod.ZodString>>;
+}, "strip", zod.ZodTypeAny, {
+    wordsLearned: number;
+    exercisesDone: number;
+    streak: number;
+    lessonsCompleted: number;
+    lastActivityAt?: string | null | undefined;
+}, {
+    wordsLearned: number;
+    exercisesDone: number;
+    streak: number;
+    lessonsCompleted: number;
+    lastActivityAt?: string | null | undefined;
+}>;
 //# sourceMappingURL=api.d.ts.map

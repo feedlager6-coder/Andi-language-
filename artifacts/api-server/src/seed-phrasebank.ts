@@ -67,10 +67,59 @@ const phrases: PhraseEntry[] = [
   { category: "actions", andi: "рукIана", russian: "быть, являться", english: "to be", breakdown: "глагол-связка, употребляется очень часто", source: "Мадиева Г.И., 1980", confidence: 0.8, orderIndex: 1 },
   { category: "actions", andi: "ИНУ", russian: "идти, находиться (где)", english: "to go / to be located", source: "Словарь Салимова, 2010", confidence: 0.6, orderIndex: 2 },
   { category: "actions", andi: "ИЛА", russian: "говорить, сказать", english: "to say", source: "Словарь Салимова, 2010", confidence: 0.6, orderIndex: 3 },
+
+  // Expansion pulled directly from the Salimov (2010) dictionary — single verified lexemes, new topical categories
+  { category: "animals", andi: "гьобдийа", russian: "собака", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 101 },
+  { category: "animals", andi: "геду", russian: "кошка", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 102 },
+  { category: "animals", andi: "йетти", russian: "корова", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 103 },
+  { category: "animals", andi: "ассахъи", russian: "овца", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 104 },
+  { category: "animals", andi: "цӏцӏеклӏи", russian: "коза", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 105 },
+  { category: "animals", andi: "хьвани", russian: "лошадь", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 106 },
+  { category: "animals", andi: "хъомор", russian: "волк", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 107 },
+  { category: "animals", andi: "сей", russian: "медведь", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 108 },
+  { category: "animals", andi: "кьанкӏала", russian: "заяц", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 109 },
+  { category: "animals", andi: "бурдийа", russian: "птица", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 110 },
+  { category: "animals", andi: "уэцу", russian: "курица", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 111 },
+  { category: "animals", andi: "берка", russian: "змея", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 112 },
+  { category: "animals", andi: "гбинкӏкгу", russian: "мышь", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 113 },
+  { category: "animals", andi: "хвами", russian: "рыба", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 114 },
+
+  { category: "colors", andi: "гьири", russian: "красный", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 101 },
+
+  { category: "body", andi: "кӏвакӏва", russian: "голова", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 101 },
+  { category: "body", andi: "кицӏи", russian: "нога", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 102 },
+  { category: "body", andi: "гьаркӏу", russian: "глаз", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 103 },
+  { category: "body", andi: "гьантӏикӏа", russian: "ухо", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 104 },
+  { category: "body", andi: "магьар", russian: "нос", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 105 },
+  { category: "body", andi: "сол", russian: "зуб", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 106 },
+  { category: "body", andi: "цщӏекӏа", russian: "палец", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 107 },
+  { category: "body", andi: "мигъул", russian: "спина", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 108 },
+  { category: "body", andi: "тару", russian: "шея", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 109 },
+  { category: "body", andi: "бехун", russian: "плечо", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 110 },
+  { category: "body", andi: "николулӏикъинил", russian: "колено", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 111 },
+
+  { category: "weather", andi: "цӏцӏа", russian: "дождь", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 101 },
+  { category: "weather", andi: "милъи", russian: "солнце", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 102 },
+  { category: "weather", andi: "мочи", russian: "ветер", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 103 },
+  { category: "weather", andi: "зарзари", russian: "холод", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 104 },
+
+  { category: "clothing", andi: "нассил", russian: "обувь", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 101 },
+  { category: "clothing", andi: "тӏабба", russian: "шапка", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 102 },
+
+  { category: "nature", andi: "лълъенссо", russian: "река", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 101 },
+  { category: "nature", andi: "лъан", russian: "трава", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 102 },
+
+  { category: "time", andi: "зубу", russian: "день", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 101 },
+  { category: "time", andi: "порцӏцӏи", russian: "месяц", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 102 },
+  { category: "time", andi: "щела", russian: "завтра", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 103 },
+  { category: "time", andi: "лъакьу", russian: "вчера", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 104 },
+  { category: "time", andi: "къину", russian: "лето", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 105 },
+  { category: "time", andi: "ссибиру", russian: "осень", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 106 },
+  { category: "time", andi: "кьину", russian: "зима", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 107 },
 ];
 
 async function main() {
-  console.log(`Сеем фразник — ${phrases.length} фраз в 10 категориях...`);
+  console.log(`Сеем фразник — ${phrases.length} фраз...`);
   let inserted = 0;
   let skipped = 0;
 

@@ -15,6 +15,7 @@ import Phrasebank from "@/pages/phrasebank";
 import Progress from "@/pages/progress";
 import Morphology from "@/pages/morphology";
 import Grammar from "@/pages/grammar";
+import Settings from "@/pages/settings";
 import AdminDashboard from "@/pages/admin/index";
 import NewWord from "@/pages/admin/new-word";
 import NewLesson from "@/pages/admin/new-lesson";
@@ -41,6 +42,7 @@ function Router() {
         <Route path="/progress" component={Progress} />
         <Route path="/morphology" component={Morphology} />
         <Route path="/grammar" component={Grammar} />
+        <Route path="/settings" component={Settings} />
         <Route path="/admin" component={AdminDashboard} />
         <Route path="/admin/words/new" component={NewWord} />
         <Route path="/admin/lessons/new" component={NewLesson} />

@@ -5,6 +5,96 @@
  * Andi Language Learning Platform API
  * OpenAPI spec version: 0.1.0
  */
+export interface AuthUser {
+    id: string;
+    /** @nullable */
+    email: string | null;
+    /** @nullable */
+    firstName: string | null;
+    /** @nullable */
+    lastName: string | null;
+    /** @nullable */
+    profileImageUrl: string | null;
+}
+export interface AuthUserEnvelope {
+    user: AuthUser | null;
+}
+export interface MobileTokenExchangeRequest {
+    /** @minLength 1 */
+    code: string;
+    /** @minLength 1 */
+    code_verifier: string;
+    /** @minLength 1 */
+    redirect_uri: string;
+    /** @minLength 1 */
+    state: string;
+    /** @minLength 1 */
+    nonce?: string;
+}
+export interface MobileTokenExchangeSuccess {
+    token: string;
+}
+export declare const LogoutSuccessValue: {
+    readonly success: true;
+};
+export type LogoutSuccess = typeof LogoutSuccessValue;
+export interface ErrorEnvelope {
+    error: string;
+}
+export type FavoriteItemType = typeof FavoriteItemType[keyof typeof FavoriteItemType];
+export declare const FavoriteItemType: {
+    readonly word: "word";
+    readonly phrase: "phrase";
+};
+export interface Favorite {
+    id: number;
+    itemType: FavoriteItemType;
+    itemId: number;
+    createdAt: string;
+}
+export type FavoriteInputItemType = typeof FavoriteInputItemType[keyof typeof FavoriteInputItemType];
+export declare const FavoriteInputItemType: {
+    readonly word: "word";
+    readonly phrase: "phrase";
+};
+export interface FavoriteInput {
+    itemType: FavoriteInputItemType;
+    itemId: number;
+}
+export interface HistoryEntry {
+    id: number;
+    inputText: string;
+    /** @nullable */
+    resultText: string | null;
+    /** @nullable */
+    confidence?: number | null;
+    createdAt: string;
+}
+export interface HistoryEntryInput {
+    inputText: string;
+    /** @nullable */
+    resultText?: string | null;
+    /** @nullable */
+    confidence?: number | null;
+}
+export interface UserSettings {
+    dailyGoal: number;
+    showTransliteration: boolean;
+    theme: string;
+}
+export interface UserSettingsInput {
+    dailyGoal?: number;
+    showTransliteration?: boolean;
+    theme?: string;
+}
+export interface UserStatsRecord {
+    streak: number;
+    exercisesDone: number;
+    wordsLearned: number;
+    lessonsCompleted: number;
+    /** @nullable */
+    lastActivityAt?: string | null;
+}
 export interface HealthStatus {
     status: string;
 }
@@ -343,6 +433,10 @@ export interface TranslationResult {
     overallConfidence: number;
     disclaimer: string;
 }
+/**
+ * Opaque session token — `Bearer <sid>`.
+ */
+export type AuthorizationSessionHeaderParameter = string;
 export type ListWordsParams = {
     search?: string;
     partOfSpeech?: string;
@@ -368,5 +462,19 @@ export type ListPhrasesParams = {
 };
 export type GetGrammarDrillsParams = {
     topic?: string;
+};
+export type BeginBrowserLoginParams = {
+    /**
+     * Relative path to redirect to after login (must start with `/`). Defaults to `/`.
+     */
+    returnTo?: string;
+};
+export type HandleBrowserLoginCallbackParams = {
+    code?: string;
+    state?: string;
+    iss?: string;
+};
+export type ListMyTranslationHistoryParams = {
+    limit?: number;
 };
 //# sourceMappingURL=api.schemas.d.ts.map

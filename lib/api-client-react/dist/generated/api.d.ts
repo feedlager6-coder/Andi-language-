@@ -1,5 +1,5 @@
 import type { QueryKey, UseMutationOptions, UseMutationResult, UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
-import type { ActivityEntry, AnalyzeWordInput, CaseParadigmsResponse, CountEntry, Exercise, ExerciseInput, ExerciseResult, ExerciseSubmission, Flashcard, FlashcardReview, GetActivityFeedParams, GetDueFlashcardsParams, GetGrammarDrillsParams, GrammarDrill, HealthStatus, Lesson, LessonDetail, LessonInput, LessonUpdate, ListExercisesParams, ListPhrasesParams, ListWordsParams, MorphologicalAnalysis, NounClassesResponse, Phrase, PhraseInput, PhraseList, PhraseUpdate, ProgressSummary, StatsSummary, TranslateInput, TranslationResult, Word, WordFormsResponse, WordInput, WordList, WordUpdate } from './api.schemas';
+import type { ActivityEntry, AnalyzeWordInput, AuthUserEnvelope, BeginBrowserLoginParams, CaseParadigmsResponse, CountEntry, ErrorEnvelope, Exercise, ExerciseInput, ExerciseResult, ExerciseSubmission, Favorite, FavoriteInput, Flashcard, FlashcardReview, GetActivityFeedParams, GetDueFlashcardsParams, GetGrammarDrillsParams, GrammarDrill, HandleBrowserLoginCallbackParams, HealthStatus, HistoryEntry, HistoryEntryInput, Lesson, LessonDetail, LessonInput, LessonUpdate, ListExercisesParams, ListMyTranslationHistoryParams, ListPhrasesParams, ListWordsParams, LogoutSuccess, MobileTokenExchangeRequest, MobileTokenExchangeSuccess, MorphologicalAnalysis, NounClassesResponse, Phrase, PhraseInput, PhraseList, PhraseUpdate, ProgressSummary, StatsSummary, TranslateInput, TranslationResult, UserSettings, UserSettingsInput, UserStatsRecord, Word, WordFormsResponse, WordInput, WordList, WordUpdate } from './api.schemas';
 import { customFetch } from '../custom-fetch';
 import type { ErrorType, BodyType } from '../custom-fetch';
 type AwaitedInput<T> = PromiseLike<T> | T;
@@ -810,6 +810,364 @@ export type GetGrammarDrillsQueryError = ErrorType<unknown>;
  */
 export declare function useGetGrammarDrills<TData = Awaited<ReturnType<typeof getGrammarDrills>>, TError = ErrorType<unknown>>(params?: GetGrammarDrillsParams, options?: {
     query?: UseQueryOptions<Awaited<ReturnType<typeof getGrammarDrills>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+};
+export declare const getGetCurrentAuthUserUrl: () => string;
+/**
+ * @summary Get the currently authenticated user
+ */
+export declare const getCurrentAuthUser: (options?: RequestInit) => Promise<AuthUserEnvelope>;
+export declare const getGetCurrentAuthUserQueryKey: () => readonly ["/api/auth/user"];
+export declare const getGetCurrentAuthUserQueryOptions: <TData = Awaited<ReturnType<typeof getCurrentAuthUser>>, TError = ErrorType<unknown>>(options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getCurrentAuthUser>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseQueryOptions<Awaited<ReturnType<typeof getCurrentAuthUser>>, TError, TData> & {
+    queryKey: QueryKey;
+};
+export type GetCurrentAuthUserQueryResult = NonNullable<Awaited<ReturnType<typeof getCurrentAuthUser>>>;
+export type GetCurrentAuthUserQueryError = ErrorType<unknown>;
+/**
+ * @summary Get the currently authenticated user
+ */
+export declare function useGetCurrentAuthUser<TData = Awaited<ReturnType<typeof getCurrentAuthUser>>, TError = ErrorType<unknown>>(options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getCurrentAuthUser>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+};
+export declare const getBeginBrowserLoginUrl: (params?: BeginBrowserLoginParams) => string;
+/**
+ * @summary Start the browser OIDC login flow
+ */
+export declare const beginBrowserLogin: (params?: BeginBrowserLoginParams, options?: RequestInit) => Promise<unknown>;
+export declare const getBeginBrowserLoginQueryKey: (params?: BeginBrowserLoginParams) => readonly ["/api/login", ...BeginBrowserLoginParams[]];
+export declare const getBeginBrowserLoginQueryOptions: <TData = Awaited<ReturnType<typeof beginBrowserLogin>>, TError = ErrorType<void>>(params?: BeginBrowserLoginParams, options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof beginBrowserLogin>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseQueryOptions<Awaited<ReturnType<typeof beginBrowserLogin>>, TError, TData> & {
+    queryKey: QueryKey;
+};
+export type BeginBrowserLoginQueryResult = NonNullable<Awaited<ReturnType<typeof beginBrowserLogin>>>;
+export type BeginBrowserLoginQueryError = ErrorType<void>;
+/**
+ * @summary Start the browser OIDC login flow
+ */
+export declare function useBeginBrowserLogin<TData = Awaited<ReturnType<typeof beginBrowserLogin>>, TError = ErrorType<void>>(params?: BeginBrowserLoginParams, options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof beginBrowserLogin>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+};
+export declare const getHandleBrowserLoginCallbackUrl: (params?: HandleBrowserLoginCallbackParams) => string;
+/**
+ * @summary Complete the browser OIDC login flow
+ */
+export declare const handleBrowserLoginCallback: (params?: HandleBrowserLoginCallbackParams, options?: RequestInit) => Promise<unknown>;
+export declare const getHandleBrowserLoginCallbackQueryKey: (params?: HandleBrowserLoginCallbackParams) => readonly ["/api/callback", ...HandleBrowserLoginCallbackParams[]];
+export declare const getHandleBrowserLoginCallbackQueryOptions: <TData = Awaited<ReturnType<typeof handleBrowserLoginCallback>>, TError = ErrorType<void>>(params?: HandleBrowserLoginCallbackParams, options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof handleBrowserLoginCallback>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseQueryOptions<Awaited<ReturnType<typeof handleBrowserLoginCallback>>, TError, TData> & {
+    queryKey: QueryKey;
+};
+export type HandleBrowserLoginCallbackQueryResult = NonNullable<Awaited<ReturnType<typeof handleBrowserLoginCallback>>>;
+export type HandleBrowserLoginCallbackQueryError = ErrorType<void>;
+/**
+ * @summary Complete the browser OIDC login flow
+ */
+export declare function useHandleBrowserLoginCallback<TData = Awaited<ReturnType<typeof handleBrowserLoginCallback>>, TError = ErrorType<void>>(params?: HandleBrowserLoginCallbackParams, options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof handleBrowserLoginCallback>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+};
+export declare const getLogoutBrowserSessionUrl: () => string;
+/**
+ * @summary Clear the session and begin OIDC logout
+ */
+export declare const logoutBrowserSession: (options?: RequestInit) => Promise<unknown>;
+export declare const getLogoutBrowserSessionQueryKey: () => readonly ["/api/logout"];
+export declare const getLogoutBrowserSessionQueryOptions: <TData = Awaited<ReturnType<typeof logoutBrowserSession>>, TError = ErrorType<void>>(options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof logoutBrowserSession>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseQueryOptions<Awaited<ReturnType<typeof logoutBrowserSession>>, TError, TData> & {
+    queryKey: QueryKey;
+};
+export type LogoutBrowserSessionQueryResult = NonNullable<Awaited<ReturnType<typeof logoutBrowserSession>>>;
+export type LogoutBrowserSessionQueryError = ErrorType<void>;
+/**
+ * @summary Clear the session and begin OIDC logout
+ */
+export declare function useLogoutBrowserSession<TData = Awaited<ReturnType<typeof logoutBrowserSession>>, TError = ErrorType<void>>(options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof logoutBrowserSession>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+};
+export declare const getExchangeMobileAuthorizationCodeUrl: () => string;
+/**
+ * @summary Exchange a mobile OIDC code for a session token
+ */
+export declare const exchangeMobileAuthorizationCode: (mobileTokenExchangeRequest: MobileTokenExchangeRequest, options?: RequestInit) => Promise<MobileTokenExchangeSuccess>;
+export declare const getExchangeMobileAuthorizationCodeMutationOptions: <TError = ErrorType<ErrorEnvelope>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof exchangeMobileAuthorizationCode>>, TError, {
+        data: BodyType<MobileTokenExchangeRequest>;
+    }, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationOptions<Awaited<ReturnType<typeof exchangeMobileAuthorizationCode>>, TError, {
+    data: BodyType<MobileTokenExchangeRequest>;
+}, TContext>;
+export type ExchangeMobileAuthorizationCodeMutationResult = NonNullable<Awaited<ReturnType<typeof exchangeMobileAuthorizationCode>>>;
+export type ExchangeMobileAuthorizationCodeMutationBody = BodyType<MobileTokenExchangeRequest>;
+export type ExchangeMobileAuthorizationCodeMutationError = ErrorType<ErrorEnvelope>;
+/**
+* @summary Exchange a mobile OIDC code for a session token
+*/
+export declare const useExchangeMobileAuthorizationCode: <TError = ErrorType<ErrorEnvelope>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof exchangeMobileAuthorizationCode>>, TError, {
+        data: BodyType<MobileTokenExchangeRequest>;
+    }, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationResult<Awaited<ReturnType<typeof exchangeMobileAuthorizationCode>>, TError, {
+    data: BodyType<MobileTokenExchangeRequest>;
+}, TContext>;
+export declare const getLogoutMobileSessionUrl: () => string;
+/**
+ * @summary Delete a mobile session token
+ */
+export declare const logoutMobileSession: (options?: RequestInit) => Promise<LogoutSuccess>;
+export declare const getLogoutMobileSessionMutationOptions: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof logoutMobileSession>>, TError, void, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationOptions<Awaited<ReturnType<typeof logoutMobileSession>>, TError, void, TContext>;
+export type LogoutMobileSessionMutationResult = NonNullable<Awaited<ReturnType<typeof logoutMobileSession>>>;
+export type LogoutMobileSessionMutationError = ErrorType<unknown>;
+/**
+* @summary Delete a mobile session token
+*/
+export declare const useLogoutMobileSession: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof logoutMobileSession>>, TError, void, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationResult<Awaited<ReturnType<typeof logoutMobileSession>>, TError, void, TContext>;
+export declare const getListMyFavoritesUrl: () => string;
+/**
+ * @summary List the current user's favorite words and phrases
+ */
+export declare const listMyFavorites: (options?: RequestInit) => Promise<Favorite[]>;
+export declare const getListMyFavoritesQueryKey: () => readonly ["/api/me/favorites"];
+export declare const getListMyFavoritesQueryOptions: <TData = Awaited<ReturnType<typeof listMyFavorites>>, TError = ErrorType<unknown>>(options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof listMyFavorites>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseQueryOptions<Awaited<ReturnType<typeof listMyFavorites>>, TError, TData> & {
+    queryKey: QueryKey;
+};
+export type ListMyFavoritesQueryResult = NonNullable<Awaited<ReturnType<typeof listMyFavorites>>>;
+export type ListMyFavoritesQueryError = ErrorType<unknown>;
+/**
+ * @summary List the current user's favorite words and phrases
+ */
+export declare function useListMyFavorites<TData = Awaited<ReturnType<typeof listMyFavorites>>, TError = ErrorType<unknown>>(options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof listMyFavorites>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+};
+export declare const getAddMyFavoriteUrl: () => string;
+/**
+ * @summary Add a word or phrase to favorites
+ */
+export declare const addMyFavorite: (favoriteInput: FavoriteInput, options?: RequestInit) => Promise<Favorite>;
+export declare const getAddMyFavoriteMutationOptions: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof addMyFavorite>>, TError, {
+        data: BodyType<FavoriteInput>;
+    }, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationOptions<Awaited<ReturnType<typeof addMyFavorite>>, TError, {
+    data: BodyType<FavoriteInput>;
+}, TContext>;
+export type AddMyFavoriteMutationResult = NonNullable<Awaited<ReturnType<typeof addMyFavorite>>>;
+export type AddMyFavoriteMutationBody = BodyType<FavoriteInput>;
+export type AddMyFavoriteMutationError = ErrorType<unknown>;
+/**
+* @summary Add a word or phrase to favorites
+*/
+export declare const useAddMyFavorite: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof addMyFavorite>>, TError, {
+        data: BodyType<FavoriteInput>;
+    }, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationResult<Awaited<ReturnType<typeof addMyFavorite>>, TError, {
+    data: BodyType<FavoriteInput>;
+}, TContext>;
+export declare const getRemoveMyFavoriteUrl: (itemType: "word" | "phrase", itemId: number) => string;
+/**
+ * @summary Remove a favorite
+ */
+export declare const removeMyFavorite: (itemType: "word" | "phrase", itemId: number, options?: RequestInit) => Promise<void>;
+export declare const getRemoveMyFavoriteMutationOptions: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof removeMyFavorite>>, TError, {
+        itemType: "word" | "phrase";
+        itemId: number;
+    }, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationOptions<Awaited<ReturnType<typeof removeMyFavorite>>, TError, {
+    itemType: "word" | "phrase";
+    itemId: number;
+}, TContext>;
+export type RemoveMyFavoriteMutationResult = NonNullable<Awaited<ReturnType<typeof removeMyFavorite>>>;
+export type RemoveMyFavoriteMutationError = ErrorType<unknown>;
+/**
+* @summary Remove a favorite
+*/
+export declare const useRemoveMyFavorite: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof removeMyFavorite>>, TError, {
+        itemType: "word" | "phrase";
+        itemId: number;
+    }, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationResult<Awaited<ReturnType<typeof removeMyFavorite>>, TError, {
+    itemType: "word" | "phrase";
+    itemId: number;
+}, TContext>;
+export declare const getListMyTranslationHistoryUrl: (params?: ListMyTranslationHistoryParams) => string;
+/**
+ * @summary List the current user's translation history
+ */
+export declare const listMyTranslationHistory: (params?: ListMyTranslationHistoryParams, options?: RequestInit) => Promise<HistoryEntry[]>;
+export declare const getListMyTranslationHistoryQueryKey: (params?: ListMyTranslationHistoryParams) => readonly ["/api/me/history", ...ListMyTranslationHistoryParams[]];
+export declare const getListMyTranslationHistoryQueryOptions: <TData = Awaited<ReturnType<typeof listMyTranslationHistory>>, TError = ErrorType<unknown>>(params?: ListMyTranslationHistoryParams, options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof listMyTranslationHistory>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseQueryOptions<Awaited<ReturnType<typeof listMyTranslationHistory>>, TError, TData> & {
+    queryKey: QueryKey;
+};
+export type ListMyTranslationHistoryQueryResult = NonNullable<Awaited<ReturnType<typeof listMyTranslationHistory>>>;
+export type ListMyTranslationHistoryQueryError = ErrorType<unknown>;
+/**
+ * @summary List the current user's translation history
+ */
+export declare function useListMyTranslationHistory<TData = Awaited<ReturnType<typeof listMyTranslationHistory>>, TError = ErrorType<unknown>>(params?: ListMyTranslationHistoryParams, options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof listMyTranslationHistory>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+};
+export declare const getAddMyHistoryEntryUrl: () => string;
+/**
+ * @summary Save a translation to history
+ */
+export declare const addMyHistoryEntry: (historyEntryInput: HistoryEntryInput, options?: RequestInit) => Promise<HistoryEntry>;
+export declare const getAddMyHistoryEntryMutationOptions: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof addMyHistoryEntry>>, TError, {
+        data: BodyType<HistoryEntryInput>;
+    }, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationOptions<Awaited<ReturnType<typeof addMyHistoryEntry>>, TError, {
+    data: BodyType<HistoryEntryInput>;
+}, TContext>;
+export type AddMyHistoryEntryMutationResult = NonNullable<Awaited<ReturnType<typeof addMyHistoryEntry>>>;
+export type AddMyHistoryEntryMutationBody = BodyType<HistoryEntryInput>;
+export type AddMyHistoryEntryMutationError = ErrorType<unknown>;
+/**
+* @summary Save a translation to history
+*/
+export declare const useAddMyHistoryEntry: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof addMyHistoryEntry>>, TError, {
+        data: BodyType<HistoryEntryInput>;
+    }, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationResult<Awaited<ReturnType<typeof addMyHistoryEntry>>, TError, {
+    data: BodyType<HistoryEntryInput>;
+}, TContext>;
+export declare const getClearMyTranslationHistoryUrl: () => string;
+/**
+ * @summary Clear the current user's translation history
+ */
+export declare const clearMyTranslationHistory: (options?: RequestInit) => Promise<void>;
+export declare const getClearMyTranslationHistoryMutationOptions: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof clearMyTranslationHistory>>, TError, void, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationOptions<Awaited<ReturnType<typeof clearMyTranslationHistory>>, TError, void, TContext>;
+export type ClearMyTranslationHistoryMutationResult = NonNullable<Awaited<ReturnType<typeof clearMyTranslationHistory>>>;
+export type ClearMyTranslationHistoryMutationError = ErrorType<unknown>;
+/**
+* @summary Clear the current user's translation history
+*/
+export declare const useClearMyTranslationHistory: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof clearMyTranslationHistory>>, TError, void, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationResult<Awaited<ReturnType<typeof clearMyTranslationHistory>>, TError, void, TContext>;
+export declare const getGetMySettingsUrl: () => string;
+/**
+ * @summary Get the current user's settings
+ */
+export declare const getMySettings: (options?: RequestInit) => Promise<UserSettings>;
+export declare const getGetMySettingsQueryKey: () => readonly ["/api/me/settings"];
+export declare const getGetMySettingsQueryOptions: <TData = Awaited<ReturnType<typeof getMySettings>>, TError = ErrorType<unknown>>(options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getMySettings>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseQueryOptions<Awaited<ReturnType<typeof getMySettings>>, TError, TData> & {
+    queryKey: QueryKey;
+};
+export type GetMySettingsQueryResult = NonNullable<Awaited<ReturnType<typeof getMySettings>>>;
+export type GetMySettingsQueryError = ErrorType<unknown>;
+/**
+ * @summary Get the current user's settings
+ */
+export declare function useGetMySettings<TData = Awaited<ReturnType<typeof getMySettings>>, TError = ErrorType<unknown>>(options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getMySettings>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+};
+export declare const getUpdateMySettingsUrl: () => string;
+/**
+ * @summary Update the current user's settings
+ */
+export declare const updateMySettings: (userSettingsInput: UserSettingsInput, options?: RequestInit) => Promise<UserSettings>;
+export declare const getUpdateMySettingsMutationOptions: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof updateMySettings>>, TError, {
+        data: BodyType<UserSettingsInput>;
+    }, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationOptions<Awaited<ReturnType<typeof updateMySettings>>, TError, {
+    data: BodyType<UserSettingsInput>;
+}, TContext>;
+export type UpdateMySettingsMutationResult = NonNullable<Awaited<ReturnType<typeof updateMySettings>>>;
+export type UpdateMySettingsMutationBody = BodyType<UserSettingsInput>;
+export type UpdateMySettingsMutationError = ErrorType<unknown>;
+/**
+* @summary Update the current user's settings
+*/
+export declare const useUpdateMySettings: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof updateMySettings>>, TError, {
+        data: BodyType<UserSettingsInput>;
+    }, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationResult<Awaited<ReturnType<typeof updateMySettings>>, TError, {
+    data: BodyType<UserSettingsInput>;
+}, TContext>;
+export declare const getGetMyStatsUrl: () => string;
+/**
+ * @summary Get the current user's learning stats
+ */
+export declare const getMyStats: (options?: RequestInit) => Promise<UserStatsRecord>;
+export declare const getGetMyStatsQueryKey: () => readonly ["/api/me/stats"];
+export declare const getGetMyStatsQueryOptions: <TData = Awaited<ReturnType<typeof getMyStats>>, TError = ErrorType<unknown>>(options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getMyStats>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseQueryOptions<Awaited<ReturnType<typeof getMyStats>>, TError, TData> & {
+    queryKey: QueryKey;
+};
+export type GetMyStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getMyStats>>>;
+export type GetMyStatsQueryError = ErrorType<unknown>;
+/**
+ * @summary Get the current user's learning stats
+ */
+export declare function useGetMyStats<TData = Awaited<ReturnType<typeof getMyStats>>, TError = ErrorType<unknown>>(options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getMyStats>>, TError, TData>;
     request?: SecondParameter<typeof customFetch>;
 }): UseQueryResult<TData, TError> & {
     queryKey: QueryKey;

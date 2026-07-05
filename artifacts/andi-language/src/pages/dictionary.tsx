@@ -8,26 +8,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search, ChevronLeft, ChevronRight, Heart, Volume2 } from "lucide-react";
+import { useFavorites } from "@/hooks/use-favorites";
 
 const PAGE_SIZE = 30;
 
 // Cyrillic alphabet for navigation
 const CYRILLIC_LETTERS = "А Б В Г Д Е Ж З И К Л М Н О П Р С Т У Ф Х Ц Ч Ш Щ Э Ю Я".split(" ");
-
-function getFavorites(): Set<number> {
-  try {
-    const stored = JSON.parse(localStorage.getItem("dict_favorites") || "[]");
-    return new Set(stored);
-  } catch { return new Set(); }
-}
-
-function toggleFavorite(id: number) {
-  const favs = getFavorites();
-  if (favs.has(id)) favs.delete(id);
-  else favs.add(id);
-  localStorage.setItem("dict_favorites", JSON.stringify([...favs]));
-  return favs;
-}
 
 export default function Dictionary() {
   const [search, setSearch] = useState("");
@@ -35,7 +21,7 @@ export default function Dictionary() {
   const [level, setLevel] = useState<string>("all");
   const [page, setPage] = useState(0);
   const [letterFilter, setLetterFilter] = useState<string>("");
-  const [favorites, setFavorites] = useState<Set<number>>(getFavorites);
+  const { favorites, toggle: toggleFavorite } = useFavorites("word");
   const [showFavOnly, setShowFavOnly] = useState(false);
 
   const offset = page * PAGE_SIZE;
@@ -80,7 +66,7 @@ export default function Dictionary() {
   const handleToggleFav = (e: React.MouseEvent, id: number) => {
     e.preventDefault();
     e.stopPropagation();
-    setFavorites(new Set(toggleFavorite(id)));
+    toggleFavorite(id);
   };
 
   const levelLabel = (l: string | null | undefined) => {

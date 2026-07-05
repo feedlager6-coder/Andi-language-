@@ -48,7 +48,30 @@
 | `PORT` | ✅ Да | Порт для запуска сервера. Устанавливается хостинг-платформой автоматически |
 | `NODE_ENV` | Рекомендуется | `production` включает статическую раздачу фронтенда и SSL для Postgres |
 | `CORS_ORIGIN` | Нет | Если задан (например `https://myapp.railway.app`), ограничивает CORS. В production без него CORS отключён (same-origin) |
-| `SESSION_SECRET` | Нет | Зарезервирован для будущей аутентификации |
+| `SESSION_SECRET` | ✅ Да (для Replit Auth) | Секрет сессии Express. На Replit управляется автоматически через Replit Auth интеграцию |
+
+---
+
+## Аутентификация (Replit Auth)
+
+Реализована через OpenID Connect (Replit Auth) с PKCE. Все данные пользователя (избранное, история переводчика, настройки, статистика) сохраняются per-user в БД, а не в анонимном `localStorage`.
+
+**Backend:**
+- `artifacts/api-server/src/auth.ts` — конфигурация OIDC-клиента
+- `artifacts/api-server/src/authMiddleware.ts` — middleware `requireAuth` для защищённых роутов
+- `artifacts/api-server/src/routes/auth.ts` — `/api/login`, `/api/logout`, `/api/auth/user`
+- `artifacts/api-server/src/routes/user-data.ts` — `/api/me/favorites`, `/api/me/translation-history`, `/api/me/settings`, `/api/me/stats`
+- Схема БД: `lib/db/src/schema/auth.ts` (users, sessions), `lib/db/src/schema/user_data.ts` (favorites, translation_history, user_settings, user_stats)
+
+**Frontend:**
+- Пакет `@workspace/replit-auth-web` → хук `useAuth()` (user, isAuthenticated, isLoading, login, logout)
+- `src/hooks/use-favorites.ts` и `src/hooks/use-translator-history.ts` — двойной режим: синхронизация с backend если пользователь вошёл, иначе fallback на `localStorage`. Это намеренно — гость не теряет функциональность, но данные не переносятся автоматически при входе в систему (известное ограничение, см. ниже).
+- `src/pages/settings.tsx` — личные настройки (дневная цель, транслитерация), требует входа
+- `src/components/layout.tsx` → `SidebarAuthFooter` — кнопка "Войти"/"Выйти" + ссылка на настройки
+
+**Известное ограничение:** при входе в систему локальные (гостевые) избранное/история НЕ переносятся автоматически на аккаунт — это будущая задача (миграция localStorage → backend при первом логине).
+
+**Анонимный `/api/progress` vs `/api/me/stats`:** `/api/progress` — старый эндпоинт, глобальная (не per-user) строка статистики, используется только для гостей. Авторизованные пользователи используют `/api/me/stats` (индивидуальные streak, exercisesDone, wordsLearned, lessonsCompleted).
 
 ---
 
@@ -135,9 +158,11 @@ Railway пингует `GET /api/healthz` после деплоя. Ответ: `
 | Таблица | Количество записей |
 |---|---|
 | words | ~5 122 (словарь Салимова + расширенный учебный) |
-| phrases | 33 фразы в 10 категориях |
+| phrases | 74 фразы в 16 категориях (greetings, everyday, numbers, family, food, home, requests, questions, time, actions, animals, colors, body, weather, clothing, nature) |
 | lessons | 22 урока (15 грамматических + 7 практических) |
 | exercises | 129 упражнений |
+| users / sessions | Растёт по мере регистрации через Replit Auth |
+| favorites / translation_history / user_settings / user_stats | Per-user данные, создаются при первом действии авторизованного пользователя |
 
 > seed:all — идемпотентен. Проверяет количество строк перед вставкой, не создаёт дубликатов при повторном запуске.
 
@@ -231,15 +256,18 @@ curl -X POST https://your-app.railway.app/api/translate \
 | Тема | Статус |
 |---|---|
 | Аудио | ❌ Нет. Структура готова, нужны записи носителей языка |
-| Система пользователей | ❌ Нет. Прогресс — анонимно (localStorage) |
+| Система пользователей | ✅ Replit Auth (OIDC). Избранное/история/настройки/статистика — per-user в БД. Гости используют localStorage-fallback (см. раздел «Аутентификация») |
 | Мобильное приложение | ❌ Только веб |
 | TTS | ❌ Нет моделей для андийского |
 | Морфоанализатор | ⚠️ Предварительный (rule-based, помечен `isPreliminary: true`) |
-| Переводчик | ⚠️ Не полный машинный перевод — фраза → n-грамма → слово за словом |
+| Переводчик | ⚠️ Не полный машинный перевод — фраза → n-грамма → слово за словом. Никогда не синтезирует перевод без опоры на грамматическую модель/словарь — при отсутствии данных возвращает частичный результат с пометкой, а не выдумку |
+| Фразник | ⚠️ 74 фразы. Одиночные слова взяты напрямую из словаря Салимова (2010) с точным указанием источника; составные фразы-черновики помечены «черновик, требует проверки носителем языка» — это честно отражённая незавершённость, а не готовый контент |
+| Визуальное/интерактивное обучение | ❌ Не начато в этой сессии (анимированные карточки, drag-and-drop, прогресс-бары, диаграммы предложений) — приоритет ниже auth/UX/данных, отложено на следующую сессию |
+| Sidebar/мобильный UX | ✅ Исправлены все 4 бага: положение заголовка, наведение на «Главная», расположение мобильной панели, рассинхронизация иконки кнопки закрытия (иконка теперь читает `openMobile`, а не desktop-state `open`) |
 | SSL для Postgres | ✅ Настроен для production |
 | Healthcheck | ✅ GET /api/healthz |
 | Railway конфиг | ✅ railway.json в корне |
 
 ---
 
-*Обновлён: июль 2026. Следующее обновление — после Railway деплоя или добавления аутентификации.*
+*Обновлён: 5 июля 2026 (добавлена аутентификация Replit Auth, исправлен sidebar/mobile UX, расширен фразник до 74 фраз). Следующие приоритеты — визуальные/интерактивные элементы обучения (drag-and-drop, прогресс-бары, диаграммы), перенос гостевых данных в аккаунт при первом логине.*

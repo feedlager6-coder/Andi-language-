@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Languages, Send, TriangleAlert, CheckCircle2, HelpCircle, ArrowRightLeft, History } from "lucide-react";
+import { useTranslatorHistory } from "@/hooks/use-translator-history";
 
 const matchTypeMeta: Record<string, { label: string; icon: typeof CheckCircle2; className: string }> = {
   phrase: { label: "найдена фраза", icon: CheckCircle2, className: "text-green-700 border-green-500 dark:text-green-400" },
@@ -22,23 +23,9 @@ const EXAMPLE_QUERIES = [
   { text: "хорошо", desc: "ответ" },
 ];
 
-const MAX_HISTORY = 5;
-
-function getHistory(): string[] {
-  try {
-    return JSON.parse(localStorage.getItem("translator_history") || "[]");
-  } catch { return []; }
-}
-
-function addToHistory(text: string) {
-  const hist = getHistory().filter(h => h !== text);
-  hist.unshift(text);
-  localStorage.setItem("translator_history", JSON.stringify(hist.slice(0, MAX_HISTORY)));
-}
-
 export default function Translator() {
   const [text, setText] = useState("");
-  const [history, setHistory] = useState<string[]>(getHistory);
+  const { history, record } = useTranslatorHistory();
   const translate = useTranslateText();
   const result = translate.data;
 
@@ -46,9 +33,11 @@ export default function Translator() {
     const q = (query ?? text).trim();
     if (!q) return;
     if (query) setText(query);
-    addToHistory(q);
-    setHistory(getHistory());
-    translate.mutate({ data: { text: q } });
+    translate.mutate({ data: { text: q } }, {
+      onSuccess: (data) => {
+        record(q, data?.draftTranslation ?? null, data?.overallConfidence ?? null);
+      },
+    });
   };
 
   return (

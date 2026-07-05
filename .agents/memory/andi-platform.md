@@ -46,3 +46,10 @@ Do NOT cast the return value to `any[]` directly; use `result.rows[0]` pattern.
 ## useSidebar hook
 The shadcn Sidebar component exposes: `toggleSidebar`, `open`, `openMobile`, `setOpenMobile`, `isMobile`, `state`.
 `setOpenMobile(false)` closes the mobile sheet overlay — call it in nav link `onClick` handlers.
+**Bug trap**: `open` tracks desktop collapse state, `openMobile` tracks the mobile sheet. Any mobile-only UI (e.g. a top-bar hamburger/X icon) must read `openMobile`, not `open` — using `open` desyncs the icon from the actual sheet state and can make the close button appear to reopen the menu.
+
+## Auth + per-user data pattern
+Replit Auth (OIDC) implemented; per-user data (favorites, translator history, settings, stats) lives in DB tables (`lib/db/src/schema/user_data.ts`), exposed via `/api/me/*` routes.
+Frontend hooks (`use-favorites.ts`, `use-translator-history.ts`) dual-mode: sync to backend when `useAuth().isAuthenticated`, else fall back to localStorage — guests keep full functionality.
+**Known gap**: no migration of localStorage data into the account on first login — guest progress does not carry over automatically.
+**Workflow names note**: in this project workflows are registered per-artifact-service, e.g. `artifacts/api-server: API Server`, `artifacts/andi-language: web` — not simple names like "Start application". Use `listWorkflows()` to check exact names before restarting.

@@ -874,3 +874,206 @@ export const GetGrammarDrillsResponseItem = zod.object({
 export const GetGrammarDrillsResponse = zod.array(GetGrammarDrillsResponseItem)
 
 
+/**
+ * @summary Get the currently authenticated user
+ */
+export const GetCurrentAuthUserHeader = zod.object({
+  "Authorization": zod.string().optional().describe('Opaque session token — `Bearer <sid>`.')
+})
+
+export const GetCurrentAuthUserResponse = zod.object({
+  "user": zod.union([zod.object({
+  "id": zod.string(),
+  "email": zod.string().nullable(),
+  "firstName": zod.string().nullable(),
+  "lastName": zod.string().nullable(),
+  "profileImageUrl": zod.string().nullable()
+}),zod.null()])
+})
+
+
+/**
+ * @summary Start the browser OIDC login flow
+ */
+export const BeginBrowserLoginQueryParams = zod.object({
+  "returnTo": zod.coerce.string().optional().describe('Relative path to redirect to after login (must start with `\/`). Defaults to `\/`.')
+})
+
+export const BeginBrowserLoginResponse = zod.void()
+
+
+/**
+ * @summary Complete the browser OIDC login flow
+ */
+export const HandleBrowserLoginCallbackQueryParams = zod.object({
+  "code": zod.coerce.string().optional(),
+  "state": zod.coerce.string().optional(),
+  "iss": zod.coerce.string().optional()
+})
+
+export const HandleBrowserLoginCallbackResponse = zod.void()
+
+
+/**
+ * @summary Clear the session and begin OIDC logout
+ */
+export const LogoutBrowserSessionHeader = zod.object({
+  "Authorization": zod.string().optional().describe('Opaque session token — `Bearer <sid>`.')
+})
+
+export const LogoutBrowserSessionResponse = zod.void()
+
+
+/**
+ * @summary Exchange a mobile OIDC code for a session token
+ */
+
+
+
+
+
+
+
+export const ExchangeMobileAuthorizationCodeBody = zod.object({
+  "code": zod.string().min(1),
+  "code_verifier": zod.string().min(1),
+  "redirect_uri": zod.string().min(1),
+  "state": zod.string().min(1),
+  "nonce": zod.string().min(1).optional()
+})
+
+export const ExchangeMobileAuthorizationCodeResponse = zod.object({
+  "token": zod.string()
+})
+
+
+/**
+ * @summary Delete a mobile session token
+ */
+export const LogoutMobileSessionHeader = zod.object({
+  "Authorization": zod.string().optional().describe('Opaque session token — `Bearer <sid>`.')
+})
+
+export const LogoutMobileSessionResponse = zod.object({
+  "success": zod.boolean()
+})
+
+
+/**
+ * @summary List the current user's favorite words and phrases
+ */
+export const ListMyFavoritesResponseItem = zod.object({
+  "id": zod.number(),
+  "itemType": zod.enum(['word', 'phrase']),
+  "itemId": zod.number(),
+  "createdAt": zod.string()
+})
+export const ListMyFavoritesResponse = zod.array(ListMyFavoritesResponseItem)
+
+
+/**
+ * @summary Add a word or phrase to favorites
+ */
+export const AddMyFavoriteBody = zod.object({
+  "itemType": zod.enum(['word', 'phrase']),
+  "itemId": zod.number()
+})
+
+export const AddMyFavoriteResponse = zod.object({
+  "id": zod.number(),
+  "itemType": zod.enum(['word', 'phrase']),
+  "itemId": zod.number(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Remove a favorite
+ */
+export const RemoveMyFavoriteParams = zod.object({
+  "itemType": zod.enum(['word', 'phrase']),
+  "itemId": zod.coerce.number()
+})
+
+export const RemoveMyFavoriteResponse = zod.void()
+
+
+/**
+ * @summary List the current user's translation history
+ */
+export const ListMyTranslationHistoryQueryParams = zod.object({
+  "limit": zod.coerce.number().optional()
+})
+
+export const ListMyTranslationHistoryResponseItem = zod.object({
+  "id": zod.number(),
+  "inputText": zod.string(),
+  "resultText": zod.string().nullable(),
+  "confidence": zod.number().nullish(),
+  "createdAt": zod.string()
+})
+export const ListMyTranslationHistoryResponse = zod.array(ListMyTranslationHistoryResponseItem)
+
+
+/**
+ * @summary Save a translation to history
+ */
+export const AddMyHistoryEntryBody = zod.object({
+  "inputText": zod.string(),
+  "resultText": zod.string().nullish(),
+  "confidence": zod.number().nullish()
+})
+
+export const AddMyHistoryEntryResponse = zod.object({
+  "id": zod.number(),
+  "inputText": zod.string(),
+  "resultText": zod.string().nullable(),
+  "confidence": zod.number().nullish(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Clear the current user's translation history
+ */
+export const ClearMyTranslationHistoryResponse = zod.void()
+
+
+/**
+ * @summary Get the current user's settings
+ */
+export const GetMySettingsResponse = zod.object({
+  "dailyGoal": zod.number(),
+  "showTransliteration": zod.boolean(),
+  "theme": zod.string()
+})
+
+
+/**
+ * @summary Update the current user's settings
+ */
+export const UpdateMySettingsBody = zod.object({
+  "dailyGoal": zod.number().optional(),
+  "showTransliteration": zod.boolean().optional(),
+  "theme": zod.string().optional()
+})
+
+export const UpdateMySettingsResponse = zod.object({
+  "dailyGoal": zod.number(),
+  "showTransliteration": zod.boolean(),
+  "theme": zod.string()
+})
+
+
+/**
+ * @summary Get the current user's learning stats
+ */
+export const GetMyStatsResponse = zod.object({
+  "streak": zod.number(),
+  "exercisesDone": zod.number(),
+  "wordsLearned": zod.number(),
+  "lessonsCompleted": zod.number(),
+  "lastActivityAt": zod.string().nullish()
+})
+
+

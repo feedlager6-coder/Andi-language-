@@ -6,3 +6,5 @@ export * from "./flashcards";
 export * from "./user_stats";
 export * from "./activity_log";
 export * from "./phrases";
+export * from "./auth";
+export * from "./user_data";

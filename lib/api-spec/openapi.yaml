@@ -18,6 +18,10 @@ tags:
   - name: grammar
   - name: phrases
   - name: translate
+  - name: Auth
+    description: Browser and mobile authentication endpoints.
+  - name: user-data
+    description: Per-user favorites, translation history and settings.
 
 paths:
   /healthz:
@@ -638,8 +642,422 @@ paths:
                 items:
                   $ref: "#/components/schemas/GrammarDrill"
 
+  /auth/user:
+    get:
+      tags: [Auth]
+      operationId: getCurrentAuthUser
+      summary: Get the currently authenticated user
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationSessionHeader'
+        - $ref: '#/components/parameters/SessionCookie'
+      responses:
+        '200':
+          description: Auth status resolved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthUserEnvelope'
+  /login:
+    get:
+      tags: [Auth]
+      operationId: beginBrowserLogin
+      summary: Start the browser OIDC login flow
+      parameters:
+        - name: returnTo
+          in: query
+          required: false
+          description: Relative path to redirect to after login (must start with `/`). Defaults to `/`.
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirect to the OIDC authorization endpoint.
+  /callback:
+    get:
+      tags: [Auth]
+      operationId: handleBrowserLoginCallback
+      summary: Complete the browser OIDC login flow
+      parameters:
+        - name: code
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: state
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: iss
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirect to the `returnTo` path on success (defaults to `/`) or `/api/login` on failure.
+  /logout:
+    get:
+      tags: [Auth]
+      operationId: logoutBrowserSession
+      summary: Clear the session and begin OIDC logout
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationSessionHeader'
+        - $ref: '#/components/parameters/SessionCookie'
+      responses:
+        '302':
+          description: Redirect to the OIDC provider logout URL.
+  /mobile-auth/token-exchange:
+    post:
+      tags: [Auth]
+      operationId: exchangeMobileAuthorizationCode
+      summary: Exchange a mobile OIDC code for a session token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MobileTokenExchangeRequest'
+      responses:
+        '200':
+          description: Session created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MobileTokenExchangeSuccess'
+        '400':
+          description: Missing or invalid required fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Token did not contain usable claims.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '500':
+          description: Token exchange failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /mobile-auth/logout:
+    post:
+      tags: [Auth]
+      operationId: logoutMobileSession
+      summary: Delete a mobile session token
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationSessionHeader'
+      responses:
+        '200':
+          description: Logout processed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoutSuccess'
+
+  /me/favorites:
+    get:
+      tags: [user-data]
+      operationId: listMyFavorites
+      summary: List the current user's favorite words and phrases
+      responses:
+        "200":
+          description: Favorites list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Favorite"
+    post:
+      tags: [user-data]
+      operationId: addMyFavorite
+      summary: Add a word or phrase to favorites
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FavoriteInput"
+      responses:
+        "201":
+          description: Favorite created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Favorite"
+  /me/favorites/{itemType}/{itemId}:
+    delete:
+      tags: [user-data]
+      operationId: removeMyFavorite
+      summary: Remove a favorite
+      parameters:
+        - name: itemType
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [word, phrase]
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Removed
+
+  /me/history:
+    get:
+      tags: [user-data]
+      operationId: listMyTranslationHistory
+      summary: List the current user's translation history
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Translation history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/HistoryEntry"
+    post:
+      tags: [user-data]
+      operationId: addMyHistoryEntry
+      summary: Save a translation to history
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HistoryEntryInput"
+      responses:
+        "201":
+          description: History entry created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HistoryEntry"
+    delete:
+      tags: [user-data]
+      operationId: clearMyTranslationHistory
+      summary: Clear the current user's translation history
+      responses:
+        "204":
+          description: Cleared
+
+  /me/settings:
+    get:
+      tags: [user-data]
+      operationId: getMySettings
+      summary: Get the current user's settings
+      responses:
+        "200":
+          description: User settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSettings"
+    put:
+      tags: [user-data]
+      operationId: updateMySettings
+      summary: Update the current user's settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserSettingsInput"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSettings"
+
+  /me/stats:
+    get:
+      tags: [user-data]
+      operationId: getMyStats
+      summary: Get the current user's learning stats
+      responses:
+        "200":
+          description: User stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserStatsRecord"
+
 components:
+  parameters:
+    AuthorizationSessionHeader:
+      name: Authorization
+      in: header
+      required: false
+      description: Opaque session token — `Bearer <sid>`.
+      schema:
+        type: string
+    SessionCookie:
+      name: sid
+      in: cookie
+      required: false
+      description: Browser session cookie.
+      schema:
+        type: string
   schemas:
+    AuthUser:
+      type: object
+      required: [id, email, firstName, lastName, profileImageUrl]
+      properties:
+        id:
+          type: string
+        email:
+          type: [string, 'null']
+        firstName:
+          type: [string, 'null']
+        lastName:
+          type: [string, 'null']
+        profileImageUrl:
+          type: [string, 'null']
+    AuthUserEnvelope:
+      type: object
+      required: [user]
+      properties:
+        user:
+          oneOf:
+            - $ref: '#/components/schemas/AuthUser'
+            - type: 'null'
+    MobileTokenExchangeRequest:
+      type: object
+      required: [code, code_verifier, redirect_uri, state]
+      properties:
+        code:
+          type: string
+          minLength: 1
+        code_verifier:
+          type: string
+          minLength: 1
+        redirect_uri:
+          type: string
+          minLength: 1
+        state:
+          type: string
+          minLength: 1
+        nonce:
+          type: string
+          minLength: 1
+    MobileTokenExchangeSuccess:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+    LogoutSuccess:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+          const: true
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+
+    Favorite:
+      type: object
+      required: [id, itemType, itemId, createdAt]
+      properties:
+        id:
+          type: integer
+        itemType:
+          type: string
+          enum: [word, phrase]
+        itemId:
+          type: integer
+        createdAt:
+          type: string
+    FavoriteInput:
+      type: object
+      required: [itemType, itemId]
+      properties:
+        itemType:
+          type: string
+          enum: [word, phrase]
+        itemId:
+          type: integer
+
+    HistoryEntry:
+      type: object
+      required: [id, inputText, resultText, createdAt]
+      properties:
+        id:
+          type: integer
+        inputText:
+          type: string
+        resultText:
+          type: ["string", "null"]
+        confidence:
+          type: ["number", "null"]
+        createdAt:
+          type: string
+    HistoryEntryInput:
+      type: object
+      required: [inputText]
+      properties:
+        inputText:
+          type: string
+        resultText:
+          type: ["string", "null"]
+        confidence:
+          type: ["number", "null"]
+
+    UserSettings:
+      type: object
+      required: [dailyGoal, showTransliteration, theme]
+      properties:
+        dailyGoal:
+          type: integer
+        showTransliteration:
+          type: boolean
+        theme:
+          type: string
+    UserSettingsInput:
+      type: object
+      properties:
+        dailyGoal:
+          type: integer
+        showTransliteration:
+          type: boolean
+        theme:
+          type: string
+
+    UserStatsRecord:
+      type: object
+      required: [streak, exercisesDone, wordsLearned, lessonsCompleted]
+      properties:
+        streak:
+          type: integer
+        exercisesDone:
+          type: integer
+        wordsLearned:
+          type: integer
+        lessonsCompleted:
+          type: integer
+        lastActivityAt:
+          type: ["string", "null"]
+
     HealthStatus:
       type: object
       properties:
