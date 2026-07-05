@@ -10,6 +10,7 @@
     "build:railway": "BASE_PATH=/ PORT=3000 pnpm --filter @workspace/andi-language run build && pnpm --filter @workspace/api-server run build",
     "start": "node --enable-source-maps artifacts/api-server/dist/index.mjs"
   },
+  "packageManager": "pnpm@10.26.1",
   "private": true,
   "devDependencies": {
     "prettier": "^3.8.4",
