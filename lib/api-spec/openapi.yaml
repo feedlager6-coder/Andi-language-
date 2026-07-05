@@ -897,6 +897,40 @@ paths:
               schema:
                 $ref: "#/components/schemas/UserStatsRecord"
 
+  /me/lessons/completed:
+    get:
+      tags: [user-data]
+      operationId: getMyCompletedLessons
+      summary: Get the IDs of lessons the current user has completed
+      responses:
+        "200":
+          description: List of completed lesson IDs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+
+  /me/lessons/{id}/complete:
+    post:
+      tags: [user-data]
+      operationId: completeMyLesson
+      summary: Mark a lesson as completed for the current user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lesson marked completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LessonCompletionResult"
+
 components:
   parameters:
     AuthorizationSessionHeader:
@@ -1057,6 +1091,17 @@ components:
           type: integer
         lastActivityAt:
           type: ["string", "null"]
+
+    LessonCompletionResult:
+      type: object
+      required: [lessonId, alreadyCompleted, lessonsCompleted]
+      properties:
+        lessonId:
+          type: integer
+        alreadyCompleted:
+          type: boolean
+        lessonsCompleted:
+          type: integer
 
     HealthStatus:
       type: object

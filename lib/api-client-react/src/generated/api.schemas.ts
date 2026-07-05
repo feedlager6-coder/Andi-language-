@@ -114,6 +114,12 @@ export interface UserStatsRecord {
   lastActivityAt?: string | null;
 }
 
+export interface LessonCompletionResult {
+  lessonId: number;
+  alreadyCompleted: boolean;
+  lessonsCompleted: number;
+}
+
 export interface HealthStatus {
   status: string;
 }

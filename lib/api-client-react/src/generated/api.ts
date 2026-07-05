@@ -44,6 +44,7 @@ import type {
   HistoryEntry,
   HistoryEntryInput,
   Lesson,
+  LessonCompletionResult,
   LessonDetail,
   LessonInput,
   LessonUpdate,
@@ -3663,4 +3664,152 @@ export function useGetMyStats<TData = Awaited<ReturnType<typeof getMyStats>>, TE
 
 
 
+
+export const getGetMyCompletedLessonsUrl = () => {
+
+
+
+
+  return `/api/me/lessons/completed`
+}
+
+/**
+ * @summary Get the IDs of lessons the current user has completed
+ */
+export const getMyCompletedLessons = async ( options?: RequestInit): Promise<number[]> => {
+
+  return customFetch<number[]>(getGetMyCompletedLessonsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMyCompletedLessonsQueryKey = () => {
+    return [
+    `/api/me/lessons/completed`
+    ] as const;
+    }
+
+
+export const getGetMyCompletedLessonsQueryOptions = <TData = Awaited<ReturnType<typeof getMyCompletedLessons>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyCompletedLessons>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMyCompletedLessonsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMyCompletedLessons>>> = ({ signal }) => getMyCompletedLessons({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMyCompletedLessons>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMyCompletedLessonsQueryResult = NonNullable<Awaited<ReturnType<typeof getMyCompletedLessons>>>
+export type GetMyCompletedLessonsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get the IDs of lessons the current user has completed
+ */
+
+export function useGetMyCompletedLessons<TData = Awaited<ReturnType<typeof getMyCompletedLessons>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyCompletedLessons>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMyCompletedLessonsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCompleteMyLessonUrl = (id: number,) => {
+
+
+
+
+  return `/api/me/lessons/${id}/complete`
+}
+
+/**
+ * @summary Mark a lesson as completed for the current user
+ */
+export const completeMyLesson = async (id: number, options?: RequestInit): Promise<LessonCompletionResult> => {
+
+  return customFetch<LessonCompletionResult>(getCompleteMyLessonUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getCompleteMyLessonMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeMyLesson>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof completeMyLesson>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['completeMyLesson'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeMyLesson>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  completeMyLesson(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CompleteMyLessonMutationResult = NonNullable<Awaited<ReturnType<typeof completeMyLesson>>>
+
+    export type CompleteMyLessonMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Mark a lesson as completed for the current user
+ */
+export const useCompleteMyLesson = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeMyLesson>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof completeMyLesson>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getCompleteMyLessonMutationOptions(options));
+    }
 

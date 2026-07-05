@@ -34,6 +34,7 @@ export * from './healthStatus';
 export * from './historyEntry';
 export * from './historyEntryInput';
 export * from './lesson';
+export * from './lessonCompletionResult';
 export * from './lessonDetail';
 export * from './lessonInput';
 export * from './lessonUpdate';

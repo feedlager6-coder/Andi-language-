@@ -1077,3 +1077,24 @@ export const GetMyStatsResponse = zod.object({
 })
 
 
+/**
+ * @summary Get the IDs of lessons the current user has completed
+ */
+export const GetMyCompletedLessonsResponseItem = zod.number()
+export const GetMyCompletedLessonsResponse = zod.array(GetMyCompletedLessonsResponseItem)
+
+
+/**
+ * @summary Mark a lesson as completed for the current user
+ */
+export const CompleteMyLessonParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const CompleteMyLessonResponse = zod.object({
+  "lessonId": zod.number(),
+  "alreadyCompleted": zod.boolean(),
+  "lessonsCompleted": zod.number()
+})
+
+

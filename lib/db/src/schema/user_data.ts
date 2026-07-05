@@ -45,3 +45,18 @@ export const userSettingsTable = pgTable("user_settings", {
 export const insertUserSettingsSchema = createInsertSchema(userSettingsTable).omit({ id: true, createdAt: true, updatedAt: true });
 export type InsertUserSettings = z.infer<typeof insertUserSettingsSchema>;
 export type UserSettingsRow = typeof userSettingsTable.$inferSelect;
+
+export const lessonCompletionsTable = pgTable(
+  "lesson_completions",
+  {
+    id: serial("id").primaryKey(),
+    userId: varchar("user_id").notNull().references(() => usersTable.id, { onDelete: "cascade" }),
+    lessonId: integer("lesson_id").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [unique().on(table.userId, table.lessonId)],
+);
+
+export const insertLessonCompletionSchema = createInsertSchema(lessonCompletionsTable).omit({ id: true, createdAt: true });
+export type InsertLessonCompletion = z.infer<typeof insertLessonCompletionSchema>;
+export type LessonCompletion = typeof lessonCompletionsTable.$inferSelect;

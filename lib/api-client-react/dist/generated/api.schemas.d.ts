@@ -95,6 +95,11 @@ export interface UserStatsRecord {
     /** @nullable */
     lastActivityAt?: string | null;
 }
+export interface LessonCompletionResult {
+    lessonId: number;
+    alreadyCompleted: boolean;
+    lessonsCompleted: number;
+}
 export interface HealthStatus {
     status: string;
 }

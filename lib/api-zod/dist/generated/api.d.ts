@@ -2918,4 +2918,32 @@ export declare const GetMyStatsResponse: zod.ZodObject<{
     lessonsCompleted: number;
     lastActivityAt?: string | null | undefined;
 }>;
+/**
+ * @summary Get the IDs of lessons the current user has completed
+ */
+export declare const GetMyCompletedLessonsResponseItem: zod.ZodNumber;
+export declare const GetMyCompletedLessonsResponse: zod.ZodArray<zod.ZodNumber, "many">;
+/**
+ * @summary Mark a lesson as completed for the current user
+ */
+export declare const CompleteMyLessonParams: zod.ZodObject<{
+    id: zod.ZodNumber;
+}, "strip", zod.ZodTypeAny, {
+    id: number;
+}, {
+    id: number;
+}>;
+export declare const CompleteMyLessonResponse: zod.ZodObject<{
+    lessonId: zod.ZodNumber;
+    alreadyCompleted: zod.ZodBoolean;
+    lessonsCompleted: zod.ZodNumber;
+}, "strip", zod.ZodTypeAny, {
+    lessonId: number;
+    lessonsCompleted: number;
+    alreadyCompleted: boolean;
+}, {
+    lessonId: number;
+    lessonsCompleted: number;
+    alreadyCompleted: boolean;
+}>;
 //# sourceMappingURL=api.d.ts.map

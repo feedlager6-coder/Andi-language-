@@ -1,5 +1,5 @@
 import type { QueryKey, UseMutationOptions, UseMutationResult, UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
-import type { ActivityEntry, AnalyzeWordInput, AuthUserEnvelope, BeginBrowserLoginParams, CaseParadigmsResponse, CountEntry, ErrorEnvelope, Exercise, ExerciseInput, ExerciseResult, ExerciseSubmission, Favorite, FavoriteInput, Flashcard, FlashcardReview, GetActivityFeedParams, GetDueFlashcardsParams, GetGrammarDrillsParams, GrammarDrill, HandleBrowserLoginCallbackParams, HealthStatus, HistoryEntry, HistoryEntryInput, Lesson, LessonDetail, LessonInput, LessonUpdate, ListExercisesParams, ListMyTranslationHistoryParams, ListPhrasesParams, ListWordsParams, LogoutSuccess, MobileTokenExchangeRequest, MobileTokenExchangeSuccess, MorphologicalAnalysis, NounClassesResponse, Phrase, PhraseInput, PhraseList, PhraseUpdate, ProgressSummary, StatsSummary, TranslateInput, TranslationResult, UserSettings, UserSettingsInput, UserStatsRecord, Word, WordFormsResponse, WordInput, WordList, WordUpdate } from './api.schemas';
+import type { ActivityEntry, AnalyzeWordInput, AuthUserEnvelope, BeginBrowserLoginParams, CaseParadigmsResponse, CountEntry, ErrorEnvelope, Exercise, ExerciseInput, ExerciseResult, ExerciseSubmission, Favorite, FavoriteInput, Flashcard, FlashcardReview, GetActivityFeedParams, GetDueFlashcardsParams, GetGrammarDrillsParams, GrammarDrill, HandleBrowserLoginCallbackParams, HealthStatus, HistoryEntry, HistoryEntryInput, Lesson, LessonCompletionResult, LessonDetail, LessonInput, LessonUpdate, ListExercisesParams, ListMyTranslationHistoryParams, ListPhrasesParams, ListWordsParams, LogoutSuccess, MobileTokenExchangeRequest, MobileTokenExchangeSuccess, MorphologicalAnalysis, NounClassesResponse, Phrase, PhraseInput, PhraseList, PhraseUpdate, ProgressSummary, StatsSummary, TranslateInput, TranslationResult, UserSettings, UserSettingsInput, UserStatsRecord, Word, WordFormsResponse, WordInput, WordList, WordUpdate } from './api.schemas';
 import { customFetch } from '../custom-fetch';
 import type { ErrorType, BodyType } from '../custom-fetch';
 type AwaitedInput<T> = PromiseLike<T> | T;
@@ -1172,5 +1172,54 @@ export declare function useGetMyStats<TData = Awaited<ReturnType<typeof getMySta
 }): UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
 };
+export declare const getGetMyCompletedLessonsUrl: () => string;
+/**
+ * @summary Get the IDs of lessons the current user has completed
+ */
+export declare const getMyCompletedLessons: (options?: RequestInit) => Promise<number[]>;
+export declare const getGetMyCompletedLessonsQueryKey: () => readonly ["/api/me/lessons/completed"];
+export declare const getGetMyCompletedLessonsQueryOptions: <TData = Awaited<ReturnType<typeof getMyCompletedLessons>>, TError = ErrorType<unknown>>(options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getMyCompletedLessons>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseQueryOptions<Awaited<ReturnType<typeof getMyCompletedLessons>>, TError, TData> & {
+    queryKey: QueryKey;
+};
+export type GetMyCompletedLessonsQueryResult = NonNullable<Awaited<ReturnType<typeof getMyCompletedLessons>>>;
+export type GetMyCompletedLessonsQueryError = ErrorType<unknown>;
+/**
+ * @summary Get the IDs of lessons the current user has completed
+ */
+export declare function useGetMyCompletedLessons<TData = Awaited<ReturnType<typeof getMyCompletedLessons>>, TError = ErrorType<unknown>>(options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getMyCompletedLessons>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+};
+export declare const getCompleteMyLessonUrl: (id: number) => string;
+/**
+ * @summary Mark a lesson as completed for the current user
+ */
+export declare const completeMyLesson: (id: number, options?: RequestInit) => Promise<LessonCompletionResult>;
+export declare const getCompleteMyLessonMutationOptions: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof completeMyLesson>>, TError, {
+        id: number;
+    }, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationOptions<Awaited<ReturnType<typeof completeMyLesson>>, TError, {
+    id: number;
+}, TContext>;
+export type CompleteMyLessonMutationResult = NonNullable<Awaited<ReturnType<typeof completeMyLesson>>>;
+export type CompleteMyLessonMutationError = ErrorType<unknown>;
+/**
+* @summary Mark a lesson as completed for the current user
+*/
+export declare const useCompleteMyLesson: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof completeMyLesson>>, TError, {
+        id: number;
+    }, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationResult<Awaited<ReturnType<typeof completeMyLesson>>, TError, {
+    id: number;
+}, TContext>;
 export {};
 //# sourceMappingURL=api.d.ts.map
