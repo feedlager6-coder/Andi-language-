@@ -1,2 +1,3 @@
 - [Andi platform architecture](andi-platform.md) — linguistics-first stack: React+Vite+Wouter, Express 5, Drizzle+Postgres, Orval codegen, SM-2 flashcards, rule-based morphology analyzer.
 - [Andi dictionary sources](andi-dictionary-sources.md) — canonical sources (CLLD contrib 32 + Церцвадзе 1967), CLLD `.tab` export trick, free Google Translate batch endpoint.
+- [Auth system (username/password)](auth-system.md) — bcrypt auth replacing OIDC; SessionUser in types.ts; Express.User augmentation pattern; zod/api-client import gotchas.

@@ -893,68 +893,65 @@ export const GetCurrentAuthUserResponse = zod.object({
 
 
 /**
- * @summary Start the browser OIDC login flow
+ * @summary Register a new user with username and password
  */
-export const BeginBrowserLoginQueryParams = zod.object({
-  "returnTo": zod.coerce.string().optional().describe('Relative path to redirect to after login (must start with `\/`). Defaults to `\/`.')
+export const registerUserBodyUsernameMin = 3;
+export const registerUserBodyUsernameMax = 32;
+
+export const registerUserBodyPasswordMin = 6;
+
+export const registerUserBodyDisplayNameMax = 64;
+
+
+
+export const RegisterUserBody = zod.object({
+  "username": zod.string().min(registerUserBodyUsernameMin).max(registerUserBodyUsernameMax),
+  "password": zod.string().min(registerUserBodyPasswordMin),
+  "displayName": zod.string().max(registerUserBodyDisplayNameMax).optional()
 })
 
-export const BeginBrowserLoginResponse = zod.void()
+export const RegisterUserResponse = zod.object({
+  "user": zod.object({
+  "id": zod.string(),
+  "email": zod.string().nullable(),
+  "firstName": zod.string().nullable(),
+  "lastName": zod.string().nullable(),
+  "profileImageUrl": zod.string().nullable()
+})
+})
 
 
 /**
- * @summary Complete the browser OIDC login flow
+ * @summary Login with username and password
  */
-export const HandleBrowserLoginCallbackQueryParams = zod.object({
-  "code": zod.coerce.string().optional(),
-  "state": zod.coerce.string().optional(),
-  "iss": zod.coerce.string().optional()
+
+
+
+
+export const LoginUserBody = zod.object({
+  "username": zod.string().min(1),
+  "password": zod.string().min(1)
 })
 
-export const HandleBrowserLoginCallbackResponse = zod.void()
+export const LoginUserResponse = zod.object({
+  "user": zod.object({
+  "id": zod.string(),
+  "email": zod.string().nullable(),
+  "firstName": zod.string().nullable(),
+  "lastName": zod.string().nullable(),
+  "profileImageUrl": zod.string().nullable()
+})
+})
 
 
 /**
- * @summary Clear the session and begin OIDC logout
+ * @summary Logout and clear session
  */
-export const LogoutBrowserSessionHeader = zod.object({
+export const LogoutUserHeader = zod.object({
   "Authorization": zod.string().optional().describe('Opaque session token — `Bearer <sid>`.')
 })
 
-export const LogoutBrowserSessionResponse = zod.void()
-
-
-/**
- * @summary Exchange a mobile OIDC code for a session token
- */
-
-
-
-
-
-
-
-export const ExchangeMobileAuthorizationCodeBody = zod.object({
-  "code": zod.string().min(1),
-  "code_verifier": zod.string().min(1),
-  "redirect_uri": zod.string().min(1),
-  "state": zod.string().min(1),
-  "nonce": zod.string().min(1).optional()
-})
-
-export const ExchangeMobileAuthorizationCodeResponse = zod.object({
-  "token": zod.string()
-})
-
-
-/**
- * @summary Delete a mobile session token
- */
-export const LogoutMobileSessionHeader = zod.object({
-  "Authorization": zod.string().optional().describe('Opaque session token — `Bearer <sid>`.')
-})
-
-export const LogoutMobileSessionResponse = zod.object({
+export const LogoutUserResponse = zod.object({
   "success": zod.boolean()
 })
 

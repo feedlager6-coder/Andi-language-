@@ -1,5 +1,5 @@
 import type { QueryKey, UseMutationOptions, UseMutationResult, UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
-import type { ActivityEntry, AnalyzeWordInput, AuthUserEnvelope, BeginBrowserLoginParams, CaseParadigmsResponse, CountEntry, ErrorEnvelope, Exercise, ExerciseInput, ExerciseResult, ExerciseSubmission, Favorite, FavoriteInput, Flashcard, FlashcardReview, GetActivityFeedParams, GetDueFlashcardsParams, GetGrammarDrillsParams, GrammarDrill, HandleBrowserLoginCallbackParams, HealthStatus, HistoryEntry, HistoryEntryInput, Lesson, LessonCompletionResult, LessonDetail, LessonInput, LessonUpdate, ListExercisesParams, ListMyTranslationHistoryParams, ListPhrasesParams, ListWordsParams, LogoutSuccess, MobileTokenExchangeRequest, MobileTokenExchangeSuccess, MorphologicalAnalysis, NounClassesResponse, Phrase, PhraseInput, PhraseList, PhraseUpdate, ProgressSummary, StatsSummary, TranslateInput, TranslationResult, UserSettings, UserSettingsInput, UserStatsRecord, Word, WordFormsResponse, WordInput, WordList, WordUpdate } from './api.schemas';
+import type { ActivityEntry, AnalyzeWordInput, AuthSuccess, AuthUserEnvelope, CaseParadigmsResponse, CountEntry, ErrorEnvelope, Exercise, ExerciseInput, ExerciseResult, ExerciseSubmission, Favorite, FavoriteInput, Flashcard, FlashcardReview, GetActivityFeedParams, GetDueFlashcardsParams, GetGrammarDrillsParams, GrammarDrill, HealthStatus, HistoryEntry, HistoryEntryInput, Lesson, LessonCompletionResult, LessonDetail, LessonInput, LessonUpdate, ListExercisesParams, ListMyTranslationHistoryParams, ListPhrasesParams, ListWordsParams, LoginInput, LogoutSuccess, MorphologicalAnalysis, NounClassesResponse, Phrase, PhraseInput, PhraseList, PhraseUpdate, ProgressSummary, RegisterInput, StatsSummary, TranslateInput, TranslationResult, UserSettings, UserSettingsInput, UserStatsRecord, Word, WordFormsResponse, WordInput, WordList, WordUpdate } from './api.schemas';
 import { customFetch } from '../custom-fetch';
 import type { ErrorType, BodyType } from '../custom-fetch';
 type AwaitedInput<T> = PromiseLike<T> | T;
@@ -837,120 +837,78 @@ export declare function useGetCurrentAuthUser<TData = Awaited<ReturnType<typeof 
 }): UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
 };
-export declare const getBeginBrowserLoginUrl: (params?: BeginBrowserLoginParams) => string;
+export declare const getRegisterUserUrl: () => string;
 /**
- * @summary Start the browser OIDC login flow
+ * @summary Register a new user with username and password
  */
-export declare const beginBrowserLogin: (params?: BeginBrowserLoginParams, options?: RequestInit) => Promise<unknown>;
-export declare const getBeginBrowserLoginQueryKey: (params?: BeginBrowserLoginParams) => readonly ["/api/login", ...BeginBrowserLoginParams[]];
-export declare const getBeginBrowserLoginQueryOptions: <TData = Awaited<ReturnType<typeof beginBrowserLogin>>, TError = ErrorType<void>>(params?: BeginBrowserLoginParams, options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof beginBrowserLogin>>, TError, TData>;
-    request?: SecondParameter<typeof customFetch>;
-}) => UseQueryOptions<Awaited<ReturnType<typeof beginBrowserLogin>>, TError, TData> & {
-    queryKey: QueryKey;
-};
-export type BeginBrowserLoginQueryResult = NonNullable<Awaited<ReturnType<typeof beginBrowserLogin>>>;
-export type BeginBrowserLoginQueryError = ErrorType<void>;
-/**
- * @summary Start the browser OIDC login flow
- */
-export declare function useBeginBrowserLogin<TData = Awaited<ReturnType<typeof beginBrowserLogin>>, TError = ErrorType<void>>(params?: BeginBrowserLoginParams, options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof beginBrowserLogin>>, TError, TData>;
-    request?: SecondParameter<typeof customFetch>;
-}): UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-};
-export declare const getHandleBrowserLoginCallbackUrl: (params?: HandleBrowserLoginCallbackParams) => string;
-/**
- * @summary Complete the browser OIDC login flow
- */
-export declare const handleBrowserLoginCallback: (params?: HandleBrowserLoginCallbackParams, options?: RequestInit) => Promise<unknown>;
-export declare const getHandleBrowserLoginCallbackQueryKey: (params?: HandleBrowserLoginCallbackParams) => readonly ["/api/callback", ...HandleBrowserLoginCallbackParams[]];
-export declare const getHandleBrowserLoginCallbackQueryOptions: <TData = Awaited<ReturnType<typeof handleBrowserLoginCallback>>, TError = ErrorType<void>>(params?: HandleBrowserLoginCallbackParams, options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof handleBrowserLoginCallback>>, TError, TData>;
-    request?: SecondParameter<typeof customFetch>;
-}) => UseQueryOptions<Awaited<ReturnType<typeof handleBrowserLoginCallback>>, TError, TData> & {
-    queryKey: QueryKey;
-};
-export type HandleBrowserLoginCallbackQueryResult = NonNullable<Awaited<ReturnType<typeof handleBrowserLoginCallback>>>;
-export type HandleBrowserLoginCallbackQueryError = ErrorType<void>;
-/**
- * @summary Complete the browser OIDC login flow
- */
-export declare function useHandleBrowserLoginCallback<TData = Awaited<ReturnType<typeof handleBrowserLoginCallback>>, TError = ErrorType<void>>(params?: HandleBrowserLoginCallbackParams, options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof handleBrowserLoginCallback>>, TError, TData>;
-    request?: SecondParameter<typeof customFetch>;
-}): UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-};
-export declare const getLogoutBrowserSessionUrl: () => string;
-/**
- * @summary Clear the session and begin OIDC logout
- */
-export declare const logoutBrowserSession: (options?: RequestInit) => Promise<unknown>;
-export declare const getLogoutBrowserSessionQueryKey: () => readonly ["/api/logout"];
-export declare const getLogoutBrowserSessionQueryOptions: <TData = Awaited<ReturnType<typeof logoutBrowserSession>>, TError = ErrorType<void>>(options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof logoutBrowserSession>>, TError, TData>;
-    request?: SecondParameter<typeof customFetch>;
-}) => UseQueryOptions<Awaited<ReturnType<typeof logoutBrowserSession>>, TError, TData> & {
-    queryKey: QueryKey;
-};
-export type LogoutBrowserSessionQueryResult = NonNullable<Awaited<ReturnType<typeof logoutBrowserSession>>>;
-export type LogoutBrowserSessionQueryError = ErrorType<void>;
-/**
- * @summary Clear the session and begin OIDC logout
- */
-export declare function useLogoutBrowserSession<TData = Awaited<ReturnType<typeof logoutBrowserSession>>, TError = ErrorType<void>>(options?: {
-    query?: UseQueryOptions<Awaited<ReturnType<typeof logoutBrowserSession>>, TError, TData>;
-    request?: SecondParameter<typeof customFetch>;
-}): UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-};
-export declare const getExchangeMobileAuthorizationCodeUrl: () => string;
-/**
- * @summary Exchange a mobile OIDC code for a session token
- */
-export declare const exchangeMobileAuthorizationCode: (mobileTokenExchangeRequest: MobileTokenExchangeRequest, options?: RequestInit) => Promise<MobileTokenExchangeSuccess>;
-export declare const getExchangeMobileAuthorizationCodeMutationOptions: <TError = ErrorType<ErrorEnvelope>, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<Awaited<ReturnType<typeof exchangeMobileAuthorizationCode>>, TError, {
-        data: BodyType<MobileTokenExchangeRequest>;
+export declare const registerUser: (registerInput: RegisterInput, options?: RequestInit) => Promise<AuthSuccess>;
+export declare const getRegisterUserMutationOptions: <TError = ErrorType<ErrorEnvelope>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof registerUser>>, TError, {
+        data: BodyType<RegisterInput>;
     }, TContext>;
     request?: SecondParameter<typeof customFetch>;
-}) => UseMutationOptions<Awaited<ReturnType<typeof exchangeMobileAuthorizationCode>>, TError, {
-    data: BodyType<MobileTokenExchangeRequest>;
+}) => UseMutationOptions<Awaited<ReturnType<typeof registerUser>>, TError, {
+    data: BodyType<RegisterInput>;
 }, TContext>;
-export type ExchangeMobileAuthorizationCodeMutationResult = NonNullable<Awaited<ReturnType<typeof exchangeMobileAuthorizationCode>>>;
-export type ExchangeMobileAuthorizationCodeMutationBody = BodyType<MobileTokenExchangeRequest>;
-export type ExchangeMobileAuthorizationCodeMutationError = ErrorType<ErrorEnvelope>;
+export type RegisterUserMutationResult = NonNullable<Awaited<ReturnType<typeof registerUser>>>;
+export type RegisterUserMutationBody = BodyType<RegisterInput>;
+export type RegisterUserMutationError = ErrorType<ErrorEnvelope>;
 /**
-* @summary Exchange a mobile OIDC code for a session token
+* @summary Register a new user with username and password
 */
-export declare const useExchangeMobileAuthorizationCode: <TError = ErrorType<ErrorEnvelope>, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<Awaited<ReturnType<typeof exchangeMobileAuthorizationCode>>, TError, {
-        data: BodyType<MobileTokenExchangeRequest>;
+export declare const useRegisterUser: <TError = ErrorType<ErrorEnvelope>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof registerUser>>, TError, {
+        data: BodyType<RegisterInput>;
     }, TContext>;
     request?: SecondParameter<typeof customFetch>;
-}) => UseMutationResult<Awaited<ReturnType<typeof exchangeMobileAuthorizationCode>>, TError, {
-    data: BodyType<MobileTokenExchangeRequest>;
+}) => UseMutationResult<Awaited<ReturnType<typeof registerUser>>, TError, {
+    data: BodyType<RegisterInput>;
 }, TContext>;
-export declare const getLogoutMobileSessionUrl: () => string;
+export declare const getLoginUserUrl: () => string;
 /**
- * @summary Delete a mobile session token
+ * @summary Login with username and password
  */
-export declare const logoutMobileSession: (options?: RequestInit) => Promise<LogoutSuccess>;
-export declare const getLogoutMobileSessionMutationOptions: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<Awaited<ReturnType<typeof logoutMobileSession>>, TError, void, TContext>;
+export declare const loginUser: (loginInput: LoginInput, options?: RequestInit) => Promise<AuthSuccess>;
+export declare const getLoginUserMutationOptions: <TError = ErrorType<ErrorEnvelope>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof loginUser>>, TError, {
+        data: BodyType<LoginInput>;
+    }, TContext>;
     request?: SecondParameter<typeof customFetch>;
-}) => UseMutationOptions<Awaited<ReturnType<typeof logoutMobileSession>>, TError, void, TContext>;
-export type LogoutMobileSessionMutationResult = NonNullable<Awaited<ReturnType<typeof logoutMobileSession>>>;
-export type LogoutMobileSessionMutationError = ErrorType<unknown>;
+}) => UseMutationOptions<Awaited<ReturnType<typeof loginUser>>, TError, {
+    data: BodyType<LoginInput>;
+}, TContext>;
+export type LoginUserMutationResult = NonNullable<Awaited<ReturnType<typeof loginUser>>>;
+export type LoginUserMutationBody = BodyType<LoginInput>;
+export type LoginUserMutationError = ErrorType<ErrorEnvelope>;
 /**
-* @summary Delete a mobile session token
+* @summary Login with username and password
 */
-export declare const useLogoutMobileSession: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
-    mutation?: UseMutationOptions<Awaited<ReturnType<typeof logoutMobileSession>>, TError, void, TContext>;
+export declare const useLoginUser: <TError = ErrorType<ErrorEnvelope>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof loginUser>>, TError, {
+        data: BodyType<LoginInput>;
+    }, TContext>;
     request?: SecondParameter<typeof customFetch>;
-}) => UseMutationResult<Awaited<ReturnType<typeof logoutMobileSession>>, TError, void, TContext>;
+}) => UseMutationResult<Awaited<ReturnType<typeof loginUser>>, TError, {
+    data: BodyType<LoginInput>;
+}, TContext>;
+export declare const getLogoutUserUrl: () => string;
+/**
+ * @summary Logout and clear session
+ */
+export declare const logoutUser: (options?: RequestInit) => Promise<LogoutSuccess>;
+export declare const getLogoutUserMutationOptions: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof logoutUser>>, TError, void, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationOptions<Awaited<ReturnType<typeof logoutUser>>, TError, void, TContext>;
+export type LogoutUserMutationResult = NonNullable<Awaited<ReturnType<typeof logoutUser>>>;
+export type LogoutUserMutationError = ErrorType<unknown>;
+/**
+* @summary Logout and clear session
+*/
+export declare const useLogoutUser: <TError = ErrorType<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<Awaited<ReturnType<typeof logoutUser>>, TError, void, TContext>;
+    request?: SecondParameter<typeof customFetch>;
+}) => UseMutationResult<Awaited<ReturnType<typeof logoutUser>>, TError, void, TContext>;
 export declare const getListMyFavoritesUrl: () => string;
 /**
  * @summary List the current user's favorite words and phrases

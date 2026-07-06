@@ -25,8 +25,9 @@ export function useFavorites(itemType: "word" | "phrase") {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [localFavs, setLocalFavs] = useState<Set<number>>(() => getLocalFavorites(itemType));
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: remoteFavs, refetch } = useListMyFavorites({
-    query: { enabled: isAuthenticated },
+    query: { enabled: isAuthenticated } as any,
   });
 
   const addMutation = useAddMyFavorite({

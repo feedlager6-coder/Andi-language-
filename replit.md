@@ -22,13 +22,22 @@
 
 Все исходные данные для сидов (включая `src/salimov_words.json` — распарсенный словарь Салимова) закоммичены в репозиторий, внешние файлы вне репозитория не требуются.
 
+## Auth
+
+- **Аутентификация:** username + password (bcrypt, нет email-верификации, нет OIDC).
+- Регистрация: `POST /api/auth/register` — логин (3–32 символа), пароль (≥6), displayName опционально.
+- Вход: `POST /api/auth/login`. Выход: `POST /api/auth/logout`. Текущий пользователь: `GET /api/auth/user`.
+- Сессии в PostgreSQL (`sessions`-таблица), cookie `sid`, TTL 7 дней.
+- Страница входа: `/login` — отдельный роут вне AppLayout.
+- `Express.User` расширяется через `artifacts/api-server/src/types.ts` (`SessionUser`); **не** импортировать `AuthUser` из `api-client-react` на сервере.
+
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
 - Frontend: React + Vite + Wouter, `artifacts/andi-language`
 - Backend: Express 5, `artifacts/api-server` (роуты собираются esbuild в `dist/index.mjs` — **dev-скрипт не хот-релоадит роуты**, см. Gotchas)
 - DB: PostgreSQL + Drizzle ORM (`lib/db`)
-- Validation: Zod (`zod/v4`), `drizzle-zod`
+- Validation: Zod (из каталога `"zod": "catalog:"` в `pnpm-workspace.yaml`), `drizzle-zod`
 - API-контракт: OpenAPI-спека → Orval-codegen → хуки в `@workspace/api-client-react`
 - Весь пользовательский интерфейс — на русском языке
 
@@ -68,6 +77,8 @@
 - `pnpm --filter @workspace/api-server run dev` = `build (esbuild) && start` — это **одноразовая сборка, не watch-режим**. После любого изменения в `artifacts/api-server/src/routes/**` или другой backend-логике нужно перезапустить workflow `API Server`, иначе изменения не подхватятся (будет 404 или старое поведение).
 - Сиды не защищены уникальными constraint'ами в БД (`words`, `phrases`, `lessons` не имеют unique-индексов) — повторный прямой запуск отдельного `seed:*` скрипта создаст дубликаты. Всегда используйте `seed:all` для первичного заполнения — он идемпотентен за счёт проверки количества строк перед каждым шагом.
 - `seed-salimov.ts` читает `src/salimov_words.json` (уже сгенерирован и закоммичен) — пересоздавать его через `parse:salimov` нужно только если меняется исходный текстовый словарь.
+- Orval-сгенерированные хуки с TanStack Query v5 требуют `queryKey` в полном `UseQueryOptions` — в call-sites передавайте опции через `as any` (или `as Partial<...>`). Это известное несоответствие типов между orval v8 и @tanstack/react-query v5.
+- **Не используйте `"zod/v4"`** — esbuild не разрешает этот путь. Используйте просто `"zod"` (каталог). Аналогично, `@workspace/api-client-react` не должен импортироваться в api-server (только фронтенд-пакет); типы пользователя сессии определены в `artifacts/api-server/src/types.ts`.
 
 ## Pointers
 

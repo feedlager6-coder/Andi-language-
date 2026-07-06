@@ -2602,84 +2602,123 @@ export declare const GetCurrentAuthUserResponse: zod.ZodObject<{
     } | null;
 }>;
 /**
- * @summary Start the browser OIDC login flow
+ * @summary Register a new user with username and password
  */
-export declare const BeginBrowserLoginQueryParams: zod.ZodObject<{
-    returnTo: zod.ZodOptional<zod.ZodString>;
+export declare const registerUserBodyUsernameMin = 3;
+export declare const registerUserBodyUsernameMax = 32;
+export declare const registerUserBodyPasswordMin = 6;
+export declare const registerUserBodyDisplayNameMax = 64;
+export declare const RegisterUserBody: zod.ZodObject<{
+    username: zod.ZodString;
+    password: zod.ZodString;
+    displayName: zod.ZodOptional<zod.ZodString>;
 }, "strip", zod.ZodTypeAny, {
-    returnTo?: string | undefined;
+    username: string;
+    password: string;
+    displayName?: string | undefined;
 }, {
-    returnTo?: string | undefined;
+    username: string;
+    password: string;
+    displayName?: string | undefined;
 }>;
-export declare const BeginBrowserLoginResponse: zod.ZodVoid;
-/**
- * @summary Complete the browser OIDC login flow
- */
-export declare const HandleBrowserLoginCallbackQueryParams: zod.ZodObject<{
-    code: zod.ZodOptional<zod.ZodString>;
-    state: zod.ZodOptional<zod.ZodString>;
-    iss: zod.ZodOptional<zod.ZodString>;
+export declare const RegisterUserResponse: zod.ZodObject<{
+    user: zod.ZodObject<{
+        id: zod.ZodString;
+        email: zod.ZodNullable<zod.ZodString>;
+        firstName: zod.ZodNullable<zod.ZodString>;
+        lastName: zod.ZodNullable<zod.ZodString>;
+        profileImageUrl: zod.ZodNullable<zod.ZodString>;
+    }, "strip", zod.ZodTypeAny, {
+        id: string;
+        email: string | null;
+        firstName: string | null;
+        lastName: string | null;
+        profileImageUrl: string | null;
+    }, {
+        id: string;
+        email: string | null;
+        firstName: string | null;
+        lastName: string | null;
+        profileImageUrl: string | null;
+    }>;
 }, "strip", zod.ZodTypeAny, {
-    code?: string | undefined;
-    state?: string | undefined;
-    iss?: string | undefined;
+    user: {
+        id: string;
+        email: string | null;
+        firstName: string | null;
+        lastName: string | null;
+        profileImageUrl: string | null;
+    };
 }, {
-    code?: string | undefined;
-    state?: string | undefined;
-    iss?: string | undefined;
+    user: {
+        id: string;
+        email: string | null;
+        firstName: string | null;
+        lastName: string | null;
+        profileImageUrl: string | null;
+    };
 }>;
-export declare const HandleBrowserLoginCallbackResponse: zod.ZodVoid;
 /**
- * @summary Clear the session and begin OIDC logout
+ * @summary Login with username and password
  */
-export declare const LogoutBrowserSessionHeader: zod.ZodObject<{
+export declare const LoginUserBody: zod.ZodObject<{
+    username: zod.ZodString;
+    password: zod.ZodString;
+}, "strip", zod.ZodTypeAny, {
+    username: string;
+    password: string;
+}, {
+    username: string;
+    password: string;
+}>;
+export declare const LoginUserResponse: zod.ZodObject<{
+    user: zod.ZodObject<{
+        id: zod.ZodString;
+        email: zod.ZodNullable<zod.ZodString>;
+        firstName: zod.ZodNullable<zod.ZodString>;
+        lastName: zod.ZodNullable<zod.ZodString>;
+        profileImageUrl: zod.ZodNullable<zod.ZodString>;
+    }, "strip", zod.ZodTypeAny, {
+        id: string;
+        email: string | null;
+        firstName: string | null;
+        lastName: string | null;
+        profileImageUrl: string | null;
+    }, {
+        id: string;
+        email: string | null;
+        firstName: string | null;
+        lastName: string | null;
+        profileImageUrl: string | null;
+    }>;
+}, "strip", zod.ZodTypeAny, {
+    user: {
+        id: string;
+        email: string | null;
+        firstName: string | null;
+        lastName: string | null;
+        profileImageUrl: string | null;
+    };
+}, {
+    user: {
+        id: string;
+        email: string | null;
+        firstName: string | null;
+        lastName: string | null;
+        profileImageUrl: string | null;
+    };
+}>;
+/**
+ * @summary Logout and clear session
+ */
+export declare const LogoutUserHeader: zod.ZodObject<{
     Authorization: zod.ZodOptional<zod.ZodString>;
 }, "strip", zod.ZodTypeAny, {
     Authorization?: string | undefined;
 }, {
     Authorization?: string | undefined;
 }>;
-export declare const LogoutBrowserSessionResponse: zod.ZodVoid;
-/**
- * @summary Exchange a mobile OIDC code for a session token
- */
-export declare const ExchangeMobileAuthorizationCodeBody: zod.ZodObject<{
-    code: zod.ZodString;
-    code_verifier: zod.ZodString;
-    redirect_uri: zod.ZodString;
-    state: zod.ZodString;
-    nonce: zod.ZodOptional<zod.ZodString>;
-}, "strip", zod.ZodTypeAny, {
-    code: string;
-    state: string;
-    code_verifier: string;
-    redirect_uri: string;
-    nonce?: string | undefined;
-}, {
-    code: string;
-    state: string;
-    code_verifier: string;
-    redirect_uri: string;
-    nonce?: string | undefined;
-}>;
-export declare const ExchangeMobileAuthorizationCodeResponse: zod.ZodObject<{
-    token: zod.ZodString;
-}, "strip", zod.ZodTypeAny, {
-    token: string;
-}, {
-    token: string;
-}>;
-/**
- * @summary Delete a mobile session token
- */
-export declare const LogoutMobileSessionHeader: zod.ZodObject<{
-    Authorization: zod.ZodOptional<zod.ZodString>;
-}, "strip", zod.ZodTypeAny, {
-    Authorization?: string | undefined;
-}, {
-    Authorization?: string | undefined;
-}>;
-export declare const LogoutMobileSessionResponse: zod.ZodObject<{
+export declare const LogoutUserResponse: zod.ZodObject<{
     success: zod.ZodBoolean;
 }, "strip", zod.ZodTypeAny, {
     success: boolean;

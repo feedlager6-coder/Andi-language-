@@ -1,31 +1,26 @@
-import * as client from "openid-client";
 import crypto from "crypto";
+import bcrypt from "bcryptjs";
 import { type Request, type Response } from "express";
 import { db, sessionsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
-import type { AuthUser } from "@workspace/api-zod";
+import type { SessionUser } from "../types";
 
-export const ISSUER_URL = process.env.ISSUER_URL ?? "https://replit.com/oidc";
 export const SESSION_COOKIE = "sid";
 export const SESSION_TTL = 7 * 24 * 60 * 60 * 1000;
 
 export interface SessionData {
-  user: AuthUser;
-  access_token: string;
-  refresh_token?: string;
-  expires_at?: number;
+  user: SessionUser;
 }
 
-let oidcConfig: client.Configuration | null = null;
+export async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 12);
+}
 
-export async function getOidcConfig(): Promise<client.Configuration> {
-  if (!oidcConfig) {
-    oidcConfig = await client.discovery(
-      new URL(ISSUER_URL),
-      process.env.REPL_ID!,
-    );
-  }
-  return oidcConfig;
+export async function verifyPassword(
+  password: string,
+  hash: string,
+): Promise<boolean> {
+  return bcrypt.compare(password, hash);
 }
 
 export async function createSession(data: SessionData): Promise<string> {
@@ -52,19 +47,6 @@ export async function getSession(sid: string): Promise<SessionData | null> {
   return row.sess as unknown as SessionData;
 }
 
-export async function updateSession(
-  sid: string,
-  data: SessionData,
-): Promise<void> {
-  await db
-    .update(sessionsTable)
-    .set({
-      sess: data as unknown as Record<string, unknown>,
-      expire: new Date(Date.now() + SESSION_TTL),
-    })
-    .where(eq(sessionsTable.sid, sid));
-}
-
 export async function deleteSession(sid: string): Promise<void> {
   await db.delete(sessionsTable).where(eq(sessionsTable.sid, sid));
 }
@@ -83,4 +65,14 @@ export function getSessionId(req: Request): string | undefined {
     return authHeader.slice(7);
   }
   return req.cookies?.[SESSION_COOKIE];
+}
+
+export function setSessionCookie(res: Response, sid: string) {
+  res.cookie(SESSION_COOKIE, sid, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: SESSION_TTL,
+  });
 }

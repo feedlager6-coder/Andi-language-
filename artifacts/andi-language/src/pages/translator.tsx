@@ -35,7 +35,7 @@ export default function Translator() {
     if (query) setText(query);
     translate.mutate({ data: { text: q } }, {
       onSuccess: (data) => {
-        record(q, data?.draftTranslation ?? null, data?.overallConfidence ?? null);
+        record(q, data?.draftTranslation ?? undefined, data?.overallConfidence ?? undefined);
       },
     });
   };

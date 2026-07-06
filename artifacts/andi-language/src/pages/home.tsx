@@ -17,8 +17,10 @@ const PHRASES = [
 
 export default function Home() {
   const { isAuthenticated, user } = useAuth();
-  const { data: anonProgress, isLoading: loadingAnonProgress } = useGetProgress({ query: { enabled: !isAuthenticated } });
-  const { data: myStats, isLoading: loadingMyStats } = useGetMyStats({ query: { enabled: isAuthenticated } });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: anonProgress, isLoading: loadingAnonProgress } = useGetProgress({ query: { enabled: !isAuthenticated } as any });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: myStats, isLoading: loadingMyStats } = useGetMyStats({ query: { enabled: isAuthenticated } as any });
   const { data: randomWord, isLoading: loadingWord } = useGetRandomWord();
   const { data: dueCards } = useGetDueFlashcards({ limit: 5 });
   const { data: stats } = useGetStatsSummary();

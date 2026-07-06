@@ -20,6 +20,7 @@ import AdminDashboard from "@/pages/admin/index";
 import NewWord from "@/pages/admin/new-word";
 import NewLesson from "@/pages/admin/new-lesson";
 import NotFound from "@/pages/not-found";
+import LoginPage from "@/pages/login";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,26 +30,34 @@ const queryClient = new QueryClient({
 
 function Router() {
   return (
-    <AppLayout>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/dictionary" component={Dictionary} />
-        <Route path="/dictionary/:id" component={WordDetail} />
-        <Route path="/lessons" component={Lessons} />
-        <Route path="/lessons/:id" component={LessonDetail} />
-        <Route path="/practice" component={Practice} />
-        <Route path="/translator" component={Translator} />
-        <Route path="/phrasebank" component={Phrasebank} />
-        <Route path="/progress" component={Progress} />
-        <Route path="/morphology" component={Morphology} />
-        <Route path="/grammar" component={Grammar} />
-        <Route path="/settings" component={Settings} />
-        <Route path="/admin" component={AdminDashboard} />
-        <Route path="/admin/words/new" component={NewWord} />
-        <Route path="/admin/lessons/new" component={NewLesson} />
-        <Route component={NotFound} />
-      </Switch>
-    </AppLayout>
+    <Switch>
+      {/* Login page renders without the sidebar layout */}
+      <Route path="/login" component={LoginPage} />
+
+      {/* All other pages use the app layout with sidebar */}
+      <Route>
+        <AppLayout>
+          <Switch>
+            <Route path="/" component={Home} />
+            <Route path="/dictionary" component={Dictionary} />
+            <Route path="/dictionary/:id" component={WordDetail} />
+            <Route path="/lessons" component={Lessons} />
+            <Route path="/lessons/:id" component={LessonDetail} />
+            <Route path="/practice" component={Practice} />
+            <Route path="/translator" component={Translator} />
+            <Route path="/phrasebank" component={Phrasebank} />
+            <Route path="/progress" component={Progress} />
+            <Route path="/morphology" component={Morphology} />
+            <Route path="/grammar" component={Grammar} />
+            <Route path="/settings" component={Settings} />
+            <Route path="/admin" component={AdminDashboard} />
+            <Route path="/admin/words/new" component={NewWord} />
+            <Route path="/admin/lessons/new" component={NewLesson} />
+            <Route component={NotFound} />
+          </Switch>
+        </AppLayout>
+      </Route>
+    </Switch>
   );
 }
 

@@ -27,7 +27,8 @@ const DIALECTS = [
 export default function Settings() {
   const { isAuthenticated, isLoading: authLoading, login } = useAuth();
   const { toast } = useToast();
-  const { data: settings, isLoading } = useGetMySettings({ query: { enabled: isAuthenticated } });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: settings, isLoading } = useGetMySettings({ query: { enabled: isAuthenticated } as any });
 
   const [dailyGoal, setDailyGoal] = useState(10);
   const [showTransliteration, setShowTransliteration] = useState(true);

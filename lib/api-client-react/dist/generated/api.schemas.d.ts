@@ -19,20 +19,25 @@ export interface AuthUser {
 export interface AuthUserEnvelope {
     user: AuthUser | null;
 }
-export interface MobileTokenExchangeRequest {
-    /** @minLength 1 */
-    code: string;
-    /** @minLength 1 */
-    code_verifier: string;
-    /** @minLength 1 */
-    redirect_uri: string;
-    /** @minLength 1 */
-    state: string;
-    /** @minLength 1 */
-    nonce?: string;
+export interface RegisterInput {
+    /**
+       * @minLength 3
+       * @maxLength 32
+       */
+    username: string;
+    /** @minLength 6 */
+    password: string;
+    /** @maxLength 64 */
+    displayName?: string;
 }
-export interface MobileTokenExchangeSuccess {
-    token: string;
+export interface LoginInput {
+    /** @minLength 1 */
+    username: string;
+    /** @minLength 1 */
+    password: string;
+}
+export interface AuthSuccess {
+    user: AuthUser;
 }
 export declare const LogoutSuccessValue: {
     readonly success: true;
@@ -469,17 +474,6 @@ export type ListPhrasesParams = {
 };
 export type GetGrammarDrillsParams = {
     topic?: string;
-};
-export type BeginBrowserLoginParams = {
-    /**
-     * Relative path to redirect to after login (must start with `/`). Defaults to `/`.
-     */
-    returnTo?: string;
-};
-export type HandleBrowserLoginCallbackParams = {
-    code?: string;
-    state?: string;
-    iss?: string;
 };
 export type ListMyTranslationHistoryParams = {
     limit?: number;

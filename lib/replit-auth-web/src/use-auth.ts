@@ -9,14 +9,22 @@ interface AuthState {
   isAuthenticated: boolean;
   login: () => void;
   logout: () => void;
+  refetch: () => void;
+}
+
+function getBase(): string {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const env = (typeof import.meta !== "undefined") ? (import.meta as any).env : undefined;
+  return env?.BASE_URL?.replace(/\/+$/, "") ?? "";
 }
 
 export function useAuth(): AuthState {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchUser = useCallback((): (() => void) => {
     let cancelled = false;
+    setIsLoading(true);
 
     fetch("/api/auth/user", { credentials: "include" })
       .then((res) => {
@@ -41,13 +49,24 @@ export function useAuth(): AuthState {
     };
   }, []);
 
+  useEffect(() => {
+    return fetchUser();
+  }, [fetchUser]);
+
   const login = useCallback(() => {
-    const base = import.meta.env.BASE_URL.replace(/\/+$/, "") || "/";
-    window.location.href = `/api/login?returnTo=${encodeURIComponent(base)}`;
+    window.location.href = `${getBase()}/login`;
   }, []);
 
-  const logout = useCallback(() => {
-    window.location.href = "/api/logout";
+  const logout = useCallback(async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      // ignore
+    }
+    window.location.href = `${getBase()}/`;
   }, []);
 
   return {
@@ -56,5 +75,6 @@ export function useAuth(): AuthState {
     isAuthenticated: !!user,
     login,
     logout,
+    refetch: fetchUser,
   };
 }

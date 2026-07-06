@@ -27,9 +27,10 @@ export function useTranslatorHistory() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [localHistory, setLocalHistory] = useState<string[]>(getLocalHistory);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: remoteHistory, refetch } = useListMyTranslationHistory(
     { limit: MAX_HISTORY },
-    { query: { enabled: isAuthenticated } },
+    { query: { enabled: isAuthenticated } as any },
   );
 
   const addMutation = useAddMyHistoryEntry({
