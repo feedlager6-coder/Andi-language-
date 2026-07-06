@@ -23,6 +23,7 @@ const mainNav = [
   { title: "Переводчик", url: "/translator", icon: Languages },
   { title: "Практика", url: "/practice", icon: Dumbbell },
   { title: "Прогресс", url: "/progress", icon: TrendingUp },
+  { title: "Настройки", url: "/settings", icon: SlidersHorizontal },
 ];
 
 const specialistNav = [
