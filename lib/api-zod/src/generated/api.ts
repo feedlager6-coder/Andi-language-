@@ -1045,7 +1045,8 @@ export const ClearMyTranslationHistoryResponse = zod.void()
 export const GetMySettingsResponse = zod.object({
   "dailyGoal": zod.number(),
   "showTransliteration": zod.boolean(),
-  "theme": zod.string()
+  "theme": zod.string(),
+  "preferredDialect": zod.string()
 })
 
 
@@ -1055,13 +1056,15 @@ export const GetMySettingsResponse = zod.object({
 export const UpdateMySettingsBody = zod.object({
   "dailyGoal": zod.number().optional(),
   "showTransliteration": zod.boolean().optional(),
-  "theme": zod.string().optional()
+  "theme": zod.string().optional(),
+  "preferredDialect": zod.string().optional()
 })
 
 export const UpdateMySettingsResponse = zod.object({
   "dailyGoal": zod.number(),
   "showTransliteration": zod.boolean(),
-  "theme": zod.string()
+  "theme": zod.string(),
+  "preferredDialect": zod.string()
 })
 
 

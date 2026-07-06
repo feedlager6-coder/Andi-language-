@@ -10,4 +10,5 @@ export interface UserSettingsInput {
   dailyGoal?: number;
   showTransliteration?: boolean;
   theme?: string;
+  preferredDialect?: string;
 }

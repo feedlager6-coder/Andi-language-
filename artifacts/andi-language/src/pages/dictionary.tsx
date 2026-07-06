@@ -208,7 +208,7 @@ export default function Dictionary() {
           </span>
           {!search && !letterFilter && partOfSpeech === "all" && level === "all" && (
             <span className="text-xs opacity-60">
-              Источник: Салимов Х.А. 2010, Мадиева Г.И. 1980
+              Источник: Intercontinental Dictionary Series (ids.clld.org), ср. Церцвадзе И.И. 1967
             </span>
           )}
         </div>

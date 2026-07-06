@@ -1059,13 +1059,15 @@ components:
 
     UserSettings:
       type: object
-      required: [dailyGoal, showTransliteration, theme]
+      required: [dailyGoal, showTransliteration, theme, preferredDialect]
       properties:
         dailyGoal:
           type: integer
         showTransliteration:
           type: boolean
         theme:
+          type: string
+        preferredDialect:
           type: string
     UserSettingsInput:
       type: object
@@ -1075,6 +1077,8 @@ components:
         showTransliteration:
           type: boolean
         theme:
+          type: string
+        preferredDialect:
           type: string
 
     UserStatsRecord:

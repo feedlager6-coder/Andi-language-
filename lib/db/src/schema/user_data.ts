@@ -38,6 +38,7 @@ export const userSettingsTable = pgTable("user_settings", {
   dailyGoal: integer("daily_goal").notNull().default(10),
   showTransliteration: boolean("show_transliteration").notNull().default(true),
   theme: text("theme").notNull().default("light"),
+  preferredDialect: text("preferred_dialect").notNull().default("верхнеандийский"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

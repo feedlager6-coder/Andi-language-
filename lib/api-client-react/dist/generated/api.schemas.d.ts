@@ -81,11 +81,13 @@ export interface UserSettings {
     dailyGoal: number;
     showTransliteration: boolean;
     theme: string;
+    preferredDialect: string;
 }
 export interface UserSettingsInput {
     dailyGoal?: number;
     showTransliteration?: boolean;
     theme?: string;
+    preferredDialect?: string;
 }
 export interface UserStatsRecord {
     streak: number;

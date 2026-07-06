@@ -44,8 +44,8 @@ export default function NewWord() {
       andiWord: "", lemma: "", russian: "", english: "",
       partOfSpeech: "существительное", nounClass: "",
       grammaticalFunction: "", root: "", affixes: "", morphology: "",
-      phonetic: "", examples: "", dialect: "",
-      source: "Салимов Х.А., 2010", license: "academic",
+      phonetic: "", examples: "", dialect: "верхнеандийский (стандарт)",
+      source: "IDS/CLLD (ids.clld.org/contributions/32); ср. Церцвадзе И.И., 1967", license: "academic",
       confidence: 0.8, editorNotes: "", level: "beginner",
     }
   });
@@ -232,7 +232,7 @@ export default function NewWord() {
               <FormField control={form.control} name="source" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Источник</FormLabel>
-                  <FormControl><Input {...field} placeholder="Мадиева 1980, Салимов 2010..." /></FormControl>
+                  <FormControl><Input {...field} placeholder="IDS/CLLD, Церцвадзе 1967..." /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />

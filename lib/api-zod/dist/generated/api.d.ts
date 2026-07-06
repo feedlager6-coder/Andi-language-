@@ -2858,14 +2858,17 @@ export declare const GetMySettingsResponse: zod.ZodObject<{
     dailyGoal: zod.ZodNumber;
     showTransliteration: zod.ZodBoolean;
     theme: zod.ZodString;
+    preferredDialect: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     dailyGoal: number;
     showTransliteration: boolean;
     theme: string;
+    preferredDialect: string;
 }, {
     dailyGoal: number;
     showTransliteration: boolean;
     theme: string;
+    preferredDialect: string;
 }>;
 /**
  * @summary Update the current user's settings
@@ -2874,27 +2877,33 @@ export declare const UpdateMySettingsBody: zod.ZodObject<{
     dailyGoal: zod.ZodOptional<zod.ZodNumber>;
     showTransliteration: zod.ZodOptional<zod.ZodBoolean>;
     theme: zod.ZodOptional<zod.ZodString>;
+    preferredDialect: zod.ZodOptional<zod.ZodString>;
 }, "strip", zod.ZodTypeAny, {
     dailyGoal?: number | undefined;
     showTransliteration?: boolean | undefined;
     theme?: string | undefined;
+    preferredDialect?: string | undefined;
 }, {
     dailyGoal?: number | undefined;
     showTransliteration?: boolean | undefined;
     theme?: string | undefined;
+    preferredDialect?: string | undefined;
 }>;
 export declare const UpdateMySettingsResponse: zod.ZodObject<{
     dailyGoal: zod.ZodNumber;
     showTransliteration: zod.ZodBoolean;
     theme: zod.ZodString;
+    preferredDialect: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
     dailyGoal: number;
     showTransliteration: boolean;
     theme: string;
+    preferredDialect: string;
 }, {
     dailyGoal: number;
     showTransliteration: boolean;
     theme: string;
+    preferredDialect: string;
 }>;
 /**
  * @summary Get the current user's learning stats

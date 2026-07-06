@@ -7,8 +7,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { LogIn, Settings as SettingsIcon } from "lucide-react";
+import { LogIn, Settings as SettingsIcon, Languages } from "lucide-react";
+
+const DIALECTS = [
+  {
+    value: "верхнеандийский",
+    label: "Верхнеандийский (стандарт)",
+    description: "Аулы Анди, Гагатли, Зило, Риквани, Ашали, Чанхо, Кванхидатль. Наиболее распространённая группа говоров, используется как стандарт в академических источниках и в данном словаре.",
+  },
+  {
+    value: "нижнеандийский",
+    label: "Нижнеандийский (мунибско-кванхидатлинский)",
+    description: "Аулы Муни и Кванхидатли. По современным исследованиям иногда выделяется как отдельный язык внутри андийской подгруппы.",
+  },
+];
 
 export default function Settings() {
   const { isAuthenticated, isLoading: authLoading, login } = useAuth();
@@ -17,11 +31,13 @@ export default function Settings() {
 
   const [dailyGoal, setDailyGoal] = useState(10);
   const [showTransliteration, setShowTransliteration] = useState(true);
+  const [preferredDialect, setPreferredDialect] = useState("верхнеандийский");
 
   useEffect(() => {
     if (settings) {
       setDailyGoal(settings.dailyGoal);
       setShowTransliteration(settings.showTransliteration);
+      setPreferredDialect(settings.preferredDialect || "верхнеандийский");
     }
   }, [settings]);
 
@@ -33,9 +49,11 @@ export default function Settings() {
 
   const handleSave = () => {
     updateSettings.mutate({
-      data: { dailyGoal, showTransliteration },
+      data: { dailyGoal, showTransliteration, preferredDialect },
     });
   };
+
+  const activeDialect = DIALECTS.find((d) => d.value === preferredDialect) ?? DIALECTS[0];
 
   if (authLoading) {
     return <Skeleton className="h-64 w-full max-w-lg" />;
@@ -89,6 +107,25 @@ export default function Settings() {
               </div>
               <Switch id="translit" checked={showTransliteration} onCheckedChange={setShowTransliteration} />
             </div>
+
+            <div className="space-y-2 pt-2 border-t border-border">
+              <Label htmlFor="dialect" className="flex items-center gap-2">
+                <Languages className="h-3.5 w-3.5" />
+                Диалект
+              </Label>
+              <Select value={preferredDialect} onValueChange={setPreferredDialect}>
+                <SelectTrigger id="dialect">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {DIALECTS.map((d) => (
+                    <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground leading-relaxed">{activeDialect.description}</p>
+            </div>
+
             <Button onClick={handleSave} disabled={updateSettings.isPending} className="w-full">
               {updateSettings.isPending ? "Сохраняю..." : "Сохранить"}
             </Button>

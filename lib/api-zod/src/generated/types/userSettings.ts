@@ -10,4 +10,5 @@ export interface UserSettings {
   dailyGoal: number;
   showTransliteration: boolean;
   theme: string;
+  preferredDialect: string;
 }
