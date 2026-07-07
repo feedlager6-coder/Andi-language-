@@ -12,6 +12,7 @@ import morphologyRouter from "./morphology";
 import grammarRouter from "./grammar";
 import phrasesRouter from "./phrases";
 import translateRouter from "./translate";
+import audioRouter from "./audio";
 
 const router: IRouter = Router();
 
@@ -28,5 +29,6 @@ router.use(statsRouter);
 router.use(grammarRouter);
 router.use(phrasesRouter);
 router.use(translateRouter);
+router.use(audioRouter);
 
 export default router;

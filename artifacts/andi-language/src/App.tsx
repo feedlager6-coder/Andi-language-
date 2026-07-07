@@ -21,6 +21,7 @@ import NewWord from "@/pages/admin/new-word";
 import NewLesson from "@/pages/admin/new-lesson";
 import NotFound from "@/pages/not-found";
 import LoginPage from "@/pages/login";
+import RecordPage from "@/pages/record";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,6 +51,7 @@ function Router() {
             <Route path="/morphology" component={Morphology} />
             <Route path="/grammar" component={Grammar} />
             <Route path="/settings" component={Settings} />
+            <Route path="/record" component={RecordPage} />
             <Route path="/admin" component={AdminDashboard} />
             <Route path="/admin/words/new" component={NewWord} />
             <Route path="/admin/lessons/new" component={NewLesson} />

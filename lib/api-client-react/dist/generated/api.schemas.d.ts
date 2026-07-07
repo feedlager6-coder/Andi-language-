@@ -451,6 +451,8 @@ export interface TranslationResult {
 export type AuthorizationSessionHeaderParameter = string;
 export type ListWordsParams = {
     search?: string;
+    letter?: string;
+    audioStatus?: string;
     partOfSpeech?: string;
     nounClass?: string;
     level?: string;

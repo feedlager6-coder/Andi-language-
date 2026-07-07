@@ -4,7 +4,7 @@ import {
   BookOpen, BookText, Home, Layers, TrendingUp,
   Dumbbell, ChevronDown, ChevronRight, Settings,
   Microscope, FlaskConical, Languages, MessageSquareText, Menu, X,
-  LogIn, LogOut, User as UserIcon, SlidersHorizontal,
+  LogIn, LogOut, User as UserIcon, SlidersHorizontal, Mic,
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
@@ -29,6 +29,7 @@ const mainNav = [
 const specialistNav = [
   { title: "Морфоанализатор", url: "/morphology", icon: Microscope },
   { title: "Грамматика", url: "/grammar", icon: FlaskConical },
+  { title: "Озвучить", url: "/record", icon: Mic },
   { title: "Панель лингвиста", url: "/admin", icon: Settings },
 ];
 
@@ -119,7 +120,7 @@ function AppSidebar() {
   const [specialistOpen, setSpecialistOpen] = useState(false);
   const { setOpenMobile } = useSidebar();
 
-  const isSpecialistPage = specialistNav.some(n => location === n.url || location.startsWith("/admin"));
+  const isSpecialistPage = specialistNav.some(n => location === n.url || location.startsWith(n.url) || location.startsWith("/admin"));
 
   const handleNavClick = () => {
     // Close mobile sidebar on navigation

@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { db, wordsTable, flashcardsTable } from "@workspace/db";
 import { eq, ilike, or, sql, desc } from "drizzle-orm";
+import { mkdirSync, writeFileSync, existsSync, createReadStream } from "node:fs";
+import path from "node:path";
 import {
   ListWordsQueryParams,
   CreateWordBody,
@@ -16,9 +18,13 @@ const router = Router();
 router.get("/words", async (req, res) => {
   const query = ListWordsQueryParams.safeParse(req.query);
   if (!query.success) return res.status(400).json({ error: "Invalid query" });
-  const { search, partOfSpeech, level, limit = 50, offset = 0 } = query.data;
+  const { search, letter, audioStatus, partOfSpeech, level, limit = 50, offset = 0 } = query.data;
 
   const conditions: any[] = [];
+  if (letter) {
+    // Filter by first letter of Andi word (case-insensitive)
+    conditions.push(ilike(wordsTable.andiWord, `${letter}%`));
+  }
   if (search) {
     conditions.push(
       or(
@@ -28,6 +34,7 @@ router.get("/words", async (req, res) => {
       )
     );
   }
+  if (audioStatus) conditions.push(eq(wordsTable.audioStatus, audioStatus));
   if (partOfSpeech) conditions.push(eq(wordsTable.partOfSpeech, partOfSpeech));
   if (level) conditions.push(eq(wordsTable.level, level));
 

@@ -23,6 +23,7 @@ export const wordsTable = pgTable("words", {
   editorNotes: text("editor_notes"),
   level: text("level"),
   audioStatus: text("audio_status").notNull().default("missing"),
+  audioUrl: text("audio_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

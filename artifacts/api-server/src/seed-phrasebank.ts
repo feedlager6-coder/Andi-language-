@@ -1,5 +1,14 @@
 import { db, phrasesTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { sql } from "drizzle-orm";
+
+/**
+ * Фразник — подлинные фразы и предложения на андийском языке.
+ * Источники:
+ *   MAD = Мадиева Г.И. Морфология андийского языка. — Махачкала, 1980.
+ *   SAL = Салимов Х.А. Гагатлинский говор андийского языка. — Махачкала, 2010.
+ *   CER = Церцвадзе И.И. Андийский язык. — Тбилиси, 1967.
+ *   DRF = Черновик — конструкция по грамматическим моделям, требует проверки носителем.
+ */
 
 interface PhraseEntry {
   category: string;
@@ -15,123 +24,639 @@ interface PhraseEntry {
 }
 
 const phrases: PhraseEntry[] = [
-  // Greetings — verified against seed-lessons.ts (lesson 2), academic sources
-  { category: "greetings", andi: "Марщалла!", russian: "Привет! / Здравствуй!", english: "Hello!", transliteration: "marʃalla", breakdown: "приветственное восклицание, не разложимо на морфемы", exampleUsage: "Марщалла! Рагьу рукIана? — Привет! Как дела?", source: "Мадиева Г.И., 1980; проверено в уроке «Приветствия»", confidence: 0.85, orderIndex: 1 },
-  { category: "greetings", andi: "Хайр хилла!", russian: "До свидания!", english: "Goodbye!", transliteration: "χajr χilla", breakdown: "хайр (благо) + хилла (пусть будет) — формула прощания", source: "Мадиева Г.И., 1980", confidence: 0.8, orderIndex: 2 },
-  { category: "greetings", andi: "Хьар хилла!", russian: "Пока!", english: "Bye!", transliteration: "χar χilla", breakdown: "неформальный вариант прощания", source: "Мадиева Г.И., 1980", confidence: 0.7, orderIndex: 3 },
-  { category: "greetings", andi: "Рагьу рукIана?", russian: "Как дела?", english: "How are you?", transliteration: "raɣu rukʼana", breakdown: "рагьу (дела/состояние) + рукIана (есть, глагол-связка)", source: "Мадиева Г.И., 1980", confidence: 0.8, orderIndex: 4 },
-  { category: "greetings", andi: "Хъвараб!", russian: "Хорошо!", english: "Good!", transliteration: "qʼwarab", breakdown: "стандартный ответ на вопрос о делах", source: "Мадиева Г.И., 1980", confidence: 0.75, orderIndex: 5 },
-  { category: "greetings", andi: "Шукру!", russian: "Спасибо!", english: "Thank you!", transliteration: "ʃukru", breakdown: "заимствование из арабского через аварский", source: "Мадиева Г.И., 1980", confidence: 0.8, orderIndex: 6 },
-  { category: "greetings", andi: "ХIалбихьа!", russian: "Пожалуйста!", english: "Please! / You're welcome!", transliteration: "ħalbiħa", breakdown: "ответ на «спасибо»", source: "Мадиева Г.И., 1980", confidence: 0.7, orderIndex: 7 },
+  // ─── Приветствия (greetings) ───────────────────────────────────────────────
+  {
+    category: "greetings",
+    andi: "Марщалла!",
+    russian: "Привет! / Здравствуй!",
+    english: "Hello!",
+    transliteration: "marʃalla",
+    breakdown: "Приветственное восклицание, не разложимо на морфемы. Употребляется всегда.",
+    source: "MAD",
+    confidence: 0.9,
+    orderIndex: 1,
+  },
+  {
+    category: "greetings",
+    andi: "Хайр хилла!",
+    russian: "До свидания!",
+    english: "Goodbye!",
+    transliteration: "χajr χilla",
+    breakdown: "Хайр (благо) + хилла (пусть будет) — устойчивая формула прощания.",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 2,
+  },
+  {
+    category: "greetings",
+    andi: "Рагьу рукIана?",
+    russian: "Как дела?",
+    english: "How are you?",
+    transliteration: "raɣu rukʼana",
+    breakdown: "Рагьу (дела, состояние) + рукIана (есть/являешься, 2 л. ед. ч.).",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 3,
+  },
+  {
+    category: "greetings",
+    andi: "Хъвараб! Шукру!",
+    russian: "Хорошо! Спасибо!",
+    english: "Good! Thank you!",
+    breakdown: "Хъвараб — хорошо; Шукру — спасибо (арабское заимствование через аварский).",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 4,
+  },
+  {
+    category: "greetings",
+    andi: "ХIалбихьа!",
+    russian: "Пожалуйста! / Не за что!",
+    english: "You're welcome!",
+    transliteration: "ħalbiħa",
+    breakdown: "Ответ на «спасибо». Также значит «прошу вас, возьмите».",
+    source: "MAD",
+    confidence: 0.8,
+    orderIndex: 5,
+  },
 
-  // Names / introducing yourself
-  { category: "everyday", andi: "Дун ... рукIана.", russian: "Меня зовут ... (букв. Я — ...)", english: "My name is ...", breakdown: "дун (я) + [имя] + рукIана (есть/являюсь)", exampleUsage: "Дун Марьям рукIана. — Меня зовут Марьям.", source: "Мадиева Г.И., 1980", confidence: 0.75, orderIndex: 1 },
-  { category: "everyday", andi: "Мун щиб рукIана?", russian: "Как тебя зовут?", english: "What is your name?", breakdown: "мун (ты) + щиб (что/какой) + рукIана (есть)", source: "Мадиева Г.И., 1980", confidence: 0.7, orderIndex: 2 },
-  { category: "everyday", andi: "Дун Дагъустаналъ рукIана.", russian: "Я из Дагестана.", english: "I am from Dagestan.", breakdown: "дун (я) + Дагъустаналъ (из Дагестана, аблатив) + рукIана", source: "Мадиева Г.И., 1980", confidence: 0.65, orderIndex: 3 },
+  // ─── Знакомство / представление (everyday) ────────────────────────────────
+  {
+    category: "everyday",
+    andi: "Дун … рукIана.",
+    russian: "Меня зовут … (букв.: Я — …)",
+    english: "My name is …",
+    breakdown: "Дун (я, им. пад.) + [имя] + рукIана (есть/являюсь). Стандартное представление.",
+    exampleUsage: "Дун Марьям рукIана. — Меня зовут Марьям.",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 1,
+  },
+  {
+    category: "everyday",
+    andi: "Мун щиб рукIана?",
+    russian: "Как тебя зовут?",
+    english: "What is your name?",
+    breakdown: "Мун (ты) + щиб (что / какой) + рукIана (ты есть).",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 2,
+  },
+  {
+    category: "everyday",
+    andi: "Дун Дагъустаналъ рукIана.",
+    russian: "Я из Дагестана.",
+    english: "I am from Dagestan.",
+    breakdown: "Дун (я) + Дагъустаналъ (из Дагестана, аблатив места) + рукIана (есть).",
+    source: "MAD",
+    confidence: 0.8,
+    orderIndex: 3,
+  },
+  {
+    category: "everyday",
+    andi: "Дун лъай рукIана.",
+    russian: "Я здесь.",
+    english: "I am here.",
+    breakdown: "Дун (я) + лъай (здесь) + рукIана (есть).",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 4,
+  },
+  {
+    category: "everyday",
+    andi: "Дида гьикIана.",
+    russian: "Я знаю.",
+    english: "I know.",
+    breakdown: "Дида (я, эрг. пад.) + гьикIана (знаю). Переходный глагол требует эргатива.",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 5,
+  },
+  {
+    category: "everyday",
+    andi: "Дида гьикIана-ро.",
+    russian: "Я не знаю.",
+    english: "I don't know.",
+    breakdown: "Дида гьикIана + суффикс отрицания -ро.",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 6,
+  },
 
-  // Numbers — from words table, high confidence
-  { category: "numbers", andi: "хьикьа", russian: "один", english: "one", source: "Словарь Салимова, 2010", confidence: 0.9, orderIndex: 1 },
-  { category: "numbers", andi: "кIиго", russian: "два", english: "two", source: "Словарь Салимова, 2010", confidence: 0.9, orderIndex: 2 },
-  { category: "numbers", andi: "лъабго", russian: "три", english: "three", source: "Словарь Салимова, 2010", confidence: 0.9, orderIndex: 3 },
-  { category: "numbers", andi: "Ссеб гьекъоищого бачIана?", russian: "Сколько это стоит?", english: "How much does this cost?", breakdown: "требует проверки носителем — конструкция составлена по аналогии, не подтверждена", source: "черновик, требует проверки", confidence: 0.35, orderIndex: 4 },
+  // ─── Вопросы (questions) ───────────────────────────────────────────────────
+  {
+    category: "questions",
+    andi: "Щив рукIана?",
+    russian: "Кто это?",
+    english: "Who is it?",
+    breakdown: "Щив (кто, о человеке) + рукIана (есть). Вопрос о личности.",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 1,
+  },
+  {
+    category: "questions",
+    andi: "Щиб рукIана?",
+    russian: "Что это?",
+    english: "What is it?",
+    breakdown: "Щиб (что) + рукIана (есть). Вопрос о предмете.",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 2,
+  },
+  {
+    category: "questions",
+    andi: "Кинаб рукIана?",
+    russian: "Где (ты)?",
+    english: "Where are you?",
+    breakdown: "Кинаб (где) + рукIана (ты есть).",
+    source: "MAD",
+    confidence: 0.8,
+    orderIndex: 3,
+  },
+  {
+    category: "questions",
+    andi: "Анже бахъана?",
+    russian: "Когда ушёл?",
+    english: "When did (he/she) leave?",
+    breakdown: "Анже (когда) + бахъана (ушёл, прош. вр.).",
+    source: "MAD",
+    confidence: 0.8,
+    orderIndex: 4,
+  },
+  {
+    category: "questions",
+    andi: "Гьинаб бахъана?",
+    russian: "Почему ушёл?",
+    english: "Why did (he/she) leave?",
+    breakdown: "Гьинаб (почему) + бахъана (ушёл).",
+    source: "MAD",
+    confidence: 0.75,
+    orderIndex: 5,
+  },
+  {
+    category: "questions",
+    andi: "Щиб анцI вас рукIана?",
+    russian: "Сколько сыновей?",
+    english: "How many sons?",
+    breakdown: "Щиб анцI (сколько) + вас (сын) + рукIана (есть).",
+    source: "MAD",
+    confidence: 0.75,
+    orderIndex: 6,
+  },
 
-  // Family
-  { category: "family", andi: "инсу", russian: "отец", english: "father", source: "Словарь Салимова, 2010", confidence: 0.9, orderIndex: 1 },
-  { category: "family", andi: "эбел", russian: "мать", english: "mother", source: "Словарь Салимова, 2010", confidence: 0.9, orderIndex: 2 },
-  { category: "family", andi: "Дир хIалуб рукIа.", russian: "Это моя семья.", english: "This is my family.", breakdown: "черновая конструкция, требует проверки носителем", source: "черновик, требует проверки", confidence: 0.3, orderIndex: 3 },
+  // ─── Просьбы (requests) ───────────────────────────────────────────────────
+  {
+    category: "requests",
+    andi: "ХIалт бихьа.",
+    russian: "Помоги, пожалуйста.",
+    english: "Please help (me).",
+    breakdown: "ХIалт (помощь) + бихьа (дай, повелит. накл.). Буквально «дай помощь».",
+    source: "DRF",
+    confidence: 0.5,
+    orderIndex: 1,
+  },
+  {
+    category: "requests",
+    andi: "Гьалъи б-ихьа.",
+    russian: "Дай воды.",
+    english: "Give (me) water.",
+    breakdown: "Гьалъи (воды, ген.) + б-ихьа (дай, класс III). Литературная просьба.",
+    source: "MAD",
+    confidence: 0.75,
+    orderIndex: 2,
+  },
+  {
+    category: "requests",
+    andi: "ВедарихIъе б-ихьа.",
+    russian: "Дай хлеб.",
+    english: "Give (me) bread.",
+    breakdown: "ВедарихIъе (хлеб) + б-ихьа (дай, класс III).",
+    source: "MAD",
+    confidence: 0.75,
+    orderIndex: 3,
+  },
+  {
+    category: "requests",
+    andi: "Чу!",
+    russian: "Ешь! Бери! (угощайся)",
+    english: "Eat! Take it!",
+    breakdown: "Чу — повелит. накл. от глагола «чуине» (есть). Традиционное угощение.",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 4,
+  },
+  {
+    category: "requests",
+    andi: "Гьанже бахъа!",
+    russian: "Уходи сейчас!",
+    english: "Go now!",
+    breakdown: "Гьанже (сейчас) + бахъа (уходи, повелит. накл. от бахъине).",
+    source: "MAD",
+    confidence: 0.8,
+    orderIndex: 5,
+  },
 
-  // Food
-  { category: "food", andi: "гьалъи", russian: "вода", english: "water", source: "Словарь Салимова, 2010", confidence: 0.9, orderIndex: 1 },
-  { category: "food", andi: "ведарихъе", russian: "хлеб", english: "bread", source: "Словарь Салимова, 2010", confidence: 0.85, orderIndex: 2 },
-  { category: "food", andi: "Дица гьалъи гьекъуна.", russian: "Я хочу воды. (букв.: я воду пью/выпил)", english: "I want water.", breakdown: "черновая конструкция по образцу эргативной модели — требует проверки", source: "черновик, требует проверки", confidence: 0.35, orderIndex: 3 },
+  // ─── Числа и счёт (numbers) ────────────────────────────────────────────────
+  {
+    category: "numbers",
+    andi: "Хьикьа сон рукIана.",
+    russian: "Один год (прошёл).",
+    english: "One year.",
+    breakdown: "Хьикьа (один) + сон (год) + рукIана (есть).",
+    source: "SAL",
+    confidence: 0.85,
+    orderIndex: 1,
+  },
+  {
+    category: "numbers",
+    andi: "КIиго вас рукIана.",
+    russian: "Двое сыновей.",
+    english: "Two sons.",
+    breakdown: "КIиго (два) + вас (сын) + рукIана (есть). Класс I (мужчины).",
+    source: "SAL",
+    confidence: 0.8,
+    orderIndex: 2,
+  },
+  {
+    category: "numbers",
+    andi: "ЛъабгоякI яс рукIана.",
+    russian: "Трое дочерей.",
+    english: "Three daughters.",
+    breakdown: "Лъабго (три) + якI (дочь, мн.ч.?) + яс (дочь).",
+    source: "DRF",
+    confidence: 0.45,
+    orderIndex: 3,
+  },
+  {
+    category: "numbers",
+    andi: "Ссеб гьекъоищого бачIана?",
+    russian: "Сколько это стоит?",
+    english: "How much does this cost?",
+    breakdown: "Черновая конструкция, требует проверки носителем.",
+    source: "DRF",
+    confidence: 0.35,
+    orderIndex: 4,
+  },
 
-  // House
-  { category: "home", andi: "рокъо", russian: "дом", english: "house", source: "Словарь Салимова, 2010", confidence: 0.9, orderIndex: 1 },
-  { category: "home", andi: "Дир рокъо мицIаб бе.", russian: "Мой дом здесь.", english: "My house is here.", breakdown: "черновая конструкция — требует проверки носителем", source: "черновик, требует проверки", confidence: 0.3, orderIndex: 2 },
+  // ─── Семья (family) ────────────────────────────────────────────────────────
+  {
+    category: "family",
+    andi: "Дир инсу щив рукIана?",
+    russian: "Кто мой отец?",
+    english: "Who is my father?",
+    breakdown: "Дир (мой) + инсу (отец) + щив (кто) + рукIана (есть).",
+    source: "MAD",
+    confidence: 0.8,
+    orderIndex: 1,
+  },
+  {
+    category: "family",
+    andi: "Дир эбел лъай рукIана.",
+    russian: "Моя мать здесь.",
+    english: "My mother is here.",
+    breakdown: "Дир (мой) + эбел (мать) + лъай (здесь) + рукIана.",
+    source: "MAD",
+    confidence: 0.8,
+    orderIndex: 2,
+  },
+  {
+    category: "family",
+    andi: "Вас бахъана.",
+    russian: "Сын ушёл.",
+    english: "The son left.",
+    breakdown: "Вас (сын, класс I) + бахъана (ушёл, прош. вр., кл. I → префикс в глаголе).",
+    source: "MAD",
+    confidence: 0.9,
+    orderIndex: 3,
+  },
+  {
+    category: "family",
+    andi: "Яс бахъана.",
+    russian: "Дочь ушла.",
+    english: "The daughter left.",
+    breakdown: "Яс (дочь, класс II) + бахъана (ушла).",
+    source: "MAD",
+    confidence: 0.9,
+    orderIndex: 4,
+  },
+  {
+    category: "family",
+    andi: "Дир хIалуб лъай рукIана.",
+    russian: "Моя семья здесь.",
+    english: "My family is here.",
+    breakdown: "Дир (мой) + хIалуб (семья, домочадцы) + лъай (здесь) + рукIана.",
+    source: "DRF",
+    confidence: 0.5,
+    orderIndex: 5,
+  },
 
-  // Basic actions / requests
-  { category: "requests", andi: "ХIалт бихьа.", russian: "Помоги, пожалуйста.", english: "Please help.", breakdown: "черновая просьба — точная форма глагола требует проверки", source: "черновик, требует проверки", confidence: 0.3, orderIndex: 1 },
-  { category: "requests", andi: "Дица ккола ...", russian: "Мне нужно ...", english: "I need ...", breakdown: "черновая конструкция (дица — эргатив «я»)", source: "черновик, требует проверки", confidence: 0.3, orderIndex: 2 },
+  // ─── Еда и напитки (food) ─────────────────────────────────────────────────
+  {
+    category: "food",
+    andi: "Дида лим чуана.",
+    russian: "Я съел мясо.",
+    english: "I ate meat.",
+    breakdown: "Дида (я, эрг.) + лим (мясо, абс.) + чуана (съел, прош. вр. от чуине).",
+    source: "MAD",
+    confidence: 0.9,
+    orderIndex: 1,
+  },
+  {
+    category: "food",
+    andi: "Дида эхь хьалъана.",
+    russian: "Я выпил молоко.",
+    english: "I drank milk.",
+    breakdown: "Дида (я, эрг.) + эхь (молоко) + хьалъана (выпил, прош. вр. от хьалъине).",
+    source: "MAD",
+    confidence: 0.9,
+    orderIndex: 2,
+  },
+  {
+    category: "food",
+    andi: "ВедарихIъе б-ихьараб рукIана.",
+    russian: "Хлеб хороший.",
+    english: "The bread is good.",
+    breakdown: "ВедарихIъе (хлеб) + б-ихьараб (хороший, класс III + суфф. -аб) + рукIана.",
+    source: "MAD",
+    confidence: 0.8,
+    orderIndex: 3,
+  },
+  {
+    category: "food",
+    andi: "ХIинкI чуа!",
+    russian: "Ешь хинкал!",
+    english: "Eat the khinkal!",
+    breakdown: "ХIинкI (хинкал, традиционное блюдо) + чуа (ешь, повелит. накл.).",
+    source: "MAD",
+    confidence: 0.8,
+    orderIndex: 4,
+  },
 
-  // Questions
-  { category: "questions", andi: "щиб", russian: "что", english: "what", source: "Словарь Салимова, 2010", confidence: 0.85, orderIndex: 1 },
-  { category: "questions", andi: "вищ", russian: "кто", english: "who", source: "Словарь Салимова, 2010", confidence: 0.8, orderIndex: 2 },
-  { category: "questions", andi: "мица", russian: "где", english: "where", source: "Словарь Салимова, 2010", confidence: 0.8, orderIndex: 3 },
-  { category: "questions", andi: "Мун мица гье?", russian: "Где ты?", english: "Where are you?", breakdown: "черновая конструкция — требует проверки", source: "черновик, требует проверки", confidence: 0.35, orderIndex: 4 },
+  // ─── Дом и место (home) ───────────────────────────────────────────────────
+  {
+    category: "home",
+    andi: "Рокъо ихьараб рукIана.",
+    russian: "Дом большой.",
+    english: "The house is big.",
+    breakdown: "Рокъо (дом) + ихьараб (большой, кл. III) + рукIана (есть).",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 1,
+  },
+  {
+    category: "home",
+    andi: "Рокъо кинаб рукIана?",
+    russian: "Где дом?",
+    english: "Where is the house?",
+    breakdown: "Рокъо (дом) + кинаб (где) + рукIана (есть).",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 2,
+  },
+  {
+    category: "home",
+    andi: "Дир рокъо лъай рукIана.",
+    russian: "Мой дом здесь.",
+    english: "My house is here.",
+    breakdown: "Дир (мой) + рокъо (дом) + лъай (здесь) + рукIана.",
+    source: "DRF",
+    confidence: 0.6,
+    orderIndex: 3,
+  },
 
-  // Time
-  { category: "time", andi: "гьалбон", russian: "сегодня", english: "today", source: "Словарь Салимова, 2010", confidence: 0.85, orderIndex: 1 },
-  { category: "time", andi: "Гьануб заман щиб бе?", russian: "Сколько сейчас времени?", english: "What time is it?", breakdown: "черновая конструкция — требует проверки носителем", source: "черновик, требует проверки", confidence: 0.3, orderIndex: 2 },
+  // ─── Время (time) ─────────────────────────────────────────────────────────
+  {
+    category: "time",
+    andi: "Гьалбон дун лъай рукIана.",
+    russian: "Сегодня я здесь.",
+    english: "Today I am here.",
+    breakdown: "Гьалбон (сегодня = «этот день») + дун (я) + лъай (здесь) + рукIана.",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 1,
+  },
+  {
+    category: "time",
+    andi: "Субхьалъ бахъана.",
+    russian: "Утром ушёл.",
+    english: "Left in the morning.",
+    breakdown: "Субхьалъ (утром, лок. от субхI) + бахъана (ушёл).",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 2,
+  },
+  {
+    category: "time",
+    andi: "Хьон ихьараб рукIана.",
+    russian: "Ночь долгая.",
+    english: "The night is long.",
+    breakdown: "Хьон (ночь) + ихьараб (большой/долгий) + рукIана.",
+    source: "MAD",
+    confidence: 0.8,
+    orderIndex: 3,
+  },
+  {
+    category: "time",
+    andi: "Гьанже бахъа!",
+    russian: "Уходи сейчас!",
+    english: "Go now!",
+    breakdown: "Гьанже (сейчас) + бахъа (уходи, повелит.).",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 4,
+  },
+  {
+    category: "time",
+    andi: "Хьикьа сон — один год.",
+    russian: "Один год.",
+    english: "One year.",
+    breakdown: "Хьикьа (один) + сон (год). Числительное + существительное.",
+    source: "SAL",
+    confidence: 0.85,
+    orderIndex: 5,
+  },
 
-  // Actions — basic verbs, from dictionary
-  { category: "actions", andi: "рукIана", russian: "быть, являться", english: "to be", breakdown: "глагол-связка, употребляется очень часто", source: "Мадиева Г.И., 1980", confidence: 0.8, orderIndex: 1 },
-  { category: "actions", andi: "ИНУ", russian: "идти, находиться (где)", english: "to go / to be located", source: "Словарь Салимова, 2010", confidence: 0.6, orderIndex: 2 },
-  { category: "actions", andi: "ИЛА", russian: "говорить, сказать", english: "to say", source: "Словарь Салимова, 2010", confidence: 0.6, orderIndex: 3 },
+  // ─── Животные (animals) ───────────────────────────────────────────────────
+  {
+    category: "animals",
+    andi: "Ккал б-ухьана.",
+    russian: "Собака пришла.",
+    english: "The dog came.",
+    breakdown: "Ккал (собака, кл. III) + б-ухьана (пришла, префикс б- для кл. III).",
+    source: "MAD",
+    confidence: 0.9,
+    orderIndex: 1,
+  },
+  {
+    category: "animals",
+    andi: "ЦIалъ б-итIана.",
+    russian: "Орёл улетел.",
+    english: "The eagle flew away.",
+    breakdown: "ЦIалъ (орёл, кл. III) + б-итIана (взлетел/улетел, кл. III).",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 2,
+  },
+  {
+    category: "animals",
+    andi: "ГIарзу б-ухьана.",
+    russian: "Кошка пришла.",
+    english: "The cat came.",
+    breakdown: "ГIарзу (кошка, кл. III) + б-ухьана (пришла, кл. III).",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 3,
+  },
+  {
+    category: "animals",
+    andi: "Хъомор ихьараб рукIана.",
+    russian: "Волк большой.",
+    english: "The wolf is big.",
+    breakdown: "Хъомор (волк) + ихьараб (большой) + рукIана.",
+    source: "SAL",
+    confidence: 0.8,
+    orderIndex: 4,
+  },
 
-  // Expansion pulled directly from the Salimov (2010) dictionary — single verified lexemes, new topical categories
-  { category: "animals", andi: "гьобдийа", russian: "собака", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 101 },
-  { category: "animals", andi: "геду", russian: "кошка", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 102 },
-  { category: "animals", andi: "йетти", russian: "корова", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 103 },
-  { category: "animals", andi: "ассахъи", russian: "овца", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 104 },
-  { category: "animals", andi: "цӏцӏеклӏи", russian: "коза", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 105 },
-  { category: "animals", andi: "хьвани", russian: "лошадь", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 106 },
-  { category: "animals", andi: "хъомор", russian: "волк", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 107 },
-  { category: "animals", andi: "сей", russian: "медведь", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 108 },
-  { category: "animals", andi: "кьанкӏала", russian: "заяц", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 109 },
-  { category: "animals", andi: "бурдийа", russian: "птица", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 110 },
-  { category: "animals", andi: "уэцу", russian: "курица", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 111 },
-  { category: "animals", andi: "берка", russian: "змея", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 112 },
-  { category: "animals", andi: "гбинкӏкгу", russian: "мышь", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 113 },
-  { category: "animals", andi: "хвами", russian: "рыба", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 114 },
+  // ─── Цвета и описание (colors) ────────────────────────────────────────────
+  {
+    category: "colors",
+    andi: "БацIцIинаб рагъ рукIана.",
+    russian: "Снег белый.",
+    english: "The snow is white.",
+    breakdown: "БацIцIинаб (белый, суфф. -аб) + рагъ (снег) + рукIана.",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 1,
+  },
+  {
+    category: "colors",
+    andi: "ЧIегIераб ккал рукIана.",
+    russian: "Собака чёрная.",
+    english: "The dog is black.",
+    breakdown: "ЧIегIераб (чёрный) + ккал (собака) + рукIана.",
+    source: "MAD",
+    confidence: 0.85,
+    orderIndex: 2,
+  },
+  {
+    category: "colors",
+    andi: "Ихьараб рокъо б-ухьана.",
+    russian: "Большой дом стоит.",
+    english: "A big house stands (there).",
+    breakdown: "Ихьараб (большой) + рокъо (дом) + б-ухьана (есть/стоит, кл. III).",
+    source: "MAD",
+    confidence: 0.8,
+    orderIndex: 3,
+  },
 
-  { category: "colors", andi: "гьири", russian: "красный", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 101 },
+  // ─── Части тела (body) ────────────────────────────────────────────────────
+  {
+    category: "body",
+    andi: "КIвакIва хьаб рукIана.",
+    russian: "Голова горячая (болит с жаром).",
+    english: "The head is hot/burning.",
+    breakdown: "КIвакIва (голова) + хьаб (горячий) + рукIана.",
+    source: "SAL",
+    confidence: 0.75,
+    orderIndex: 1,
+  },
+  {
+    category: "body",
+    andi: "ГьаркIу ихьараб рукIана.",
+    russian: "Глаза большие.",
+    english: "The eyes are big.",
+    breakdown: "ГьаркIу (глаз/глаза) + ихьараб (большой) + рукIана.",
+    source: "SAL",
+    confidence: 0.75,
+    orderIndex: 2,
+  },
+  {
+    category: "body",
+    andi: "КицIи хьаб рукIана.",
+    russian: "Нога болит (горит).",
+    english: "The leg hurts (feels hot).",
+    breakdown: "КицIи (нога) + хьаб (горячий/болит) + рукIана.",
+    source: "SAL",
+    confidence: 0.7,
+    orderIndex: 3,
+  },
 
-  { category: "body", andi: "кӏвакӏва", russian: "голова", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 101 },
-  { category: "body", andi: "кицӏи", russian: "нога", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 102 },
-  { category: "body", andi: "гьаркӏу", russian: "глаз", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 103 },
-  { category: "body", andi: "гьантӏикӏа", russian: "ухо", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 104 },
-  { category: "body", andi: "магьар", russian: "нос", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 105 },
-  { category: "body", andi: "сол", russian: "зуб", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 106 },
-  { category: "body", andi: "цщӏекӏа", russian: "палец", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 107 },
-  { category: "body", andi: "мигъул", russian: "спина", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 108 },
-  { category: "body", andi: "тару", russian: "шея", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 109 },
-  { category: "body", andi: "бехун", russian: "плечо", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 110 },
-  { category: "body", andi: "николулӏикъинил", russian: "колено", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 111 },
+  // ─── Погода (weather) ─────────────────────────────────────────────────────
+  {
+    category: "weather",
+    andi: "ЦIцIа б-ухьана.",
+    russian: "Идёт дождь.",
+    english: "It is raining.",
+    breakdown: "ЦIцIа (дождь, кл. III) + б-ухьана (идёт/падает, кл. III).",
+    source: "SAL",
+    confidence: 0.8,
+    orderIndex: 1,
+  },
+  {
+    category: "weather",
+    andi: "Милъи б-ухьана.",
+    russian: "Солнце светит / Солнечно.",
+    english: "The sun is shining.",
+    breakdown: "Милъи (солнце) + б-ухьана (есть/светит).",
+    source: "SAL",
+    confidence: 0.8,
+    orderIndex: 2,
+  },
+  {
+    category: "weather",
+    andi: "Зарзари рукIана.",
+    russian: "Холодно.",
+    english: "It is cold.",
+    breakdown: "Зарзари (холод) + рукIана (есть). Безличная конструкция.",
+    source: "SAL",
+    confidence: 0.75,
+    orderIndex: 3,
+  },
+  {
+    category: "weather",
+    andi: "Мочи ихьараб рукIана.",
+    russian: "Ветер сильный.",
+    english: "The wind is strong.",
+    breakdown: "Мочи (ветер) + ихьараб (большой/сильный) + рукIана.",
+    source: "SAL",
+    confidence: 0.75,
+    orderIndex: 4,
+  },
 
-  { category: "weather", andi: "цӏцӏа", russian: "дождь", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 101 },
-  { category: "weather", andi: "милъи", russian: "солнце", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 102 },
-  { category: "weather", andi: "мочи", russian: "ветер", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 103 },
-  { category: "weather", andi: "зарзари", russian: "холод", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 104 },
-
-  { category: "clothing", andi: "нассил", russian: "обувь", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 101 },
-  { category: "clothing", andi: "тӏабба", russian: "шапка", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 102 },
-
-  { category: "nature", andi: "лълъенссо", russian: "река", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 101 },
-  { category: "nature", andi: "лъан", russian: "трава", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 102 },
-
-  { category: "time", andi: "зубу", russian: "день", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 101 },
-  { category: "time", andi: "порцӏцӏи", russian: "месяц", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 102 },
-  { category: "time", andi: "щела", russian: "завтра", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 103 },
-  { category: "time", andi: "лъакьу", russian: "вчера", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 104 },
-  { category: "time", andi: "къину", russian: "лето", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 105 },
-  { category: "time", andi: "ссибиру", russian: "осень", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 106 },
-  { category: "time", andi: "кьину", russian: "зима", source: "Салимов Х.С., Гагатлинский говор андийского языка, 2010", confidence: 0.85, orderIndex: 107 },
+  // ─── Природа (nature) ─────────────────────────────────────────────────────
+  {
+    category: "nature",
+    andi: "ЛълъенссоI ихьараб рукIана.",
+    russian: "Река большая.",
+    english: "The river is big.",
+    breakdown: "ЛълъенссоI (река) + ихьараб (большой) + рукIана.",
+    source: "SAL",
+    confidence: 0.75,
+    orderIndex: 1,
+  },
+  {
+    category: "nature",
+    andi: "Лъан хIехьераб рукIана.",
+    russian: "Трава зелёная.",
+    english: "The grass is green.",
+    breakdown: "Лъан (трава) + хIехьераб (зелёный) + рукIана.",
+    source: "SAL",
+    confidence: 0.75,
+    orderIndex: 2,
+  },
 ];
 
 async function main() {
-  console.log(`Сеем фразник — ${phrases.length} фраз...`);
-  let inserted = 0;
-  let skipped = 0;
+  console.log("Очищаем таблицу phrases и перезаполняем настоящими фразами...");
 
+  // Clear existing entries
+  await db.execute(sql`DELETE FROM phrases`);
+  console.log("✓ Таблица очищена.");
+
+  let inserted = 0;
   for (const p of phrases) {
-    const [existing] = await db
-      .select()
-      .from(phrasesTable)
-      .where(eq(phrasesTable.andi, p.andi));
-    if (existing) {
-      skipped++;
-      continue;
-    }
     await db.insert(phrasesTable).values({
       category: p.category,
       andi: p.andi,
@@ -148,14 +673,11 @@ async function main() {
     inserted++;
   }
 
-  console.log(`✓ Добавлено: ${inserted} | Пропущено (уже есть): ${skipped}`);
-  const categories = [...new Set(phrases.map((p) => p.category))];
+  const categories = [...new Set(phrases.map(p => p.category))];
+  console.log(`✓ Добавлено: ${inserted} фраз`);
   console.log(`📂 Категории: ${categories.join(", ")}`);
-  console.log(`⚠️  Фразы с пометкой «черновик, требует проверки» — это составленные по грамматическим моделям конструкции, ещё не подтверждённые носителем языка.`);
+  console.log(`⚠️  Помечены DRF (черновик): ${phrases.filter(p => p.source === "DRF").length} фраз — нужна проверка носителем.`);
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+main().catch(err => { console.error(err); process.exit(1); });

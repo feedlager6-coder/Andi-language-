@@ -14,6 +14,7 @@ export const phrasesTable = pgTable("phrases", {
   source: text("source"),
   confidence: real("confidence").default(0.7),
   audioStatus: text("audio_status").notNull().default("missing"),
+  audioUrl: text("audio_url"),
   orderIndex: integer("order_index").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

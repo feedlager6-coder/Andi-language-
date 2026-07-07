@@ -24,6 +24,8 @@ export const listWordsQueryOffsetDefault = 0;
 
 export const ListWordsQueryParams = zod.object({
   "search": zod.coerce.string().optional(),
+  "letter": zod.coerce.string().max(4).optional(),
+  "audioStatus": zod.coerce.string().optional(),
   "partOfSpeech": zod.coerce.string().optional(),
   "nounClass": zod.coerce.string().optional(),
   "level": zod.coerce.string().optional(),

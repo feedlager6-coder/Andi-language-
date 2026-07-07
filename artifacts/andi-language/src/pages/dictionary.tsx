@@ -26,13 +26,9 @@ export default function Dictionary() {
 
   const offset = page * PAGE_SIZE;
 
-  // Build effective search: letter filter + text search
-  const effectiveSearch = letterFilter
-    ? (search ? `${letterFilter} ${search}` : letterFilter)
-    : search || undefined;
-
   const { data, isLoading } = useListWords({
-    search: effectiveSearch,
+    search: search || undefined,
+    letter: letterFilter || undefined,
     partOfSpeech: partOfSpeech !== "all" ? partOfSpeech : undefined,
     level: level !== "all" ? level : undefined,
     limit: PAGE_SIZE,

@@ -23,6 +23,8 @@ export declare const listWordsQueryLimitDefault = 50;
 export declare const listWordsQueryOffsetDefault = 0;
 export declare const ListWordsQueryParams: zod.ZodObject<{
     search: zod.ZodOptional<zod.ZodString>;
+    letter: zod.ZodOptional<zod.ZodString>;
+    audioStatus: zod.ZodOptional<zod.ZodString>;
     partOfSpeech: zod.ZodOptional<zod.ZodString>;
     nounClass: zod.ZodOptional<zod.ZodString>;
     level: zod.ZodOptional<zod.ZodString>;
@@ -32,11 +34,15 @@ export declare const ListWordsQueryParams: zod.ZodObject<{
     limit: number;
     offset: number;
     search?: string | undefined;
+    letter?: string | undefined;
+    audioStatus?: string | undefined;
     partOfSpeech?: string | undefined;
     nounClass?: string | undefined;
     level?: string | undefined;
 }, {
     search?: string | undefined;
+    letter?: string | undefined;
+    audioStatus?: string | undefined;
     partOfSpeech?: string | undefined;
     nounClass?: string | undefined;
     level?: string | undefined;
@@ -72,6 +78,7 @@ export declare const ListWordsResponse: zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -87,13 +94,13 @@ export declare const ListWordsResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     }, {
         partOfSpeech: string;
         id: number;
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -109,7 +116,6 @@ export declare const ListWordsResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     }>, "many">;
     total: zod.ZodNumber;
 }, "strip", zod.ZodTypeAny, {
@@ -119,6 +125,7 @@ export declare const ListWordsResponse: zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -134,7 +141,6 @@ export declare const ListWordsResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     }[];
     total: number;
 }, {
@@ -144,6 +150,7 @@ export declare const ListWordsResponse: zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -159,7 +166,6 @@ export declare const ListWordsResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     }[];
     total: number;
 }>;
@@ -252,6 +258,7 @@ export declare const CreateWordResponse: zod.ZodObject<{
     andiWord: string;
     russian: string;
     createdAt: string;
+    audioStatus?: string | null | undefined;
     nounClass?: string | null | undefined;
     level?: string | null | undefined;
     lemma?: string | null | undefined;
@@ -267,13 +274,13 @@ export declare const CreateWordResponse: zod.ZodObject<{
     license?: string | null | undefined;
     confidence?: number | null | undefined;
     editorNotes?: string | null | undefined;
-    audioStatus?: string | null | undefined;
 }, {
     partOfSpeech: string;
     id: number;
     andiWord: string;
     russian: string;
     createdAt: string;
+    audioStatus?: string | null | undefined;
     nounClass?: string | null | undefined;
     level?: string | null | undefined;
     lemma?: string | null | undefined;
@@ -289,7 +296,6 @@ export declare const CreateWordResponse: zod.ZodObject<{
     license?: string | null | undefined;
     confidence?: number | null | undefined;
     editorNotes?: string | null | undefined;
-    audioStatus?: string | null | undefined;
 }>;
 /**
  * @summary Get a random word of the day
@@ -322,6 +328,7 @@ export declare const GetRandomWordResponse: zod.ZodObject<{
     andiWord: string;
     russian: string;
     createdAt: string;
+    audioStatus?: string | null | undefined;
     nounClass?: string | null | undefined;
     level?: string | null | undefined;
     lemma?: string | null | undefined;
@@ -337,13 +344,13 @@ export declare const GetRandomWordResponse: zod.ZodObject<{
     license?: string | null | undefined;
     confidence?: number | null | undefined;
     editorNotes?: string | null | undefined;
-    audioStatus?: string | null | undefined;
 }, {
     partOfSpeech: string;
     id: number;
     andiWord: string;
     russian: string;
     createdAt: string;
+    audioStatus?: string | null | undefined;
     nounClass?: string | null | undefined;
     level?: string | null | undefined;
     lemma?: string | null | undefined;
@@ -359,7 +366,6 @@ export declare const GetRandomWordResponse: zod.ZodObject<{
     license?: string | null | undefined;
     confidence?: number | null | undefined;
     editorNotes?: string | null | undefined;
-    audioStatus?: string | null | undefined;
 }>;
 /**
  * @summary Morphological analysis of an Andi word (rule-based, preliminary)
@@ -402,6 +408,7 @@ export declare const AnalyzeWordResponse: zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -417,13 +424,13 @@ export declare const AnalyzeWordResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     }, {
         partOfSpeech: string;
         id: number;
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -439,7 +446,6 @@ export declare const AnalyzeWordResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     }>>>;
     segments: zod.ZodArray<zod.ZodObject<{
         text: zod.ZodString;
@@ -483,6 +489,7 @@ export declare const AnalyzeWordResponse: zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -498,7 +505,6 @@ export declare const AnalyzeWordResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     } | null | undefined;
     case?: string | null | undefined;
 }, {
@@ -521,6 +527,7 @@ export declare const AnalyzeWordResponse: zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -536,7 +543,6 @@ export declare const AnalyzeWordResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     } | null | undefined;
     case?: string | null | undefined;
 }>;
@@ -578,6 +584,7 @@ export declare const GetWordResponse: zod.ZodObject<{
     andiWord: string;
     russian: string;
     createdAt: string;
+    audioStatus?: string | null | undefined;
     nounClass?: string | null | undefined;
     level?: string | null | undefined;
     lemma?: string | null | undefined;
@@ -593,13 +600,13 @@ export declare const GetWordResponse: zod.ZodObject<{
     license?: string | null | undefined;
     confidence?: number | null | undefined;
     editorNotes?: string | null | undefined;
-    audioStatus?: string | null | undefined;
 }, {
     partOfSpeech: string;
     id: number;
     andiWord: string;
     russian: string;
     createdAt: string;
+    audioStatus?: string | null | undefined;
     nounClass?: string | null | undefined;
     level?: string | null | undefined;
     lemma?: string | null | undefined;
@@ -615,7 +622,6 @@ export declare const GetWordResponse: zod.ZodObject<{
     license?: string | null | undefined;
     confidence?: number | null | undefined;
     editorNotes?: string | null | undefined;
-    audioStatus?: string | null | undefined;
 }>;
 /**
  * @summary Update a word
@@ -648,6 +654,7 @@ export declare const UpdateWordBody: zod.ZodObject<{
     level: zod.ZodOptional<zod.ZodString>;
     audioStatus: zod.ZodOptional<zod.ZodString>;
 }, "strip", zod.ZodTypeAny, {
+    audioStatus?: string | undefined;
     partOfSpeech?: string | undefined;
     nounClass?: string | undefined;
     level?: string | undefined;
@@ -666,8 +673,8 @@ export declare const UpdateWordBody: zod.ZodObject<{
     license?: string | undefined;
     confidence?: number | undefined;
     editorNotes?: string | undefined;
-    audioStatus?: string | undefined;
 }, {
+    audioStatus?: string | undefined;
     partOfSpeech?: string | undefined;
     nounClass?: string | undefined;
     level?: string | undefined;
@@ -686,7 +693,6 @@ export declare const UpdateWordBody: zod.ZodObject<{
     license?: string | undefined;
     confidence?: number | undefined;
     editorNotes?: string | undefined;
-    audioStatus?: string | undefined;
 }>;
 export declare const UpdateWordResponse: zod.ZodObject<{
     id: zod.ZodNumber;
@@ -716,6 +722,7 @@ export declare const UpdateWordResponse: zod.ZodObject<{
     andiWord: string;
     russian: string;
     createdAt: string;
+    audioStatus?: string | null | undefined;
     nounClass?: string | null | undefined;
     level?: string | null | undefined;
     lemma?: string | null | undefined;
@@ -731,13 +738,13 @@ export declare const UpdateWordResponse: zod.ZodObject<{
     license?: string | null | undefined;
     confidence?: number | null | undefined;
     editorNotes?: string | null | undefined;
-    audioStatus?: string | null | undefined;
 }, {
     partOfSpeech: string;
     id: number;
     andiWord: string;
     russian: string;
     createdAt: string;
+    audioStatus?: string | null | undefined;
     nounClass?: string | null | undefined;
     level?: string | null | undefined;
     lemma?: string | null | undefined;
@@ -753,7 +760,6 @@ export declare const UpdateWordResponse: zod.ZodObject<{
     license?: string | null | undefined;
     confidence?: number | null | undefined;
     editorNotes?: string | null | undefined;
-    audioStatus?: string | null | undefined;
 }>;
 /**
  * @summary Delete a word
@@ -805,6 +811,7 @@ export declare const GetWordFormsResponse: zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -820,13 +827,13 @@ export declare const GetWordFormsResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     }, {
         partOfSpeech: string;
         id: number;
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -842,7 +849,6 @@ export declare const GetWordFormsResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     }>;
     forms: zod.ZodArray<zod.ZodObject<{
         id: zod.ZodNumber;
@@ -879,6 +885,7 @@ export declare const GetWordFormsResponse: zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -894,7 +901,6 @@ export declare const GetWordFormsResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     };
     forms: {
         id: number;
@@ -913,6 +919,7 @@ export declare const GetWordFormsResponse: zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -928,7 +935,6 @@ export declare const GetWordFormsResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     };
     forms: {
         id: number;
@@ -1359,6 +1365,7 @@ export declare const GetDueFlashcardsResponseItem: zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -1374,13 +1381,13 @@ export declare const GetDueFlashcardsResponseItem: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     }, {
         partOfSpeech: string;
         id: number;
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -1396,7 +1403,6 @@ export declare const GetDueFlashcardsResponseItem: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     }>;
     dueDate: zod.ZodString;
     repetitions: zod.ZodNumber;
@@ -1409,6 +1415,7 @@ export declare const GetDueFlashcardsResponseItem: zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -1424,7 +1431,6 @@ export declare const GetDueFlashcardsResponseItem: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     };
     wordId: number;
     dueDate: string;
@@ -1438,6 +1444,7 @@ export declare const GetDueFlashcardsResponseItem: zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -1453,7 +1460,6 @@ export declare const GetDueFlashcardsResponseItem: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     };
     wordId: number;
     dueDate: string;
@@ -1491,6 +1497,7 @@ export declare const GetDueFlashcardsResponse: zod.ZodArray<zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -1506,13 +1513,13 @@ export declare const GetDueFlashcardsResponse: zod.ZodArray<zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     }, {
         partOfSpeech: string;
         id: number;
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -1528,7 +1535,6 @@ export declare const GetDueFlashcardsResponse: zod.ZodArray<zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     }>;
     dueDate: zod.ZodString;
     repetitions: zod.ZodNumber;
@@ -1541,6 +1547,7 @@ export declare const GetDueFlashcardsResponse: zod.ZodArray<zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -1556,7 +1563,6 @@ export declare const GetDueFlashcardsResponse: zod.ZodArray<zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     };
     wordId: number;
     dueDate: string;
@@ -1570,6 +1576,7 @@ export declare const GetDueFlashcardsResponse: zod.ZodArray<zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -1585,7 +1592,6 @@ export declare const GetDueFlashcardsResponse: zod.ZodArray<zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     };
     wordId: number;
     dueDate: string;
@@ -1640,6 +1646,7 @@ export declare const ReviewFlashcardResponse: zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -1655,13 +1662,13 @@ export declare const ReviewFlashcardResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     }, {
         partOfSpeech: string;
         id: number;
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -1677,7 +1684,6 @@ export declare const ReviewFlashcardResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     }>;
     dueDate: zod.ZodString;
     repetitions: zod.ZodNumber;
@@ -1690,6 +1696,7 @@ export declare const ReviewFlashcardResponse: zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -1705,7 +1712,6 @@ export declare const ReviewFlashcardResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     };
     wordId: number;
     dueDate: string;
@@ -1719,6 +1725,7 @@ export declare const ReviewFlashcardResponse: zod.ZodObject<{
         andiWord: string;
         russian: string;
         createdAt: string;
+        audioStatus?: string | null | undefined;
         nounClass?: string | null | undefined;
         level?: string | null | undefined;
         lemma?: string | null | undefined;
@@ -1734,7 +1741,6 @@ export declare const ReviewFlashcardResponse: zod.ZodObject<{
         license?: string | null | undefined;
         confidence?: number | null | undefined;
         editorNotes?: string | null | undefined;
-        audioStatus?: string | null | undefined;
     };
     wordId: number;
     dueDate: string;
@@ -1984,9 +1990,9 @@ export declare const ListPhrasesResponse: zod.ZodObject<{
         orderIndex: zod.ZodNumber;
         createdAt: zod.ZodString;
     }, "strip", zod.ZodTypeAny, {
+        audioStatus: string;
         id: number;
         russian: string;
-        audioStatus: string;
         createdAt: string;
         orderIndex: number;
         category: string;
@@ -1998,9 +2004,9 @@ export declare const ListPhrasesResponse: zod.ZodObject<{
         breakdown?: string | null | undefined;
         exampleUsage?: string | null | undefined;
     }, {
+        audioStatus: string;
         id: number;
         russian: string;
-        audioStatus: string;
         createdAt: string;
         orderIndex: number;
         category: string;
@@ -2016,9 +2022,9 @@ export declare const ListPhrasesResponse: zod.ZodObject<{
 }, "strip", zod.ZodTypeAny, {
     total: number;
     phrases: {
+        audioStatus: string;
         id: number;
         russian: string;
-        audioStatus: string;
         createdAt: string;
         orderIndex: number;
         category: string;
@@ -2033,9 +2039,9 @@ export declare const ListPhrasesResponse: zod.ZodObject<{
 }, {
     total: number;
     phrases: {
+        audioStatus: string;
         id: number;
         russian: string;
-        audioStatus: string;
         createdAt: string;
         orderIndex: number;
         category: string;
@@ -2067,10 +2073,10 @@ export declare const CreatePhraseBody: zod.ZodObject<{
     russian: string;
     category: string;
     andi: string;
+    audioStatus?: string | undefined;
     english?: string | undefined;
     source?: string | undefined;
     confidence?: number | undefined;
-    audioStatus?: string | undefined;
     orderIndex?: number | undefined;
     transliteration?: string | undefined;
     breakdown?: string | undefined;
@@ -2079,10 +2085,10 @@ export declare const CreatePhraseBody: zod.ZodObject<{
     russian: string;
     category: string;
     andi: string;
+    audioStatus?: string | undefined;
     english?: string | undefined;
     source?: string | undefined;
     confidence?: number | undefined;
-    audioStatus?: string | undefined;
     orderIndex?: number | undefined;
     transliteration?: string | undefined;
     breakdown?: string | undefined;
@@ -2103,9 +2109,9 @@ export declare const CreatePhraseResponse: zod.ZodObject<{
     orderIndex: zod.ZodNumber;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
+    audioStatus: string;
     id: number;
     russian: string;
-    audioStatus: string;
     createdAt: string;
     orderIndex: number;
     category: string;
@@ -2117,9 +2123,9 @@ export declare const CreatePhraseResponse: zod.ZodObject<{
     breakdown?: string | null | undefined;
     exampleUsage?: string | null | undefined;
 }, {
+    audioStatus: string;
     id: number;
     russian: string;
-    audioStatus: string;
     createdAt: string;
     orderIndex: number;
     category: string;
@@ -2179,9 +2185,9 @@ export declare const GetPhraseResponse: zod.ZodObject<{
     orderIndex: zod.ZodNumber;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
+    audioStatus: string;
     id: number;
     russian: string;
-    audioStatus: string;
     createdAt: string;
     orderIndex: number;
     category: string;
@@ -2193,9 +2199,9 @@ export declare const GetPhraseResponse: zod.ZodObject<{
     breakdown?: string | null | undefined;
     exampleUsage?: string | null | undefined;
 }, {
+    audioStatus: string;
     id: number;
     russian: string;
-    audioStatus: string;
     createdAt: string;
     orderIndex: number;
     category: string;
@@ -2230,11 +2236,11 @@ export declare const UpdatePhraseBody: zod.ZodObject<{
     audioStatus: zod.ZodOptional<zod.ZodString>;
     orderIndex: zod.ZodOptional<zod.ZodNumber>;
 }, "strip", zod.ZodTypeAny, {
+    audioStatus?: string | undefined;
     russian?: string | undefined;
     english?: string | undefined;
     source?: string | undefined;
     confidence?: number | undefined;
-    audioStatus?: string | undefined;
     orderIndex?: number | undefined;
     category?: string | undefined;
     andi?: string | undefined;
@@ -2242,11 +2248,11 @@ export declare const UpdatePhraseBody: zod.ZodObject<{
     breakdown?: string | undefined;
     exampleUsage?: string | undefined;
 }, {
+    audioStatus?: string | undefined;
     russian?: string | undefined;
     english?: string | undefined;
     source?: string | undefined;
     confidence?: number | undefined;
-    audioStatus?: string | undefined;
     orderIndex?: number | undefined;
     category?: string | undefined;
     andi?: string | undefined;
@@ -2269,9 +2275,9 @@ export declare const UpdatePhraseResponse: zod.ZodObject<{
     orderIndex: zod.ZodNumber;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
+    audioStatus: string;
     id: number;
     russian: string;
-    audioStatus: string;
     createdAt: string;
     orderIndex: number;
     category: string;
@@ -2283,9 +2289,9 @@ export declare const UpdatePhraseResponse: zod.ZodObject<{
     breakdown?: string | null | undefined;
     exampleUsage?: string | null | undefined;
 }, {
+    audioStatus: string;
     id: number;
     russian: string;
-    audioStatus: string;
     createdAt: string;
     orderIndex: number;
     category: string;
@@ -2322,9 +2328,9 @@ export declare const RequestPhraseAudioResponse: zod.ZodObject<{
     orderIndex: zod.ZodNumber;
     createdAt: zod.ZodString;
 }, "strip", zod.ZodTypeAny, {
+    audioStatus: string;
     id: number;
     russian: string;
-    audioStatus: string;
     createdAt: string;
     orderIndex: number;
     category: string;
@@ -2336,9 +2342,9 @@ export declare const RequestPhraseAudioResponse: zod.ZodObject<{
     breakdown?: string | null | undefined;
     exampleUsage?: string | null | undefined;
 }, {
+    audioStatus: string;
     id: number;
     russian: string;
-    audioStatus: string;
     createdAt: string;
     orderIndex: number;
     category: string;
@@ -2388,6 +2394,7 @@ export declare const RequestWordAudioResponse: zod.ZodObject<{
     andiWord: string;
     russian: string;
     createdAt: string;
+    audioStatus?: string | null | undefined;
     nounClass?: string | null | undefined;
     level?: string | null | undefined;
     lemma?: string | null | undefined;
@@ -2403,13 +2410,13 @@ export declare const RequestWordAudioResponse: zod.ZodObject<{
     license?: string | null | undefined;
     confidence?: number | null | undefined;
     editorNotes?: string | null | undefined;
-    audioStatus?: string | null | undefined;
 }, {
     partOfSpeech: string;
     id: number;
     andiWord: string;
     russian: string;
     createdAt: string;
+    audioStatus?: string | null | undefined;
     nounClass?: string | null | undefined;
     level?: string | null | undefined;
     lemma?: string | null | undefined;
@@ -2425,7 +2432,6 @@ export declare const RequestWordAudioResponse: zod.ZodObject<{
     license?: string | null | undefined;
     confidence?: number | null | undefined;
     editorNotes?: string | null | undefined;
-    audioStatus?: string | null | undefined;
 }>;
 /**
  * @summary Translate a Russian sentence into Andi with confidence scoring (draft, not machine translation)
